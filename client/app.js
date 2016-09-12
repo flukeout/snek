@@ -1,3 +1,21 @@
+var socket = io();
+
+//
+//      socket.on('chat message', function(msg){
+//       var messages = document.querySelector('#messages');
+//       var li = document.createElement('li');
+//       li.textContent = msg;
+//       messages.appendChild(li);
+//      });
+//
+//      document.querySelector('#b').addEventListener("click", function(e) {
+//       var m = document.querySelector('#m');
+//       console.log(m);
+//       socket.emit('chat message', m.value);
+//       m.value ='';
+//      });
+//
+
 var directions = ["left","right","up","down"];
 
 $(document).ready(function(){
@@ -23,10 +41,23 @@ $(document).ready(function(){
       default:
         direction = false;
     }
+
     if(direction){
-      game.snakes[0].changeDirection(direction);
+      socket.emit('direction', {
+        id: 0,
+        direction: direction
+      });
+      //game.snakes[0].changeDirection(direction);
     }
   });
+
+  // listen for the server to tell us where to go
+  socket.on('direction', function(data) {
+    var id = parseInt(data.id);
+    var direction = data.direction;
+    game.snakes[id].changeDirection(direction);    
+  });
+
 });
 
 function gameLoop(){
