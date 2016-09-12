@@ -4,6 +4,23 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 
+var colors = require('../client/colors');
+var nextColor = (function() {
+  var c = 0;
+  return function() {
+    return colors[c++ % colors.length];
+  };
+}());
+
+var uuid = (function() {
+  var uid = 0;
+  return function() {
+    return ++uid;
+  };
+}());
+
+var players = {};
+
 app.use(express.static(path.join(__dirname,'..','client')));
 
 app.get('/socket.io.js', function(req, res) {
@@ -12,56 +29,74 @@ app.get('/socket.io.js', function(req, res) {
   });
 });
 
-var snakeids = [];
-
 // A player joins the game
 io.on('connection', function(socket) {
 
+  var player = {
+    id: uuid(),
+    socket: socket,
+    color: nextColor()
+  };
+
+  players[player.id] = player
+
   // welcome user, send them their snake color (may be user-changeble later)
-  console.log('a user connected');  
-  socket.emit('welcome', {
-    color: "red"
+  console.log('a user connected, giving it snake id', player.id);  
+
+  // send in response to connecting:
+  socket.emit('gameSetup', {
+    width: 40,
+    height: 28,
+    id: player.id,
+    color: player.color
   });
 
-  /*
-    Client-generated events
-  */
+  // inform everyone a new player joined
+  io.emit('playerJoin', {
+    id: player.id,
+    color: player.color
+  });
 
-  // a client disconnects
+  // a client disconnects - we don't do much with that yet
   socket.on('disconnect', function(){
     console.log('user disconnected');
+    io.emit('playerDisconnect', {
+      id: player.id
+    })
   });
 
-  // record a snake's movement
-  socket.on('direction', function(data){
-  	console.log("directional change: ", JSON.stringify(data));;
-    io.emit('direction', {
-      id: data.id,
-      direction: data.direction
-    });
-  });
-
-  // client requests a new snake
-  socket.on('make-snake', function() {
-  	console.log("new snake request");
-  	var id = snakeids.length;
-  	snakeids[id] = socket;
+  // client requests a new snake, server spawns a new snake
+  socket.on('makeSnake', function() {
+    console.log("making a snake for player with id", player.id);
   	var data = {
-      id: id,
+      id: player.id,
       x: (Math.random() * 40)  | 0,
-      y: (Math.random() * 40)  | 0,
-      lenght: 3
+      y: (Math.random() * 28)  | 0,
+      length: 10,
+      color: player.color
     };
   	console.log("new snake request", JSON.stringify(data));
-    io.emit('spawn-snake', data);
+    io.emit('spawnSnake', data);
   });
 
-  /*
-    Server-generated events
 
-    'kill-snake': id
-    'disconnect-snake': id
-  */
+  // client sends direction input to server, server broadcasts the player's move
+  socket.on('direction', function(data){
+    data = {
+      id: player.id,
+      direction: data.direction
+    }
+    console.log("directional change: ", JSON.stringify(data));;
+    io.emit('direction', data);
+  });
+
+
+  // client snake died... broadcast to all connected clients
+  socket.on('died', function() {
+    io.emit('killSnake', {
+      id: player.id
+    });
+  });
 });
 
 
