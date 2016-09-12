@@ -2,18 +2,7 @@ var socket = io();
 
 var directions = ["left","right","up","down"];
 
-// socket.on('gameSetup', function(msg){
-//   var width = parseInt(msg.width);
-//   var height = parseInt(msg.height);
-//   var id = parseInt(msg.id);
-//   player.id = id;
-// });
-
-socket.emit("make-snake");
-
-// var player = {
-//   id : 0
-// }
+socket.emit("makeSnake");
 
 $(document).ready(function(){
 
@@ -37,15 +26,11 @@ $(document).ready(function(){
         direction = false;
     }
 
-    console.log(direction);
     if(direction){
       socket.emit('direction', {
-        id: player.id,
         direction: direction
       });
     }
   });
-
-
 });
 

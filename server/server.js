@@ -22,6 +22,8 @@ var uuid = (function() {
 var players = {};
 
 app.use(express.static(path.join(__dirname,'..','client')));
+app.use("/view", express.static(path.join(__dirname,'..','view')));
+app.use("/pad", express.static(path.join(__dirname,'..','pad')));
 
 app.get('/socket.io.js', function(req, res) {
   res.sendFile('socket.io.js', {
@@ -41,7 +43,7 @@ io.on('connection', function(socket) {
   players[player.id] = player
 
   // welcome user, send them their snake color (may be user-changeble later)
-  console.log('a user connected, giving it snake id', player.id);  
+  console.log('a user connected, giving it snake id', player.id);
 
   // send in response to connecting:
   socket.emit('gameSetup', {
