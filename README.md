@@ -62,15 +62,12 @@ direction = {
   direction: "left"
 }
 ```
-```
-respawnSnake = {
-  id : 0
-}
-```
 
 When the player joins the game and wants to spawn
 ```
 makeSnake = {
-    
+  id: <id player got when they joined>
 }
 ```
+
+When the player died and needs a new snake, they send a `makeSnake` event to the server. If the server receiveds a `makeSnake` for a player who is not dead, it is ignored.
