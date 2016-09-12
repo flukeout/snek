@@ -1,0 +1,115 @@
+@import "variables.less";
+
+body, html {
+  font-family: "Helvetica Neue";
+  padding: 0;
+  margin: 0;
+  background: black;
+  perspective: 1200px;
+}
+
+.board {
+  position: relative;
+  height: 400px;
+  width: 400px;
+  background: #222;
+  background-color: #222;
+  background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+  linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  border: solid 20px #444;
+  border-radius: 4px;
+  margin: 0 auto;
+
+  transform: rotateX(20deg);
+  transform-style: preserve-3d;
+}
+
+.snek {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+
+  .body {
+    position: absolute;
+    width: ~"calc(100% - 2px)";
+    height: ~"calc(100% - 2px)";
+    top: 1px;
+    left: 1px;
+  }
+}
+
+.gone .body {
+  animation: blam .2s ease-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes blam {
+  0% {
+    transform: scale(1);
+
+  }
+  99% {
+    transform: scale(.2);
+  }
+  100% {
+    opacity: 0;
+  }
+
+}
+
+.apple {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+
+  .body {
+    position: absolute;
+    background: red;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    border-radius: 50%;
+    animation: pulse .5s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+//
+// .animation-example {
+//   -webkit-animation-name: example;
+//   -webkit-animation-duration:  .4s;
+//   -webkit-animation-iteration-count: 3;
+//   -webkit-animation-delay: .5s;
+// }
+//
+// @-webkit-keyframes example {
+//     0% {
+//         -webkit-transform: scale(1.5);
+//         opacity: .5;
+//     }
+//     50%{
+//         -webkit-transform: scale(.7);
+//         opacity: .5;
+//     }
+//     100% {
+//         -webkit-transform: scale(.7);
+//         opacity: 0;
+//     }
+// }
