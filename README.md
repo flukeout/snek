@@ -7,8 +7,8 @@ When you join, this tells the client how big of a grid to draw and what your pla
 
 ```
 gameSetup = {
-  boardWidth : 0,
-  boardHeight: 0,
+  width : 0,
+  height: 0,
   id : 0
 }
 ```
