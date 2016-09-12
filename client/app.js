@@ -1,27 +1,27 @@
 var socket = io();
 
-//
-//      socket.on('chat message', function(msg){
-//       var messages = document.querySelector('#messages');
-//       var li = document.createElement('li');
-//       li.textContent = msg;
-//       messages.appendChild(li);
-//      });
-//
-//      document.querySelector('#b').addEventListener("click", function(e) {
-//       var m = document.querySelector('#m');
-//       console.log(m);
-//       socket.emit('chat message', m.value);
-//       m.value ='';
-//      });
-//
-
 var directions = ["left","right","up","down"];
 
 $(document).ready(function(){
-  game.start();
-  gameLoop();
 
+  // listen for a server welcome, which has all kinds of game information for us
+  socket.on('gameSetup', function(data) {
+    console.log("joined game! welcome package:", data);
+
+    game.start(data);
+    gameLoop();
+
+    // set up a listener for snake spawns!
+    socket.on('spawnSnake', function(data) {
+      console.log("spawned, starting...", data);
+      game.addSnake(data);
+    });
+
+    // immediately request a snake be made for this player
+    socket.emit('makeSnake', { id: game.player.id });
+  });
+
+  // send user input to the server
   $(document).on("keydown",function(e){
 
     var direction;
@@ -44,10 +44,9 @@ $(document).ready(function(){
 
     if(direction){
       socket.emit('direction', {
-        id: 0,
+        id: game.player.id,
         direction: direction
       });
-      //game.snakes[0].changeDirection(direction);
     }
   });
 
@@ -55,9 +54,14 @@ $(document).ready(function(){
   socket.on('direction', function(data) {
     var id = parseInt(data.id);
     var direction = data.direction;
-    game.snakes[id].changeDirection(direction);    
-  });
 
+    for (var i=0, snake; i<game.snakes.length; i++) {
+      snake = game.snakes[i];
+      if (snake.id === data.id) {
+        snake.changeDirection(direction);
+      }
+    }
+  });
 });
 
 function gameLoop(){
@@ -71,14 +75,20 @@ var game = {
   height: 28,
   apples : [],
   snakes : [],
-  start : function(){
+  player : {},
+
+  start : function(data){
+    player = {
+      color: data.color,
+      id: parseInt(data.id)
+    }
+
+    this.width = parseInt(data.width);
+    this.height = parseInt(data.height);
+
     this.addApple();
     $(".board").css("width",this.size * this.width);
     $(".board").css("height",this.size * this.height);
-
-    for(var i = 0; i < 1; i++){
-      this.addSnake();
-    }
   },
   move : function(){
     for(var i = 0 ; i < this.snakes.length; i++ ){
@@ -86,9 +96,15 @@ var game = {
       s.move();
     }
   },
-  addSnake : function(){
-    var id = getRandom(0,100000000);
-    var snake = makeSnake(id);
+  addSnake : function(snakeData){
+    console.log("adding a snake");
+    var snake = makeSnake(
+      parseInt(snakeData.id),
+      parseInt(snakeData.x),
+      parseInt(snakeData.y),
+      parseInt(snakeData.length),
+      snakeData.color
+    );
     snake.init();
     this.snakes.push(snake);
   },
@@ -133,16 +149,17 @@ function collider(one,two){
   }
 }
 
-function makeSnake(id){
+function makeSnake(id, x, y, length, color){
+  console.log("making snake", id, x, y, length, color);
   var snek = {
-    x : 0,
-    y : 0,
+    x : x,
+    y : y,
     id : id,
     size : 20,
-    length: 10,
+    length: length,
     moving : false,
     ticks : 0,
-    color : "#FFFFFF",
+    color : color,
     speed : 5, // every 10 frames?
     direction : "right",
     segments : [],
@@ -156,12 +173,7 @@ function makeSnake(id){
       this.direction = direction;
     },
     init : function(){
-      this.color = colors[getRandom(0,colors.length)];
-      this.x = getRandom(0,game.width-1);
-      this.y = getRandom(0,game.height-1);
-
       this.direction = directions[getRandom(0,directions.length-1)];
-
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
       }
@@ -301,7 +313,8 @@ function makeSnake(id){
       this.draw();
     },
     die : function(){
-      game.addSnake();
+      socket.emit('died', { id: this.id });
+
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
         tail.el.addClass("gone");
@@ -313,9 +326,10 @@ function makeSnake(id){
       }
 
       var snakeIndex = game.snakes.indexOf(this);
-
       game.snakes.splice(snakeIndex, 1);
 
+      // request a new snake, now that we're dead...
+      socket.emit("makeSnake");
     },
     loseTail : function(){
 
