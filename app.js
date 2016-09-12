@@ -56,7 +56,8 @@ var game = {
     }
   },
   addSnake : function(){
-    var snake = makeSnake();
+    var id = getRandom(0,100000000);
+    var snake = makeSnake(id);
     snake.init();
     this.snakes.push(snake);
   },
@@ -101,12 +102,14 @@ function collider(one,two){
   }
 }
 
-function makeSnake(){
+function makeSnake(id){
   var snek = {
     x : 0,
     y : 0,
+    id : id,
     size : 20,
     length: 10,
+    moving : false,
     ticks : 0,
     color : "#FFFFFF",
     speed : 5, // every 10 frames?
@@ -125,6 +128,7 @@ function makeSnake(){
       this.color = colors[getRandom(0,colors.length)];
       this.x = getRandom(0,game.width-1);
       this.y = getRandom(0,game.height-1);
+
       this.direction = directions[getRandom(0,directions.length-1)];
 
       for(var i = 0; i < this.length; i++) {
@@ -132,14 +136,19 @@ function makeSnake(){
       }
     },
     makeSegment : function(x,y,place){
-      // console.log(x,y,place);
+
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
       var segmentDetails = {
         x : x,
         y : y,
         el : segmentEl
       }
+
       $(".board").append(segmentEl);
+
+      if(!this.moving) {
+        segmentEl.hide();
+      }
 
       segmentEl.css("width",this.size).css("height",this.size);
       segmentEl.find(".body").css("background",this.color);
@@ -149,6 +158,7 @@ function makeSnake(){
       } else {
         this.segments.push(segmentDetails);
       }
+
     },
     eat : function(){
       this.length++;
@@ -156,6 +166,7 @@ function makeSnake(){
       this.makeSegment(tail.x,tail.y,"tail");
     },
     move : function(){
+      this.moving = true;
       this.ticks++;
 
       if(game.snakes.indexOf(this) != 0){
