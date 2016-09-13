@@ -12,13 +12,13 @@ body, html {
   position: relative;
   height: 400px;
   width: 400px;
-  background: #222;
-  background-color: #222;
+  background: #111;
+  background-color: #111;
   background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
   linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
   background-size: 40px 40px;
   background-position: 0 0, 20px 20px;
-  border: solid 20px #444;
+  border: solid 20px #222;
   border-radius: 4px;
   margin: 0 auto;
 
@@ -34,6 +34,19 @@ body, html {
 
   &.ghost .body {
     opacity: .2;
+  }
+
+  &.player:not(.ghost):last-child .body:after {
+    content: "";
+    position: absolute;
+    opacity: .5;
+    background: white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    left: 4px;
+    top: 4px;
+
   }
 
   .body {
@@ -72,13 +85,27 @@ body, html {
 
   .body {
     position: absolute;
-    background: red;
     top: 0;
     left: 0;
     width: 100%;
     height:100%;
+    background: #e62d0e;
     border-radius: 50%;
+
     animation: pulse .5s infinite;
+
+    &:after {
+      content: "";
+      width: 35%;
+      height: 35%;
+      top: 17%;
+      left: 17%;
+      position: absolute;
+      border-radius: 50%;
+      opacity: .4;
+      background: white;
+
+    }
   }
 }
 

@@ -86,11 +86,7 @@ io.on('connection', function(socket) {
       id: player.id,
       direction: data.direction
     }
-
     game.changeDirection(data);
-
-    // console.log("directional change: ", JSON.stringify(data));;
-
   });
 
   // client snake died... broadcast to all connected clients
@@ -132,7 +128,6 @@ var game = {
       var snake = this.snakes[i];
       if(snake.id === id){
         snake.changeDirection(data.direction);
-        // io.emit('message', { content: "Server: snake changed dir at: " + snake.x + "," + snake.y + " at " + snake.ticks});
         data.x = snake.x;
         data.y = snake.y;
         data.ticks = snake.ticks;
@@ -164,7 +159,9 @@ var game = {
 
     snake.init();
     this.snakes.push(snake);
-    // this.addApple();
+    if(this.apples.length == 0) {
+      this.addApple();
+    }
   },
   addApple : function(){
 
@@ -189,7 +186,6 @@ var game = {
     // console.log(this.apples);
   },
   checkCollisions(){
-
     //Checks collisions between apples and snakes
     for(var i = 0; i < this.snakes.length; i++){
       var snake = this.snakes[i];
@@ -198,7 +194,7 @@ var game = {
       for(var j = 0; j < this.apples.length; j++) {
         var apple = this.apples[j];
           if(collider(apple, head)){
-            // snake.eat();
+            snake.eat();
             this.removeApple(apple);
             this.addApple();
           }
@@ -271,6 +267,7 @@ function makeSnake(details){
       this.length++;
       var tail = this.segments[0];
       this.makeSegment(tail.x,tail.y,"tail");
+      io.emit('snakeEat', this.id);
     },
     move : function(){
       this.ticks++;

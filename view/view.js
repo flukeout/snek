@@ -48,9 +48,22 @@ socket.on('gameSetup', function(msg){
 
 socket.on('playerDisconnect', function(msg){
   game.removePlayer(msg.id);
-
 });
 
+socket.on('snakeEat', function(msg){
+  var id = msg;
+  var snake = getSnake(id);
+  snake.eat();
+});
+
+function getSnake(id){
+  for(var i = 0; i < game.snakes.length; i++){
+    var s = game.snakes[i];
+    if(s.id === id) {
+      return s;
+    }
+  }
+}
 
 socket.on('addApple', function(msg){
   var x = parseInt(msg.x);
@@ -71,7 +84,6 @@ socket.on('message', function(msg){
 });
 
 socket.on('spawnSnake', function(msg){
-  console.log(msg);
   var id = parseInt(msg.id);
   var x = parseInt(msg.x);
   var y = parseInt(msg.y);
@@ -122,8 +134,6 @@ var game = {
       var snake = this.snakes[i];
       if(snake.id === id){
         snake.die();
-        // var snakeIndex = this.snakes.indexOf(snake);
-        // this.snakes.splice(snakeIndex, 1);
       }
     }
   },
@@ -201,10 +211,10 @@ var game = {
     }
 
     $(".board").append(apple.el);
+
     apple.el.css("width",this.size).css("height",this.size);
     apple.el.css("transform","translateX(" + this.size * apple.x + "px) translateY("+this.size * apple.y+"px)");
     this.apples.push(apple);
-
   },
   removeApple: function(id){
     console.log("removing apple" + id);
@@ -289,10 +299,8 @@ function makeSnake(id, x, y, color, direction, length){
       }
 
       $(".board").append(segmentEl);
+      segmentEl.css("opacity",0);
 
-      if(!this.moving) {
-        segmentEl.hide();
-      }
 
       segmentEl.css("width",this.size).css("height",this.size);
       segmentEl.find(".body").css("background",this.color);
@@ -342,7 +350,6 @@ function makeSnake(id, x, y, color, direction, length){
 
       var lastSegment = this.segments[0];
 
-
       if(this.segments.length > (this.length + 5) ){
         lastSegment.el.remove();
         this.segments.splice(0,1); // remove last segment
@@ -381,15 +388,19 @@ function makeSnake(id, x, y, color, direction, length){
 
     },
     draw : function(){
-
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
 
-          seg.el.addClass("ghost");
           if(i > (this.segments.length - this.length)) {
-          seg.el.removeClass("ghost");
+            seg.el.removeClass("ghost");
+          } else {
+            seg.el.addClass("ghost");
+            seg.el.remove();
           }
-
+          if(this.id == game.playerId) {
+            seg.el.addClass("player");
+          }
+        $(seg.el).css("opacity", 1);
         $(seg.el).css("transform","translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)");
       }
     }
