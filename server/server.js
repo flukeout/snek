@@ -64,7 +64,6 @@ io.on('connection', function(socket) {
   // a client disconnects - we don't do much with that yet
 
   socket.on('disconnect', function(){
-    console.log('user disconnected');
     io.emit('playerDisconnect', {
       id: player.id
     })
@@ -73,14 +72,11 @@ io.on('connection', function(socket) {
 
   // client requests a new snake, server spawns a new snake
   socket.on('makeSnake', function() {
-    console.log("making a snake for player with id", player.id);
+    // console.log("making a snake for player with id", player.id);
   	var data = {
       id: player.id,
       color: player.color
     };
-
-  	console.log("new snake request", JSON.stringify(data));
-
     game.addSnake(data);
   });
 
@@ -112,9 +108,9 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 5,
-  width : 28,
-  height: 28,
+  size : 15,
+  width : 45,
+  height: 30,
   apples : [],
   snakes : [],
   player : {},
@@ -159,7 +155,7 @@ var game = {
       x: (Math.random() * game.width)  | 0,
       y: (Math.random() * game.height)  | 0,
       color: data.color,
-      length: 10,
+      length: this.size,
     }
 
     io.emit('spawnSnake', snakeDetails);

@@ -342,8 +342,11 @@ function makeSnake(id, x, y, color, direction, length){
 
       var lastSegment = this.segments[0];
 
-      // lastSegment.el.remove();
-      // this.segments.splice(0,1); // remove last segment
+
+      if(this.segments.length > (this.length + 5) ){
+        lastSegment.el.remove();
+        this.segments.splice(0,1); // remove last segment
+      }
 
       this.draw();
     },
