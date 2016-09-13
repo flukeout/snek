@@ -358,6 +358,10 @@ function makeSnake(id, x, y, length, color){
       console.log("snake died at " + this.moves);
 
       io.emit('killSnake', { id: this.id });
+      io.emit('message', { content: "Server: snake died at move: " + this.moves });
+      io.emit('message', { content: "Avg MS: " + getAverageFrameMS() });
+
+
 
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];

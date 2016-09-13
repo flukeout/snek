@@ -44,6 +44,10 @@ socket.on('gameSetup', function(msg){
   game.setup(width,height,id);
 });
 
+socket.on('message', function(msg){
+  console.log(msg.content);
+});
+
 socket.on('spawnSnake', function(msg){
 
   var id = parseInt(msg.id);
