@@ -42,8 +42,15 @@ socket.on('gameSetup', function(msg){
   var height = parseInt(msg.height);
   var id = parseInt(msg.id);
   var apples = msg.apples;
-  game.setup(width,height,id, apples);
+  var snakes = msg.snakes;
+  game.setup(width,height,id, apples, snakes);
 });
+
+socket.on('playerDisconnect', function(msg){
+  game.removePlayer(msg.id);
+
+});
+
 
 socket.on('addApple', function(msg){
   var x = parseInt(msg.x);
@@ -110,6 +117,16 @@ var game = {
   playerId : 0,
   elapsed : 0,
   time : new Date().getTime(),
+  removePlayer : function(id){
+    for(var i = 0 ; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      if(snake.id === id){
+        snake.die();
+        // var snakeIndex = this.snakes.indexOf(snake);
+        // this.snakes.splice(snakeIndex, 1);
+      }
+    }
+  },
   changeDirection : function(id,direction,ticks, x, y){
     for(var i = 0; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -118,11 +135,20 @@ var game = {
       }
     }
   },
-  setup : function(width,height,id,apples) {
+  setup : function(width,height,id,apples,snakes) {
 
     for(var i = 0; i < apples.length; i++) {
       var apple = apples[i];
       this.addApple(apple.x,apple.y,apple.id);
+    }
+
+
+    // Adds snakes from the server...
+    for(var i = 0; i < snakes.length; i++) {
+      var snake = snakes[i];
+      this.addSnake(snake.id,snake.x, snake.y, snake.color, "", snake.length);
+      console.log("Server snake");
+      console.log(snake);
     }
 
     this.height = height;
@@ -157,7 +183,6 @@ var game = {
       var snake = this.snakes[i];
       if(snake.id === id) {
         snake.die();
-        // console.log("Client: snake died at move " + frames);
       }
     }
   },
@@ -323,7 +348,6 @@ function makeSnake(id, x, y, color, direction, length){
       this.draw();
     },
     die : function(){
-
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
         tail.el.addClass("gone");
@@ -333,11 +357,8 @@ function makeSnake(id, x, y, color, direction, length){
           };
         }(tail), 200);
       }
-
       var snakeIndex = game.snakes.indexOf(this);
-
       game.snakes.splice(snakeIndex, 1);
-
     },
     loseTail : function(){
 

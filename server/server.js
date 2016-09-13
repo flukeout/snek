@@ -51,7 +51,8 @@ io.on('connection', function(socket) {
     height: game.height,
     id: player.id,
     color: player.color,
-    apples: game.apples
+    apples: game.apples,
+    snakes: game.snakes
   });
 
   // inform everyone a new player joined
@@ -61,11 +62,13 @@ io.on('connection', function(socket) {
   });
 
   // a client disconnects - we don't do much with that yet
+
   socket.on('disconnect', function(){
     console.log('user disconnected');
     io.emit('playerDisconnect', {
       id: player.id
     })
+    game.removePlayer(player.id);
   });
 
   // client requests a new snake, server spawns a new snake
@@ -115,11 +118,19 @@ var game = {
   apples : [],
   snakes : [],
   player : {},
+  removePlayer : function(id){
+    for(var i = 0 ; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      if(snake.id === id){
+        var snakeIndex = this.snakes.indexOf(snake);
+        this.snakes.splice(snakeIndex, 1);
+      }
+    }
+  },
   changeDirection : function(data){
 
     var newDirection = data.direction;
     var id = data.id;
-
 
     for(var i = 0 ; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -137,7 +148,6 @@ var game = {
     this.addApple();
   },
   move : function(){
-
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
       s.move();
@@ -158,7 +168,7 @@ var game = {
 
     snake.init();
     this.snakes.push(snake);
-    this.addApple();
+    // this.addApple();
   },
   addApple : function(){
 
@@ -331,29 +341,31 @@ function makeSnake(details){
             break;
           }
         }
-
       }
 
       // Other snakes...
 
-      // for(var i = 0; i < game.snakes.length; i++) {
-      //   var otherSnake = game.snakes[i];
-      //
-      //   for(var j = 0; j < otherSnake.segments.length; j++) {
-      //     var seg = otherSnake.segments[j];
-      //     collide = collider(newHead,seg);
-      //     if(collide){
-      //       break;
-      //     }
-      //   }
-      //   if(collide){
-      //     break;
-      //   }
-      // }
+      for(var i = 0; i < game.snakes.length; i++) {
+        var otherSnake = game.snakes[i];
+
+        if(otherSnake != this) {
+          for(var j = 0; j < otherSnake.segments.length; j++) {
+            var seg = otherSnake.segments[j];
+            collide = collider(newHead,seg);
+            if(collide){
+              break;
+            }
+          }
+        }
+
+        if(collide){
+          break;
+        }
+
+      }
 
       if(collide) {
         this.die();
-        // this.loseTail();
         return;
       }
 
@@ -364,10 +376,9 @@ function makeSnake(details){
     },
     die : function(){
 
-      console.log("snake id " + this. id + " died at " + this.moves);
+      console.log("snake id " + this.id + " died at " + this.moves);
 
       io.emit('killSnake', { id: this.id });
-      // io.emit('message', { content: "Server: snake died at move: " + this.moves });
 
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
@@ -376,25 +387,15 @@ function makeSnake(details){
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
 
-      // var snakeOptions = makeSnake(
-      //   parseInt(snakeData.id),
-      //   parseInt(snakeData.x),
-      //   parseInt(snakeData.y),
-      //   parseInt(snakeData.length),
-      //   snakeData.color
-      // );
+      //respawns snake...
 
-      // game.addSnake : function(snakeData){
-      //   console.log("adding a snake");
-      //
-      //   snake.init();
-      //   this.snakes.push(snake);
-      //   this.addApple();
-      // },
-      //
+      var snakeDetails = {
+        id : this.id,
+        color: this.color
+      }
 
-      // request a new snake, now that we're dead...
-      // socket.emit("makeSnake");
+      game.addSnake(snakeDetails);
+
     },
     loseTail : function(){
       if(this.segments.length > 1) {
@@ -426,7 +427,7 @@ function move(){
   elapsed = elapsed + delta;
 
   while(elapsed >= 83) {
-    console.log(elapsed);
+    // console.log(elapsed);
     elapsed = elapsed - 83;
     totalFrames++;
     game.move();
