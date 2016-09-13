@@ -32,6 +32,10 @@ body, html {
   left: 0;
   transform-style: preserve-3d;
 
+  &.ghost .body {
+    opacity: .2;
+  }
+
   .body {
     position: absolute;
     width: ~"calc(100% - 2px)";

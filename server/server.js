@@ -31,8 +31,6 @@ app.get('/socket.io.js', function(req, res) {
   });
 });
 
-console.error('bar');
-
 // A player joins the game
 io.on('connection', function(socket) {
 
@@ -52,7 +50,8 @@ io.on('connection', function(socket) {
     width: game.width,
     height: game.height,
     id: player.id,
-    color: player.color
+    color: player.color,
+    apples: game.apples
   });
 
   // inform everyone a new player joined
@@ -74,15 +73,12 @@ io.on('connection', function(socket) {
     console.log("making a snake for player with id", player.id);
   	var data = {
       id: player.id,
-      x: (Math.random() * game.width)  | 0,
-      y: (Math.random() * game.height)  | 0,
-      length: 10,
       color: player.color
     };
-  	console.log("new snake request", JSON.stringify(data));
-    io.emit('spawnSnake', data);
-    game.addSnake(data);
 
+  	console.log("new snake request", JSON.stringify(data));
+
+    game.addSnake(data);
   });
 
   // client sends direction input to server, server broadcasts the player's move
@@ -94,10 +90,9 @@ io.on('connection', function(socket) {
 
     game.changeDirection(data);
 
-    console.log("directional change: ", JSON.stringify(data));;
-    io.emit('direction', data);
-  });
+    // console.log("directional change: ", JSON.stringify(data));;
 
+  });
 
   // client snake died... broadcast to all connected clients
   socket.on('died', function() {
@@ -114,36 +109,32 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 20,
-  width : 20,
+  size : 5,
+  width : 28,
   height: 28,
   apples : [],
   snakes : [],
   player : {},
-  ticks: 0,
   changeDirection : function(data){
+
     var newDirection = data.direction;
     var id = data.id;
+
 
     for(var i = 0 ; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
       if(snake.id === id){
         snake.changeDirection(data.direction);
+        // io.emit('message', { content: "Server: snake changed dir at: " + snake.x + "," + snake.y + " at " + snake.ticks});
+        data.x = snake.x;
+        data.y = snake.y;
+        data.ticks = snake.ticks;
+        io.emit('direction', data);
       }
     }
   },
   start : function(data){
-    player = {
-      color: data.color,
-      id: parseInt(data.id)
-    }
-
-    this.width = parseInt(data.width);
-    this.height = parseInt(data.height);
-
     this.addApple();
-    $(".board").css("width",this.size * this.width);
-    $(".board").css("height",this.size * this.height);
   },
   move : function(){
 
@@ -152,52 +143,61 @@ var game = {
       s.move();
     }
   },
-  addSnake : function(snakeData){
-
-    console.log("adding a snake");
-    var snake = makeSnake(
-      parseInt(snakeData.id),
-      parseInt(snakeData.x),
-      parseInt(snakeData.y),
-      parseInt(snakeData.length),
-      snakeData.color
-    );
-    snake.init();
-    this.snakes.push(snake);
-
-  },
-  addApple : function(){
-    var apple = {
-      el : $("<div class='apple'><div class='body'></div></div>"),
-      x : getRandom(0,this.width - 1),
-      y : getRandom(0,this.height - 1)
+  addSnake : function(data){
+    var snakeDetails = {
+      id : data.id,
+      x: (Math.random() * game.width)  | 0,
+      y: (Math.random() * game.height)  | 0,
+      color: data.color,
+      length: 10,
     }
 
-    $(".board").append(apple.el);
-    apple.el.css("width",this.size).css("height",this.size);
-    apple.el.css("transform","translateX(" + this.size * apple.x + "px) translateY("+this.size * apple.y+"px)");
+    io.emit('spawnSnake', snakeDetails);
+
+    var snake = makeSnake(snakeDetails);
+
+    snake.init();
+    this.snakes.push(snake);
+    this.addApple();
+  },
+  addApple : function(){
+
+    var apple = {
+      x : getRandom(0,this.width - 1),
+      y : getRandom(0,this.height - 1),
+      id: uuid()
+    };
+
+    io.emit('addApple', apple);
+
     this.apples.push(apple);
   },
   removeApple: function(apple){
-    apple.el.remove();
     var appleIndex = this.apples.indexOf(apple);
+
     this.apples.splice(appleIndex, 1);
+
+    io.emit('removeApple', apple.id);
+
+    // console.log("Apples:");
+    // console.log(this.apples);
   },
   checkCollisions(){
+
     //Checks collisions between apples and snakes
-    // for(var i = 0; i < this.snakes.length; i++){
-    //   var snake = this.snakes[i];
-    //   var head = snake.segments[snake.segments.length - 1];
-    //
-    //   for(var j = 0; j < this.apples.length; j++) {
-    //     var apple = this.apples[j];
-    //       if(collider(apple, head)){
-    //         snake.eat();
-    //         this.removeApple(apple);
-    //         this.addApple();
-    //       }
-    //     }
-    //   }
+    for(var i = 0; i < this.snakes.length; i++){
+      var snake = this.snakes[i];
+      var head = snake.segments[snake.segments.length - 1];
+
+      for(var j = 0; j < this.apples.length; j++) {
+        var apple = this.apples[j];
+          if(collider(apple, head)){
+            // snake.eat();
+            this.removeApple(apple);
+            this.addApple();
+          }
+        }
+      }
     }
 }
 
@@ -207,8 +207,16 @@ function collider(one,two){
   }
 }
 
-function makeSnake(id, x, y, length, color){
-  console.log("making snake", id, x, y, length, color);
+function makeSnake(details){
+
+  var id = details.id;
+  var x = details.x;
+  var y = details.y;
+  var length = details.length;
+  var color = details.color;
+
+  // console.log("making snake", id, x, y, length, color);
+
   var snek = {
     x : x,
     y : y,
@@ -259,8 +267,7 @@ function makeSnake(id, x, y, length, color){
       this.makeSegment(tail.x,tail.y,"tail");
     },
     move : function(){
-
-
+      this.ticks++;
       this.moves++;
       this.moving = true;
 
@@ -285,9 +292,8 @@ function makeSnake(id, x, y, length, color){
         return;
       }
 
-      // console.log(blocked);
       // From here on in, we are moving...
-      // game.checkCollisions();
+      game.checkCollisions();
 
       var newHead = {
         x : parseInt(head.x),
@@ -308,6 +314,9 @@ function makeSnake(id, x, y, length, color){
           newHead.x--;
           break;
       }
+
+      this.x = newHead.x;
+      this.y = newHead.y;
 
       // check against other snakes
       var collide = false;
@@ -342,7 +351,6 @@ function makeSnake(id, x, y, length, color){
       //   }
       // }
 
-
       if(collide) {
         this.die();
         // this.loseTail();
@@ -355,13 +363,11 @@ function makeSnake(id, x, y, length, color){
       this.segments.splice(0,1);
     },
     die : function(){
-      console.log("snake died at " + this.moves);
+
+      console.log("snake id " + this. id + " died at " + this.moves);
 
       io.emit('killSnake', { id: this.id });
-      io.emit('message', { content: "Server: snake died at move: " + this.moves });
-      io.emit('message', { content: "Avg MS: " + getAverageFrameMS() });
-
-
+      // io.emit('message', { content: "Server: snake died at move: " + this.moves });
 
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
@@ -369,6 +375,23 @@ function makeSnake(id, x, y, length, color){
 
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
+
+      // var snakeOptions = makeSnake(
+      //   parseInt(snakeData.id),
+      //   parseInt(snakeData.x),
+      //   parseInt(snakeData.y),
+      //   parseInt(snakeData.length),
+      //   snakeData.color
+      // );
+
+      // game.addSnake : function(snakeData){
+      //   console.log("adding a snake");
+      //
+      //   snake.init();
+      //   this.snakes.push(snake);
+      //   this.addApple();
+      // },
+      //
 
       // request a new snake, now that we're dead...
       // socket.emit("makeSnake");
@@ -393,40 +416,23 @@ var elapsedHistory = [];
 function getRandom(min, max){
   return Math.round(min + Math.random() * (max-min));
 }
-
-function getAverageFrameMS(){
-  var total = 0;
-  for(var i = 0; i < elapsedHistory.length; i++) {
-    var frameTime = elapsedHistory[i];
-    total = total + frameTime;
-  }
-
-  var avg = total / elapsedHistory.length;
-  return avg;
-
-}
+var elapsed = 0;
 
 function move(){
 
-  totalFrames++;
   var now = new Date().getTime();
   var delta = now - time;
   time = now;
+  elapsed = elapsed + delta;
 
-  elapsedHistory.push(delta);
-
-  if(elapsedHistory.length > 10) {
-    elapsedHistory.splice(0,1);
+  while(elapsed >= 83) {
+    console.log(elapsed);
+    elapsed = elapsed - 83;
+    totalFrames++;
+    game.move();
   }
 
-  var average = getAverageFrameMS();
-
-  var delta = 80 - average;
-
-  game.move();
-  setTimeout(function(){
-    move();
-  },80 + delta);
+  setTimeout(move,1);
 }
 
 move();

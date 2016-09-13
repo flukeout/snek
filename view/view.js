@@ -41,7 +41,22 @@ socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
   var height = parseInt(msg.height);
   var id = parseInt(msg.id);
-  game.setup(width,height,id);
+  var apples = msg.apples;
+  game.setup(width,height,id, apples);
+});
+
+socket.on('addApple', function(msg){
+  var x = parseInt(msg.x);
+  var y = parseInt(msg.y);
+  var id = parseInt(msg.id);
+
+  game.addApple(x,y,id);
+
+  console.log("received - add apple");
+});
+
+socket.on('removeApple', function(id){
+  game.removeApple(id);
 });
 
 socket.on('message', function(msg){
@@ -49,14 +64,15 @@ socket.on('message', function(msg){
 });
 
 socket.on('spawnSnake', function(msg){
-
+  console.log(msg);
   var id = parseInt(msg.id);
   var x = parseInt(msg.x);
   var y = parseInt(msg.y);
   var color = msg.color;
   var direction = msg.direction;
+  var length = msg.length;
 
-  game.addSnake(id, x, y, color, direction);
+  game.addSnake(id, x, y, color, direction,length);
 });
 
 socket.on('killSnake', function(msg){
@@ -64,24 +80,18 @@ socket.on('killSnake', function(msg){
   game.killSnake(id);
 });
 
-
 socket.on('direction', function(msg){
   var id = parseInt(msg.id);
   var direction = msg.direction;
-  game.changeDirection(id, direction);
+  var ticks = parseInt(msg.ticks);
+  var x = parseInt(msg.x);
+  var y = parseInt(msg.y);
+
+  game.changeDirection(id, direction, ticks, x, y);
 });
 
 $(document).ready(function(){
-  // game.start();
   gameLoop();
-
-  // listen for the server to tell us where to go
-  // socket.on('direction', function(data) {
-  //   var id = parseInt(data.id);
-  //   var direction = data.direction;
-  //   game.snakes[id].changeDirection(direction);
-  // });
-
 });
 
 function gameLoop(){
@@ -89,9 +99,6 @@ function gameLoop(){
   window.requestAnimationFrame(gameLoop);
 }
 
-// for(var i = 0; i < 1; i++){
-//   this.addSnake();
-// }
 var frames = 0;
 
 var game = {
@@ -103,24 +110,31 @@ var game = {
   playerId : 0,
   elapsed : 0,
   time : new Date().getTime(),
-  changeDirection : function(id,direction){
+  changeDirection : function(id,direction,ticks, x, y){
     for(var i = 0; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
       if(id === snake.id){
-        snake.changeDirection(direction);
+        snake.changeDirection(direction, ticks, x ,y);
       }
     }
   },
-  setup : function(width,height,id) {
+  setup : function(width,height,id,apples) {
+
+    for(var i = 0; i < apples.length; i++) {
+      var apple = apples[i];
+      this.addApple(apple.x,apple.y,apple.id);
+    }
+
     this.height = height;
     this.width = width;
     this.playerId = id;
     this.start();
-  },
-  start : function(){
-    this.addApple();
+
     $(".board").css("width",this.size * this.width);
     $(".board").css("height",this.size * this.height);
+
+  },
+  start : function(){
   },
   move : function(){
     var now = new Date().getTime();
@@ -128,15 +142,14 @@ var game = {
     this.time = now;
     this.elapsed = this.elapsed + delta;
 
-    if(this.elapsed >= 81) {
-
+    if(this.elapsed >= 80) {
       frames++;
-
       for(var i = 0 ; i < this.snakes.length; i++ ){
         var s = this.snakes[i];
         s.move();
       }
       this.elapsed = 0;
+
     }
   },
   killSnake : function(id){
@@ -144,48 +157,89 @@ var game = {
       var snake = this.snakes[i];
       if(snake.id === id) {
         snake.die();
-        console.log("Died at frame " + frames);
+        // console.log("Client: snake died at move " + frames);
       }
     }
   },
-  addSnake : function(id, x, y, color, direction){
-    var snake = makeSnake(id, x, y, color, direction);
+  addSnake : function(id, x, y, color, direction, length){
+    var snake = makeSnake(id, x, y, color, direction, length);
     snake.init();
     this.snakes.push(snake);
   },
-  addApple : function(){
+  addApple : function(x,y,id){
+
     var apple = {
       el : $("<div class='apple'><div class='body'></div></div>"),
-      x : getRandom(0,this.width - 1),
-      y : getRandom(0,this.height - 1)
+      x : x,
+      y : y,
+      id : id
     }
 
     $(".board").append(apple.el);
     apple.el.css("width",this.size).css("height",this.size);
     apple.el.css("transform","translateX(" + this.size * apple.x + "px) translateY("+this.size * apple.y+"px)");
     this.apples.push(apple);
+
   },
-  removeApple: function(apple){
-    apple.el.remove();
-    var appleIndex = this.apples.indexOf(apple);
-    this.apples.splice(appleIndex, 1);
+  removeApple: function(id){
+    console.log("removing apple" + id);
+    console.log(this.apples);
+    for(var i = 0; i < this.apples.length; i++){
+      var apple = this.apples[i];
+      if(id === apple.id){
+        apple.el.remove();
+        var appleIndex = this.apples.indexOf(apple);
+        this.apples.splice(appleIndex, 1);
+      }
+    }
   }
 }
 
-function makeSnake(id, x, y, color, direction){
+function makeSnake(id, x, y, color, direction, length){
   var snek = {
     x : x,
     y : y,
     id : id,
     size : 20,
-    length: 10,
+    length: length,
     moving : false,
     ticks : 0,
     color : color,
     speed : 5, // every 10 frames?
     direction : direction,
     segments : [],
-    changeDirection : function(direction){
+    changes : [],
+    rewind : function(){
+      var head = this.segments[this.segments.length - 1];
+
+      head.el.remove();
+      this.segments.splice(this.segments.length - 1,1);
+
+      var head = this.segments[this.segments.length - 1];
+      this.x = head.x;
+      this.y = head.y;
+      this.ticks--;
+    },
+    changeDirection : function(direction,ticks,x,y){
+
+      // console.log("Server : " + ticks);
+      // console.log("Client : " + this.ticks);
+      //
+      if(this.ticks < ticks) {
+        this.move();
+      }
+
+      if(this.ticks > ticks) {
+        this.rewind();
+      }
+
+      console.log("Server: snake changed dir at: " + x + "," + y + " at " + ticks);
+      console.log("Client: snake changed dir at: " + this.x + "," + this.y + " at " + this.ticks);
+
+      // if(x != this.x || y != this.y){
+      //
+      // }
+
       if((this.direction == "up" && direction == "down") || (this.direction == "down" && direction == "up")) {
         return;
       }
@@ -202,6 +256,7 @@ function makeSnake(id, x, y, color, direction){
     makeSegment : function(x,y,place){
 
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
+
       var segmentDetails = {
         x : x,
         y : y,
@@ -235,16 +290,6 @@ function makeSnake(id, x, y, color, direction){
 
       var head = this.segments[this.segments.length - 1];
 
-
-
-
-
-      // if(this.ticks < this.speed) {
-      //   return;
-      // } else {
-      //   this.ticks = 0;
-      // }
-
       var newHead = {
         x : head.x,
         y : head.y
@@ -265,11 +310,16 @@ function makeSnake(id, x, y, color, direction){
           break;
       }
 
+      this.x = newHead.x;
+      this.y = newHead.y;
+
       this.makeSegment(newHead.x,newHead.y,"head");
 
       var lastSegment = this.segments[0];
-      lastSegment.el.remove();
-      this.segments.splice(0,1);
+
+      // lastSegment.el.remove();
+      // this.segments.splice(0,1); // remove last segment
+
       this.draw();
     },
     die : function(){
@@ -307,9 +357,15 @@ function makeSnake(id, x, y, color, direction){
 
     },
     draw : function(){
-      // console.log(this.direction);
+
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
+
+          seg.el.addClass("ghost");
+          if(i > (this.segments.length - this.length)) {
+          seg.el.removeClass("ghost");
+          }
+
         $(seg.el).css("transform","translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)");
       }
     }
