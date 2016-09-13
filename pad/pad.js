@@ -1,7 +1,4 @@
 var socket = io();
-
-var directions = ["left","right","up","down"];
-
 socket.emit("makeSnake");
 
 $(document).ready(function(){

@@ -1,5 +1,42 @@
 var socket = io();
 
+
+$(document).ready(function(){
+  socket.emit("makeSnake");
+
+  $(document).on("keydown",function(e){
+
+    var direction;
+    switch(e.keyCode) {
+      case 37:
+        direction = "left";
+        break;
+      case 39:
+        direction = "right";
+        break;
+      case 38:
+        direction = "up";
+        break;
+      case 40:
+        direction = "down";
+        break;
+      default:
+        direction = false;
+    }
+
+    if(direction){
+      socket.emit('direction', {
+        direction: direction
+      });
+    }
+  });
+});
+
+
+////// Pad COD
+
+var socket = io();
+
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
   var height = parseInt(msg.height);
@@ -15,10 +52,14 @@ socket.on('spawnSnake', function(msg){
   var color = msg.color;
   var direction = msg.direction;
 
-  console.log(id,x,y,color,direction);
-
   game.addSnake(id, x, y, color, direction);
 });
+
+socket.on('killSnake', function(msg){
+  var id = msg.id;
+  game.killSnake(id);
+});
+
 
 socket.on('direction', function(msg){
   var id = parseInt(msg.id);
@@ -47,7 +88,7 @@ function gameLoop(){
 // for(var i = 0; i < 1; i++){
 //   this.addSnake();
 // }
-
+var frames = 0;
 
 var game = {
   size : 20,
@@ -56,6 +97,8 @@ var game = {
   apples : [],
   snakes : [],
   playerId : 0,
+  elapsed : 0,
+  time : new Date().getTime(),
   changeDirection : function(id,direction){
     for(var i = 0; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -76,13 +119,32 @@ var game = {
     $(".board").css("height",this.size * this.height);
   },
   move : function(){
-    for(var i = 0 ; i < this.snakes.length; i++ ){
-      var s = this.snakes[i];
-      s.move();
+    var now = new Date().getTime();
+    var delta = now - this.time;
+    this.time = now;
+    this.elapsed = this.elapsed + delta;
+
+    if(this.elapsed >= 81) {
+
+      frames++;
+
+      for(var i = 0 ; i < this.snakes.length; i++ ){
+        var s = this.snakes[i];
+        s.move();
+      }
+      this.elapsed = 0;
+    }
+  },
+  killSnake : function(id){
+    for(var i = 0; i < this.snakes.length; i++){
+      var snake = this.snakes[i];
+      if(snake.id === id) {
+        snake.die();
+        console.log("Died at frame " + frames);
+      }
     }
   },
   addSnake : function(id, x, y, color, direction){
-    console.log(id,x,y,color, direction);
     var snake = makeSnake(id, x, y, color, direction);
     snake.init();
     this.snakes.push(snake);
@@ -169,11 +231,15 @@ function makeSnake(id, x, y, color, direction){
 
       var head = this.segments[this.segments.length - 1];
 
-      if(this.ticks < this.speed) {
-        return;
-      } else {
-        this.ticks = 0;
-      }
+
+
+
+
+      // if(this.ticks < this.speed) {
+      //   return;
+      // } else {
+      //   this.ticks = 0;
+      // }
 
       var newHead = {
         x : head.x,
@@ -237,6 +303,7 @@ function makeSnake(id, x, y, color, direction){
 
     },
     draw : function(){
+      // console.log(this.direction);
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
         $(seg.el).css("transform","translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)");
