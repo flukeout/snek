@@ -41,10 +41,47 @@ function calcTime(){
   console.log("Server ping: " + (returnTime - emitTime));
 }
 
+function getAverage(array){
+  var total = 0;
+  for(var i = 0; i < array.length; i++){
+    var item = array[i];
+    total = total + item;
+  }
 
+  return total / array.length;
+}
+
+
+var deltaKeeper = {
+  deltas : [],
+  trends : [],
+  averageTrend : 0,
+  average : 0,
+  add : function(val){
+
+    this.deltas.push(val);
+    if(this.deltas.length > 10) {
+      this.deltas.splice(0,1)
+    }
+    var total = 0;
+    for(var i = 0; i < this.deltas.length; i++){
+      var delta = this.deltas[i];
+      total = total + delta;
+    }
+    this.average = total / this.deltas.length;
+
+    if(this.deltas.length > 2) {
+      var lastTrend = this.deltas[this.deltas.length-1] - this.deltas[this.deltas.length-2];
+      this.trends.push(lastTrend);
+      this.averageTrend = getAverage(this.trends);
+      console.log("averge drift per frame " + this.averageTrend);
+    }
+  }
+}
 
 var lastLocalTick = 0;
 var lastServerTick = 0;
+var deltas = [];
 
 function strobe(type) {
   if(type == "local") {
@@ -62,9 +99,19 @@ function strobe(type) {
     var delta = lastServerTick - lastLocalTick;
     $(".delta").text(delta);
 
-    if(delta > 0) {
-      game.elapsed = game.elapsed + delta/2;
+    if(delta < 500) {
+      deltaKeeper.add(delta);
     }
+
+    // if(deltaKeeper.average > 0) {
+    //   game.tickSpeed++;
+    // } else {
+    //   game.tickSpeed--;
+    // }
+
+    // if(delta > 0) {
+    //   game.elapsed = game.elapsed + delta/2;
+    // }
 
     // if(delta > 0) {
     //   game.tickSpeed = game.tickSpeed + delta;
