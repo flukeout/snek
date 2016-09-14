@@ -328,7 +328,6 @@ function makeSnake(details){
       if(this.moves > this.length) {
         for(var i = 0; i < this.segments.length; i++) {
           var segment = this.segments[i];
-
           collide = collider(newHead,segment);
           if(collide){
             break;

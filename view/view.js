@@ -82,6 +82,7 @@ var deltaKeeper = {
 var lastLocalTick = 0;
 var lastServerTick = 0;
 var deltas = [];
+var blam = 0;
 
 function strobe(type) {
   if(type == "local") {
@@ -103,6 +104,13 @@ function strobe(type) {
       deltaKeeper.add(delta);
     }
 
+    blam++
+    if(blam > 10) {
+      console.log("adjusting tick by " + deltaKeeper.averageTrend);
+
+      game.tickSpeed = game.tickSpeed + (deltaKeeper.averageTrend/2);
+      blam = 0;
+    }
     // if(deltaKeeper.average > 0) {
     //   game.tickSpeed++;
     // } else {
