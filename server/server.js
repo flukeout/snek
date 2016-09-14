@@ -410,7 +410,7 @@ function getRandom(min, max){
   return Math.round(min + Math.random() * (max-min));
 }
 var elapsed = 0;
-var ms = 160;
+var ms = 500;
 function move(){
 
   var now = new Date().getTime();

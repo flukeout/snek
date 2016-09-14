@@ -159,3 +159,40 @@ body, html {
 //         opacity: 0;
 //     }
 // }
+
+@keyframes strobe {
+  0% {
+    opacity: 1
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.tick {
+  height: 40px;
+  width: 40px;
+  margin: 10px;
+  display: inline-block;
+  border-radius: 50%;
+
+  &.strobe {
+    animation: strobe .4s ease-out;
+    animation-fill-mode: forwards;
+  }
+
+  &.server-tick {
+    background: blue;
+    margin-left: 0;
+  }
+
+  &.local-tick {
+    background: green;
+  }
+
+}
+
+.delta {
+  display: inline-block;
+  color: #999;
+}

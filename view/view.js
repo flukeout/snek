@@ -1,6 +1,5 @@
 var socket = io();
 
-
 $(document).ready(function(){
   socket.emit("makeSnake");
 
@@ -42,6 +41,28 @@ function calcTime(){
   console.log("Server ping: " + (returnTime - emitTime));
 }
 
+var lastLocalTick = 0;
+var lastServerTick = 0;
+
+function strobe(type) {
+  if(type == "local") {
+    $(".local-tick").removeClass("strobe");
+    $(".local-tick").width($(".local-tick").width());
+    $(".local-tick").addClass("strobe");
+    lastLocalTick = new Date().getTime();
+  } else {
+    $(".server-tick").removeClass("strobe");
+    $(".server-tick").width($(".server-tick").width());
+    $(".server-tick").addClass("strobe");
+    lastServerTick = new Date().getTime();
+    var delta = 250 - Math.abs(250 - (lastServerTick - lastLocalTick));
+    $(".delta").text(delta);
+
+    game.elapsed = game.elapsed + delta; // 250 is the worst off
+  }
+
+
+}
 ////// Pad COD
 
 var socket = io();
@@ -59,6 +80,7 @@ function calcAverage(){
 }
 
 socket.on('serverTick', function(msg){
+  strobe("server");
   var tick = msg.message;
   tickHistory.push(tick);
 
@@ -67,6 +89,7 @@ socket.on('serverTick', function(msg){
   }
 
   averageTick = calcAverage();
+
 });
 
 
@@ -212,6 +235,9 @@ var game = {
 
     if(this.elapsed >= averageTick) {
       frames++;
+
+      strobe("local");
+
       for(var i = 0 ; i < this.snakes.length; i++ ){
         var s = this.snakes[i];
         s.move();
