@@ -57,21 +57,23 @@ function strobe(type) {
     $(".server-tick").width($(".server-tick").width());
     $(".server-tick").addClass("strobe");
     lastServerTick = new Date().getTime();
-    var delta = 250 - Math.abs(250 - (lastServerTick - lastLocalTick));
+    // var delta = 250 - Math.abs(250 - (lastServerTick - lastLocalTick));
+
+    var delta = lastServerTick - lastLocalTick;
     $(".delta").text(delta);
 
     if(delta > 0) {
-      game.elapsed = game.elapsed + delta;
+      game.elapsed = game.elapsed + delta/2;
     }
+
     // if(delta > 0) {
     //   game.tickSpeed = game.tickSpeed + delta;
     // } else {
     //   game.tickSpeed = game.tickSpeed - delta;
     // }
     // game.elapsed = game.elapsed + delta; // 250 is the worst off
+
   }
-
-
 }
 
 ////// Pad COD
