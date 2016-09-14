@@ -28,14 +28,47 @@ $(document).ready(function(){
       socket.emit('direction', {
         direction: direction
       });
+      emitTime = new Date().getTime();
     }
   });
 });
 
 
+
+var emitTime = 0;
+var returnTime = 0;
+
+function calcTime(){
+  console.log("Server ping: " + (returnTime - emitTime));
+}
+
 ////// Pad COD
 
 var socket = io();
+
+var tickHistory = [];
+var averageTick = 0;
+
+function calcAverage(){
+  var total = 0;
+  for(var i = 0; i < tickHistory.length; i++) {
+    var tick = tickHistory[i];
+    total = total + tick;
+  }
+  return total / tickHistory.length;
+}
+
+socket.on('serverTick', function(msg){
+  var tick = msg.message;
+  tickHistory.push(tick);
+
+  if(tickHistory.length > 15) {
+    tickHistory.splice(0,1);
+  }
+
+  averageTick = calcAverage();
+});
+
 
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
@@ -105,8 +138,9 @@ socket.on('direction', function(msg){
   var ticks = parseInt(msg.ticks);
   var x = parseInt(msg.x);
   var y = parseInt(msg.y);
-
   game.changeDirection(id, direction, ticks, x, y);
+  returnTime = new Date().getTime();
+  calcTime();
 });
 
 $(document).ready(function(){
@@ -157,8 +191,6 @@ var game = {
     for(var i = 0; i < snakes.length; i++) {
       var snake = snakes[i];
       this.addSnake(snake.id,snake.x, snake.y, snake.color, "", snake.length);
-      console.log("Server snake");
-      console.log(snake);
     }
 
     this.height = height;
@@ -178,7 +210,7 @@ var game = {
     this.time = now;
     this.elapsed = this.elapsed + delta;
 
-    if(this.elapsed >= 80) {
+    if(this.elapsed >= averageTick) {
       frames++;
       for(var i = 0 ; i < this.snakes.length; i++ ){
         var s = this.snakes[i];
@@ -358,6 +390,10 @@ function makeSnake(id, x, y, color, direction, length){
       this.draw();
     },
     die : function(){
+
+      $(".board").removeClass("crash").width($(".board").width());
+      $(".board").addClass("crash");
+
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
         tail.el.addClass("gone");

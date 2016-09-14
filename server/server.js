@@ -354,7 +354,6 @@ function makeSnake(details){
         if(collide){
           break;
         }
-
       }
 
       if(collide) {
@@ -411,7 +410,7 @@ function getRandom(min, max){
   return Math.round(min + Math.random() * (max-min));
 }
 var elapsed = 0;
-
+var ms = 160;
 function move(){
 
   var now = new Date().getTime();
@@ -419,9 +418,9 @@ function move(){
   time = now;
   elapsed = elapsed + delta;
 
-  while(elapsed >= 83) {
-    // console.log(elapsed);
-    elapsed = elapsed - 83;
+  while(elapsed >= ms) {
+    io.emit('serverTick', { message: elapsed });
+    elapsed = elapsed - ms;
     totalFrames++;
     game.move();
   }

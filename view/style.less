@@ -8,6 +8,11 @@ body, html {
   perspective: 1200px;
 }
 
+.board-wrapper {
+  transform: rotateX(20deg);
+  transform-style: preserve-3d;
+
+}
 .board {
   position: relative;
   height: 400px;
@@ -22,8 +27,6 @@ body, html {
   border-radius: 4px;
   margin: 0 auto;
 
-  transform: rotateX(20deg);
-  transform-style: preserve-3d;
 }
 
 .snek {
@@ -121,8 +124,20 @@ body, html {
   }
 }
 
+.crash {
+  animation: crash .7s ease-out;
+}
 
-//
+@keyframes crash {
+  0% {
+    border-color: #444;
+  }
+  100% {
+    border-color: #222;
+  }
+}
+
+
 // .animation-example {
 //   -webkit-animation-name: example;
 //   -webkit-animation-duration:  .4s;
