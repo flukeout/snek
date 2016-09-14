@@ -41,6 +41,8 @@ function calcTime(){
   console.log("Server ping: " + (returnTime - emitTime));
 }
 
+
+
 var lastLocalTick = 0;
 var lastServerTick = 0;
 
@@ -58,11 +60,20 @@ function strobe(type) {
     var delta = 250 - Math.abs(250 - (lastServerTick - lastLocalTick));
     $(".delta").text(delta);
 
-    game.elapsed = game.elapsed + delta; // 250 is the worst off
+    if(delta > 0) {
+      game.elapsed = game.elapsed + delta;
+    }
+    // if(delta > 0) {
+    //   game.tickSpeed = game.tickSpeed + delta;
+    // } else {
+    //   game.tickSpeed = game.tickSpeed - delta;
+    // }
+    // game.elapsed = game.elapsed + delta; // 250 is the worst off
   }
 
 
 }
+
 ////// Pad COD
 
 var socket = io();
@@ -182,6 +193,7 @@ var game = {
   width : 40,
   height: 28,
   apples : [],
+  tickSpeed : 500,
   snakes : [],
   playerId : 0,
   elapsed : 0,
@@ -233,7 +245,7 @@ var game = {
     this.time = now;
     this.elapsed = this.elapsed + delta;
 
-    if(this.elapsed >= averageTick) {
+    if(this.elapsed >= this.tickSpeed) {
       frames++;
 
       strobe("local");
@@ -243,7 +255,6 @@ var game = {
         s.move();
       }
       this.elapsed = 0;
-
     }
   },
   killSnake : function(id){
