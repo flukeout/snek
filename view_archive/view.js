@@ -150,29 +150,7 @@ function calcAverage(){
 
 var serverTicks = 0;
 
-function updateSnakes(snakes){
-
-  for(var i = 0; i < snakes.length; i++){
-    var snake = snakes[i];
-    for(var j = 0; j < game.snakes.length; j++) {
-      var gameSnake = game.snakes[j];
-      if(snake.id === gameSnake.id) {
-        for(var k = 0; k < gameSnake.segments.length; k++) {
-          var serverSegment = snake.segments[k];
-          gameSnake.segments[k].x = serverSegment.x;
-          gameSnake.segments[k].y = serverSegment.y;
-        }
-      }
-    }
-  }
-  game.move();
-}
-
 socket.on('serverTick', function(msg){
-
-  var snakes = msg.snakes;
-  updateSnakes(snakes);
-
   serverTicks++;
   if(serverTicks > 2) {
     strobe("server");
@@ -256,15 +234,15 @@ socket.on('killSnake', function(msg){
   game.killSnake(id);
 });
 
-// socket.on('direction', function(msg){
-//   var id = parseInt(msg.id);
-//   var direction = msg.direction;
-//   var ticks = parseInt(msg.ticks);
-//   var x = parseInt(msg.x);
-//   var y = parseInt(msg.y);
-//   game.changeDirection(id, direction, ticks, x, y);
-//   returnTime = new Date().getTime();
-// });
+socket.on('direction', function(msg){
+  var id = parseInt(msg.id);
+  var direction = msg.direction;
+  var ticks = parseInt(msg.ticks);
+  var x = parseInt(msg.x);
+  var y = parseInt(msg.y);
+  game.changeDirection(id, direction, ticks, x, y);
+  returnTime = new Date().getTime();
+});
 
 // $(document).ready(function(){
   // gameLoop();
@@ -272,7 +250,7 @@ socket.on('killSnake', function(msg){
 
 function gameLoop(){
   game.move();
-  // window.requestAnimationFrame(gameLoop);
+  window.requestAnimationFrame(gameLoop);
 }
 
 var frames = 0;
@@ -326,20 +304,20 @@ var game = {
     $(".board").css("height",this.size * this.height);
   },
   move : function(){
-    // var now = new Date().getTime();
-    // var delta = now - this.time;
-    // this.time = now;
-    // this.elapsed = this.elapsed + delta;
+    var now = new Date().getTime();
+    var delta = now - this.time;
+    this.time = now;
+    this.elapsed = this.elapsed + delta;
 
-    // if(this.elapsed >= (this.tickSpeed + this.tickSpeedModifier)) {
-    //   frames++;
-    //   strobe("local");
+    if(this.elapsed >= (this.tickSpeed + this.tickSpeedModifier)) {
+      frames++;
+      strobe("local");
       for(var i = 0 ; i < this.snakes.length; i++ ){
         var s = this.snakes[i];
         s.move();
       }
-      // this.elapsed = 0;
-    // }
+      this.elapsed = 0;
+    }
   },
   killSnake : function(id){
     for(var i = 0; i < this.snakes.length; i++){
@@ -413,13 +391,13 @@ function makeSnake(id, x, y, color, direction, length){
       // console.log("Server : " + ticks);
       // console.log("Client : " + this.ticks);
       //
-      // if(this.ticks < ticks) {
-   //      this.move();
-   //    }
-   //
-   //    if(this.ticks > ticks) {
-   //      this.rewind();
-   //    }
+      if(this.ticks < ticks) {
+        this.move();
+      }
+
+      if(this.ticks > ticks) {
+        this.rewind();
+      }
 
       // console.log("Server: snake changed dir at: " + x + "," + y + " at " + ticks);
       // console.log("Client: snake changed dir at: " + this.x + "," + this.y + " at " + this.ticks);
@@ -428,13 +406,13 @@ function makeSnake(id, x, y, color, direction, length){
       //
       // }
 
-      // if((this.direction == "up" && direction == "down") || (this.direction == "down" && direction == "up")) {
-  //       return;
-  //     }
-  //     if((this.direction == "left" && direction == "right") || (this.direction == "right" && direction == "left")) {
-  //       return;
-  //     }
-  //     this.direction = direction;
+      if((this.direction == "up" && direction == "down") || (this.direction == "down" && direction == "up")) {
+        return;
+      }
+      if((this.direction == "left" && direction == "right") || (this.direction == "right" && direction == "left")) {
+        return;
+      }
+      this.direction = direction;
     },
     init : function(){
       for(var i = 0; i < this.length; i++) {
@@ -471,44 +449,42 @@ function makeSnake(id, x, y, color, direction, length){
       this.makeSegment(tail.x,tail.y,"tail");
     },
     move : function(){
+      this.moving = true;
+      this.ticks++;
 
-      // console.log(this.segments);
-      // this.moving = true;
-      // this.ticks++;
-      //
-      // var head = this.segments[this.segments.length - 1];
-      //
-      // var newHead = {
-      //   x : head.x,
-      //   y : head.y
-      // }
-      //
-      // switch(this.direction) {
-      //   case "up":
-      //     newHead.y--;
-      //     break;
-      //   case "down":
-      //     newHead.y++;
-      //     break;
-      //   case "right":
-      //     newHead.x++;
-      //     break;
-      //   case "left":
-      //     newHead.x--;
-      //     break;
-      // }
-      //
-      // this.x = newHead.x;
-      // this.y = newHead.y;
-      //
-      // this.makeSegment(newHead.x,newHead.y,"head");
-      //
-      // var lastSegment = this.segments[0];
-      //
-      // if(this.segments.length > (this.length + 5) ){
-      //   lastSegment.el.remove();
-      //   this.segments.splice(0,1); // remove last segment
-      // }
+      var head = this.segments[this.segments.length - 1];
+
+      var newHead = {
+        x : head.x,
+        y : head.y
+      }
+
+      switch(this.direction) {
+        case "up":
+          newHead.y--;
+          break;
+        case "down":
+          newHead.y++;
+          break;
+        case "right":
+          newHead.x++;
+          break;
+        case "left":
+          newHead.x--;
+          break;
+      }
+
+      this.x = newHead.x;
+      this.y = newHead.y;
+
+      this.makeSegment(newHead.x,newHead.y,"head");
+
+      var lastSegment = this.segments[0];
+
+      if(this.segments.length > (this.length + 5) ){
+        lastSegment.el.remove();
+        this.segments.splice(0,1); // remove last segment
+      }
 
       this.draw();
     },
@@ -547,8 +523,6 @@ function makeSnake(id, x, y, color, direction, length){
 
     },
     draw : function(){
-      console.log(this.segments[0].x,this.segments[0].y);
-
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
 

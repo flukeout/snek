@@ -105,7 +105,7 @@ http.listen(process.env.PORT || 3000, function(){
 
 var game = {
   size : 15,
-  width : 45,
+  width : 40,
   height: 30,
   apples : [],
   snakes : [],
@@ -409,16 +409,19 @@ function getRandom(min, max){
   return Math.round(min + Math.random() * (max-min));
 }
 var elapsed = 0;
-var ms = 500;
-function move(){
+var ms = 80;
 
+function move(){
   var now = new Date().getTime();
   var delta = now - time;
   time = now;
   elapsed = elapsed + delta;
 
   while(elapsed >= ms) {
-    io.emit('serverTick', { message: elapsed });
+    io.emit('serverTick', {
+      message: elapsed,
+      snakes : game.snakes
+     });
     elapsed = elapsed - ms;
     totalFrames++;
     game.move();
