@@ -35,23 +35,6 @@ body, html {
   left: 0;
   transform-style: preserve-3d;
 
-  &.ghost .body {
-    opacity: .2;
-  }
-
-  &.player:not(.ghost):last-child .body:after {
-    content: "";
-    position: absolute;
-    opacity: .5;
-    background: white;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    left: 4px;
-    top: 4px;
-
-  }
-
   .body {
     position: absolute;
     width: ~"calc(100% - 2px)";
@@ -62,7 +45,7 @@ body, html {
 }
 
 .gone .body {
-  animation: blam .2s ease-out;
+  animation: blam 1s ease-out;
   animation-fill-mode: forwards;
 }
 
@@ -130,35 +113,12 @@ body, html {
 
 @keyframes crash {
   0% {
-    border-color: #444;
+    border-color: #666;
   }
   100% {
     border-color: #222;
   }
 }
-
-
-// .animation-example {
-//   -webkit-animation-name: example;
-//   -webkit-animation-duration:  .4s;
-//   -webkit-animation-iteration-count: 3;
-//   -webkit-animation-delay: .5s;
-// }
-//
-// @-webkit-keyframes example {
-//     0% {
-//         -webkit-transform: scale(1.5);
-//         opacity: .5;
-//     }
-//     50%{
-//         -webkit-transform: scale(.7);
-//         opacity: .5;
-//     }
-//     100% {
-//         -webkit-transform: scale(.7);
-//         opacity: 0;
-//     }
-// }
 
 @keyframes strobe {
   0% {

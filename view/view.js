@@ -27,133 +27,16 @@ $(document).ready(function(){
       socket.emit('direction', {
         direction: direction
       });
-      emitTime = new Date().getTime();
-      if(game.tickSpeed - game.elapsed < 50){
-        console.log("LATE MOVE BRO");
-      }
-
     }
   });
 });
 
-var emitTime = 0;
-var returnTime = 0;
-
-function getAverage(array){
-  var total = 0;
-  for(var i = 0; i < array.length; i++){
-    var item = array[i];
-    total = total + item;
-  }
-  return total / array.length;
-}
-
-var deltaKeeper = {
-  deltas : [],
-  trends : [],
-  averageTrend : 0,
-  average : 0,
-  add : function(val){
-
-    this.deltas.push(val);
-    if(this.deltas.length > 10) {
-      this.deltas.splice(0,1)
-    }
-    this.average = getAverage(this.deltas);
-
-    if(this.deltas.length > 2) {
-      var lastTrend = this.deltas[this.deltas.length-1] - this.deltas[this.deltas.length-2];
-      this.trends.push(lastTrend);
-      this.averageTrend = getAverage(this.trends);
-      // console.log("Average drift per frame " + this.averageTrend);
-    }
-
-    if(this.deltas.length > 10) {
-      this.deltas.splice(0,1);
-    }
-  }
-}
-
-var lastLocalTick = 0;
-var lastServerTick = 0;
-var deltas = [];
-var blam = 0;
-
-function strobe(type) {
-  if(type == "local") {
-    $(".local-tick").removeClass("strobe");
-    $(".local-tick").width($(".local-tick").width());
-    $(".local-tick").addClass("strobe");
-    lastLocalTick = new Date().getTime();
-  } else {
-
-    $(".server-tick").removeClass("strobe");
-    $(".server-tick").width($(".server-tick").width());
-    $(".server-tick").addClass("strobe");
-    lastServerTick = new Date().getTime();
-
-    var delta = 200 - (lastServerTick - lastLocalTick);
-
-    // console.log(delta);
-
-    if(delta > 0) {
-      game.elapsed = game.elapsed + delta;
-    }
-
-    // if(delta > 0) {
-      // game.tickSpeed.modifier++;
-    // }
-    // // $(".delta").text(deltaKeeper.average);
-    // //
-    // console.log(deltaKeeper.average, deltaKeeper.averageTrend, deltaKeeper.deltas);
-    // //
-    if(Math.abs(delta) < 1000 ) {
-      deltaKeeper.add(delta);
-    }
-    // //
-    // // blam++
-    // //
-    // // if(deltaKeeper.average > 0) {
-    // //   // game.tickSpeed.modifier--;
-    // }
-
-    // if(deltaKeeper.averageTrend > 0) {
-    //   game.tickSpeedModifier--;
-    // } else {
-    //   game.tickSpeedModifier++;
-    // }
-
-    if(blam > 10) {
-      // console.log("***** adjusting tick by -" + deltaKeeper.averageTrend);
-      // game.tickSpeedModifier = game.tickSpeedModifier;
-      // console.log(game.tickSpeed + (-1 * game.tickSpeedModifier));
-      blam = 0;
-    }
-
-  }
-}
-
-////// Pad COD
-
-var tickHistory = [];
-var gameStart = 0;
-var averageTick = 0;
-
-function calcAverage(){
-  var total = 0;
-  for(var i = 0; i < tickHistory.length; i++) {
-    var tick = tickHistory[i];
-    total = total + tick;
-  }
-  return total / tickHistory.length;
-}
-
-var serverTicks = 0;
 
 function updateSnakes(snakes){
 
   for(var i = 0; i < snakes.length; i++){
     var snake = snakes[i];
+
     for(var j = 0; j < game.snakes.length; j++) {
       var gameSnake = game.snakes[j];
       if(snake.id === gameSnake.id) {
@@ -165,37 +48,13 @@ function updateSnakes(snakes){
       }
     }
   }
-  game.move();
 }
 
 socket.on('serverTick', function(msg){
-
   var snakes = msg.snakes;
   updateSnakes(snakes);
-
-  serverTicks++;
-  if(serverTicks > 2) {
-    strobe("server");
-
-    var tick = msg.message;
-    tickHistory.push(tick);
-
-    if(tickHistory.length > 15) {
-      tickHistory.splice(0,1);
-    }
-
-    averageTick = calcAverage();
-
-    if(!started) {
-      started = true;
-      lastLocalTick = new Date().getTime();
-      gameLoop();
-    }
-  }
-
+  game.move();
 });
-
-var started = false;
 
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
@@ -256,26 +115,7 @@ socket.on('killSnake', function(msg){
   game.killSnake(id);
 });
 
-// socket.on('direction', function(msg){
-//   var id = parseInt(msg.id);
-//   var direction = msg.direction;
-//   var ticks = parseInt(msg.ticks);
-//   var x = parseInt(msg.x);
-//   var y = parseInt(msg.y);
-//   game.changeDirection(id, direction, ticks, x, y);
-//   returnTime = new Date().getTime();
-// });
 
-// $(document).ready(function(){
-  // gameLoop();
-// });
-
-function gameLoop(){
-  game.move();
-  // window.requestAnimationFrame(gameLoop);
-}
-
-var frames = 0;
 
 var game = {
   size : 20,
@@ -326,20 +166,10 @@ var game = {
     $(".board").css("height",this.size * this.height);
   },
   move : function(){
-    // var now = new Date().getTime();
-    // var delta = now - this.time;
-    // this.time = now;
-    // this.elapsed = this.elapsed + delta;
-
-    // if(this.elapsed >= (this.tickSpeed + this.tickSpeedModifier)) {
-    //   frames++;
-    //   strobe("local");
       for(var i = 0 ; i < this.snakes.length; i++ ){
         var s = this.snakes[i];
         s.move();
       }
-      // this.elapsed = 0;
-    // }
   },
   killSnake : function(id){
     for(var i = 0; i < this.snakes.length; i++){
@@ -370,8 +200,6 @@ var game = {
     this.apples.push(apple);
   },
   removeApple: function(id){
-    console.log("removing apple" + id);
-    console.log(this.apples);
     for(var i = 0; i < this.apples.length; i++){
       var apple = this.apples[i];
       if(id === apple.id){
@@ -391,57 +219,18 @@ function makeSnake(id, x, y, color, direction, length){
     size : 20,
     length: length,
     moving : false,
-    ticks : 0,
     color : color,
     speed : 5, // every 10 frames?
-    direction : direction,
     segments : [],
     changes : [],
-    rewind : function(){
-      var head = this.segments[this.segments.length - 1];
-
-      head.el.remove();
-      this.segments.splice(this.segments.length - 1,1);
-
-      var head = this.segments[this.segments.length - 1];
-      this.x = head.x;
-      this.y = head.y;
-      this.ticks--;
-    },
-    changeDirection : function(direction,ticks,x,y){
-
-      // console.log("Server : " + ticks);
-      // console.log("Client : " + this.ticks);
-      //
-      // if(this.ticks < ticks) {
-   //      this.move();
-   //    }
-   //
-   //    if(this.ticks > ticks) {
-   //      this.rewind();
-   //    }
-
-      // console.log("Server: snake changed dir at: " + x + "," + y + " at " + ticks);
-      // console.log("Client: snake changed dir at: " + this.x + "," + this.y + " at " + this.ticks);
-
-      // if(x != this.x || y != this.y){
-      //
-      // }
-
-      // if((this.direction == "up" && direction == "down") || (this.direction == "down" && direction == "up")) {
-  //       return;
-  //     }
-  //     if((this.direction == "left" && direction == "right") || (this.direction == "right" && direction == "left")) {
-  //       return;
-  //     }
-  //     this.direction = direction;
-    },
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
       }
     },
     makeSegment : function(x,y,place){
+
+      console.log("Adding snake segment",this.segments.length);
 
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
 
@@ -453,7 +242,6 @@ function makeSnake(id, x, y, color, direction, length){
 
       $(".board").append(segmentEl);
       segmentEl.css("opacity",0);
-
 
       segmentEl.css("width",this.size).css("height",this.size);
       segmentEl.find(".body").css("background",this.color);
@@ -471,52 +259,11 @@ function makeSnake(id, x, y, color, direction, length){
       this.makeSegment(tail.x,tail.y,"tail");
     },
     move : function(){
-
-      // console.log(this.segments);
-      // this.moving = true;
-      // this.ticks++;
-      //
-      // var head = this.segments[this.segments.length - 1];
-      //
-      // var newHead = {
-      //   x : head.x,
-      //   y : head.y
-      // }
-      //
-      // switch(this.direction) {
-      //   case "up":
-      //     newHead.y--;
-      //     break;
-      //   case "down":
-      //     newHead.y++;
-      //     break;
-      //   case "right":
-      //     newHead.x++;
-      //     break;
-      //   case "left":
-      //     newHead.x--;
-      //     break;
-      // }
-      //
-      // this.x = newHead.x;
-      // this.y = newHead.y;
-      //
-      // this.makeSegment(newHead.x,newHead.y,"head");
-      //
-      // var lastSegment = this.segments[0];
-      //
-      // if(this.segments.length > (this.length + 5) ){
-      //   lastSegment.el.remove();
-      //   this.segments.splice(0,1); // remove last segment
-      // }
-
       this.draw();
     },
     die : function(){
-
       $(".board").removeClass("crash").width($(".board").width());
       $(".board").addClass("crash");
-
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
         tail.el.addClass("gone");
@@ -524,52 +271,30 @@ function makeSnake(id, x, y, color, direction, length){
           return function(){
             tail.el.remove();
           };
-        }(tail), 200);
+        }(tail), 1000);
       }
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
     },
     loseTail : function(){
-
       if(this.segments.length > 1) {
         var tail = this.segments[0];
-
         tail.el.addClass("gone");
-
         setTimeout(function(el) {
           return function(){
             el.remove();
           };
         }(tail.el), 200);
-
         this.segments.splice(0,1);
       }
-
     },
     draw : function(){
-      console.log(this.segments[0].x,this.segments[0].y);
-
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
-
-          if(i > (this.segments.length - this.length)) {
-            seg.el.removeClass("ghost");
-          } else {
-            seg.el.addClass("ghost");
-            seg.el.remove();
-          }
-          if(this.id == game.playerId) {
-            seg.el.addClass("player");
-          }
         $(seg.el).css("opacity", 1);
         $(seg.el).css("transform","translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)");
       }
     }
   }
   return snek;
-}
-
-
-function getRandom(min, max){
-  return Math.round(min + Math.random() * (max-min));
 }

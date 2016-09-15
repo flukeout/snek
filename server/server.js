@@ -104,7 +104,7 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 15,
+  size : 5,
   width : 40,
   height: 30,
   apples : [],
@@ -164,7 +164,6 @@ var game = {
     }
   },
   addApple : function(){
-
     var apple = {
       x : getRandom(0,this.width - 1),
       y : getRandom(0,this.height - 1),
@@ -172,18 +171,13 @@ var game = {
     };
 
     io.emit('addApple', apple);
-
     this.apples.push(apple);
   },
   removeApple: function(apple){
     var appleIndex = this.apples.indexOf(apple);
-
     this.apples.splice(appleIndex, 1);
-
     io.emit('removeApple', apple.id);
 
-    // console.log("Apples:");
-    // console.log(this.apples);
   },
   checkCollisions(){
     //Checks collisions between apples and snakes
@@ -223,7 +217,7 @@ function makeSnake(details){
     x : x,
     y : y,
     id : id,
-    size : 20,
+    size : 4,
     length: length,
     moving : false,
     ticks : 0,
