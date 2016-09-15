@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 
-var colors = require('../client/colors');
+var colors = require('../view/colors');
 var nextColor = (function() {
   var c = 0;
   return function() {
@@ -21,8 +21,7 @@ var uuid = (function() {
 
 var players = {};
 
-app.use(express.static(path.join(__dirname,'..','client')));
-app.use("/view", express.static(path.join(__dirname,'..','view')));
+app.use(express.static(path.join(__dirname,'..','view')));
 app.use("/pad", express.static(path.join(__dirname,'..','pad')));
 
 app.get('/socket.io.js', function(req, res) {
@@ -106,7 +105,7 @@ http.listen(process.env.PORT || 3000, function(){
 var game = {
   size : 12,
   width : 40,
-  height: 30,
+  height: 26,
   apples : [],
   snakes : [],
   player : {},
@@ -364,9 +363,6 @@ function makeSnake(details){
         io.emit('loseHead', {id: this.id,});
         this.segments.splice(this.segments.length - 1, 1);
       }
-
-      console.log(this.segments.length);
-
     },
     die : function(){
       this.loseHead();

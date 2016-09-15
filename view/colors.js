@@ -14,3 +14,7 @@ var colors = ["#bd92dc",
 "#d87cad",
 "#cf9e5d",
 "#bc5f5f"]
+
+if (typeof module !== "undefined" && module.exports) {
+	module.exports = colors;
+}
