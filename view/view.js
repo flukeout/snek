@@ -33,7 +33,6 @@ $(document).ready(function(){
 
 
 function updateSnakes(snakes){
-
   for(var i = 0; i < snakes.length; i++){
     var snake = snakes[i];
 
@@ -42,8 +41,10 @@ function updateSnakes(snakes){
       if(snake.id === gameSnake.id) {
         for(var k = 0; k < gameSnake.segments.length; k++) {
           var serverSegment = snake.segments[k];
-          gameSnake.segments[k].x = serverSegment.x;
-          gameSnake.segments[k].y = serverSegment.y;
+          if(serverSegment){
+            gameSnake.segments[k].x = serverSegment.x;
+            gameSnake.segments[k].y = serverSegment.y;
+          }
         }
       }
     }
@@ -54,6 +55,16 @@ socket.on('serverTick', function(msg){
   var snakes = msg.snakes;
   updateSnakes(snakes);
   game.move();
+});
+
+socket.on('loseHead', function(msg){
+  console.log("loseHead",msg);
+
+  var snake = getSnake(msg.id);
+  snake.loseHead();
+  // var snakes = msg.snakes;
+  // updateSnakes(snakes);
+  // game.move();
 });
 
 socket.on('gameSetup', function(msg){
@@ -275,6 +286,18 @@ function makeSnake(id, x, y, color, direction, length){
       }
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
+    },
+    loseHead : function(){
+      if(this.segments.length > 1) {
+        var head = this.segments[this.segments.length - 1];
+        head.el.addClass("gone");
+        setTimeout(function(el) {
+          return function(){
+            el.remove();
+          };
+        }(head.el), 200);
+        this.segments.splice(this.segments.length - 1,1);
+      }
     },
     loseTail : function(){
       if(this.segments.length > 1) {

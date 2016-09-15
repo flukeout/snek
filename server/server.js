@@ -104,7 +104,7 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 5,
+  size : 12,
   width : 40,
   height: 30,
   apples : [],
@@ -359,7 +359,19 @@ function makeSnake(details){
       var lastSegment = this.segments[0];
       this.segments.splice(0,1);
     },
+    loseHead : function(){
+      if(this.segments.length > 1) {
+        io.emit('loseHead', {id: this.id,});
+        this.segments.splice(this.segments.length - 1, 1);
+      }
+
+      console.log(this.segments.length);
+
+    },
     die : function(){
+      this.loseHead();
+
+      return;
 
       console.log("snake id " + this.id + " died at " + this.moves);
 
