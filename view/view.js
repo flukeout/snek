@@ -318,6 +318,7 @@ function makeSnake(id, x, y, color, direction, length){
         // makeAnimParticle(head.x * this.size, head.y * this.size);
 
         head.el.addClass("gone");
+
         setTimeout(function(el) {
           return function(){
             el.remove();

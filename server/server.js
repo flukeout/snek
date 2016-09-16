@@ -288,7 +288,7 @@ function makeSnake(details){
       }
 
       // From here on in, we are moving...
-      // game.checkCollisions();
+      game.checkCollisions();
 
       var newHead = {
         x : parseInt(head.x),
