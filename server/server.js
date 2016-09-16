@@ -326,23 +326,22 @@ function makeSnake(details){
 
       // Other snakes...
 
-      // for(var i = 0; i < game.snakes.length; i++) {
-      //   var otherSnake = game.snakes[i];
-      //
-      //   if(otherSnake != this) {
-      //     for(var j = 0; j < otherSnake.segments.length; j++) {
-      //       var seg = otherSnake.segments[j];
-      //       collide = collider(newHead,seg);
-      //       if(collide){
-      //         break;
-      //       }
-      //     }
-      //   }
-      //
-      //   if(collide){
-      //     break;
-      //   }
-      // }
+      for(var i = 0; i < game.snakes.length; i++) {
+        var otherSnake = game.snakes[i];
+
+        if(otherSnake != this) {
+          for(var j = 0; j < otherSnake.segments.length; j++) {
+            var segment = otherSnake.segments[j];
+            var check = collider(newHead,segment);
+            if(!collide && check) {
+              collide = check;
+              break;
+            }
+          }
+        }
+
+
+      }
 
       if(collide) {
 
