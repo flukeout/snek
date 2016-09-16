@@ -6,7 +6,11 @@ $(document).ready(function(){
   $(document).on("keydown",function(e){
 
     var direction;
+
     switch(e.keyCode) {
+      case 65:
+        game.snakes[0].boom();
+        break;
       case 37:
         direction = "left";
         break;
@@ -31,6 +35,16 @@ $(document).ready(function(){
   });
 });
 
+loop();
+
+function loop(){
+  for(var i = 0; i < particles.length; i++){
+    var p = particles[i];
+    p.move();
+  }
+  requestAnimationFrame(loop);
+}
+
 
 function updateSnakes(snakes){
   for(var i = 0; i < snakes.length; i++){
@@ -39,6 +53,7 @@ function updateSnakes(snakes){
     for(var j = 0; j < game.snakes.length; j++) {
       var gameSnake = game.snakes[j];
       if(snake.id === gameSnake.id) {
+        gameSnake.direction = snake.direction;
         for(var k = 0; k < gameSnake.segments.length; k++) {
           var serverSegment = snake.segments[k];
           if(serverSegment){
@@ -58,13 +73,13 @@ socket.on('serverTick', function(msg){
 });
 
 socket.on('loseHead', function(msg){
-  console.log("loseHead",msg);
-
   var snake = getSnake(msg.id);
   snake.loseHead();
-  // var snakes = msg.snakes;
-  // updateSnakes(snakes);
-  // game.move();
+});
+
+socket.on('loseTail', function(msg){
+  var snake = getSnake(msg.id);
+  snake.loseTail();
 });
 
 socket.on('gameSetup', function(msg){
@@ -123,9 +138,10 @@ socket.on('spawnSnake', function(msg){
 
 socket.on('killSnake', function(msg){
   var id = msg.id;
-  game.killSnake(id);
+  var x = msg.x;
+  var y = msg.y;
+  game.killSnake(id,x,y);
 });
-
 
 
 var game = {
@@ -171,18 +187,18 @@ var game = {
     this.height = height;
     this.width = width;
     this.playerId = id;
-    // this.start();
 
     $(".board").css("width",this.size * this.width);
     $(".board").css("height",this.size * this.height);
   },
   move : function(){
-      for(var i = 0 ; i < this.snakes.length; i++ ){
-        var s = this.snakes[i];
-        s.move();
-      }
+    for(var i = 0 ; i < this.snakes.length; i++ ){
+      var s = this.snakes[i];
+      s.move();
+    }
   },
-  killSnake : function(id){
+  killSnake : function(id,x,y){
+    makeAnimParticle(x, y); // explosion
     for(var i = 0; i < this.snakes.length; i++){
       var snake = this.snakes[i];
       if(snake.id === id) {
@@ -240,9 +256,6 @@ function makeSnake(id, x, y, color, direction, length){
       }
     },
     makeSegment : function(x,y,place){
-
-      console.log("Adding snake segment",this.segments.length);
-
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
 
       var segmentDetails = {
@@ -273,8 +286,9 @@ function makeSnake(id, x, y, color, direction, length){
       this.draw();
     },
     die : function(){
-      $(".board").removeClass("crash").width($(".board").width());
-      $(".board").addClass("crash");
+      $(".border").removeClass("crash").width($(".border").width());
+      $(".border").addClass("crash");
+
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
         tail.el.addClass("gone");
@@ -287,9 +301,22 @@ function makeSnake(id, x, y, color, direction, length){
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
     },
+    boom : function(){
+      var head = this.segments[this.segments.length - 1];
+      makeBeam(head.x, head.y, this.direction, this.color);
+    },
     loseHead : function(){
+      console.log("loseHead");
       if(this.segments.length > 1) {
+
         var head = this.segments[this.segments.length - 1];
+
+        makeParticle(head.x * this.size,head.y * this.size,10,          225,this.color);
+        // makeParticle(head.x * this.size,head.y * this.size + 10,10,     315,this.color);
+        // makeParticle(head.x * this.size + 10,head.y * this.size,10,     135,this.color);
+        // makeParticle(head.x * this.size + 10,head.y * this.size + 10,10,45,this.color);
+        // makeAnimParticle(head.x * this.size, head.y * this.size);
+
         head.el.addClass("gone");
         setTimeout(function(el) {
           return function(){

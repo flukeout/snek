@@ -7,24 +7,40 @@ body, html {
   background: black;
   perspective: 1200px;
   overflow: hidden;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom:0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 .board-wrapper {
   transform: rotateX(20deg);
   transform-style: preserve-3d;
+  position: relative;
+  margin-top: -5%;
 }
 
 .board {
   position: relative;
   background: #111;
-  background-color: #111;
-  background-image: linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
-  linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
-  background-size: 40px 40px;
-  background-position: 0 0, 20px 20px;
+  margin: 0 auto;
+  transform-style: preserve-3d;
+}
+
+.border {
+  content: " ";
+  position: absolute;
   border: solid 20px #222;
   border-radius: 4px;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  top: -20px;
+  left: -20px;
 }
 
 .snek {
@@ -32,6 +48,7 @@ body, html {
   top: 0;
   left: 0;
   transform-style: preserve-3d;
+  z-index: 2;
 
   .body {
     position: absolute;
@@ -50,20 +67,17 @@ body, html {
 }
 
 .gone .body {
-  animation: blam 1s ease-out;
-  animation-fill-mode: forwards;
+  background: white !important;
+  // animation: blam .1s ease-out;
+  // animation-fill-mode: forwards;
 }
 
 @keyframes blam {
   0% {
     transform: scale(1);
-
-  }
-  99% {
-    transform: scale(.2);
   }
   100% {
-    opacity: 0;
+    transform: scale(.5);
   }
 
 }
@@ -72,7 +86,6 @@ body, html {
   position: absolute;
   top: 0;
   left: 0;
-
 
   .body {
     position: absolute;
@@ -154,10 +167,131 @@ body, html {
   &.local-tick {
     background: green;
   }
-
 }
 
 .delta {
   display: inline-block;
   color: #999;
+}
+
+.particle {
+  background: pink;
+  position: absolute;
+  top:0;
+  left: 0;
+}
+
+.boom {
+  position: absolute;
+  z-index: 1;
+  opacity: .6;
+
+  .body {
+    animation: boom .5s ease-out;
+    animation-fill-mode: forward;
+    width: 100%;
+    height: 100%;
+    background: #ffb806;
+    opacity: 0;
+
+  }
+
+  .shock {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    animation: shock .5s ease-out;
+    animation-fill-mode: forward;
+    // border: solid 5px white;
+    background: white;
+    box-sizing: border-box;
+    opacity: 0;
+  }
+
+}
+
+@keyframes boom {
+  0% {
+    transform: scale(.95);
+    opacity: 1;
+    background: white;
+  }
+  30% {
+    background: #ffb806;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+    background: #ffb806;
+    animation-timing-function: ease-in;
+  }
+  80% {
+    background: #727272;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(.75);
+  }
+}
+
+@keyframes shock {
+  0% {
+    transform: scale(.95);
+    opacity: .4;
+    background: white;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.shake {
+  animation: shake .2s ease-out;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(-10px) translateY(-10px);
+  }
+  25% {
+    transform: translateX(10px) translateY(-10px) rotate(1deg);
+  }
+  50% {
+    transform: translateX(-5px) translateY(-5px);
+  }
+  75% {
+    transform: translateX(5px) translateY(5px) rotate(-1deg);
+  }
+}
+
+
+
+
+
+.beam {
+  position: absolute;
+  z-index: 1;
+  opacity: .5;
+
+  .body {
+    width: 100%;
+    height: 100%;
+    animation: fadeOut .2s ease-out;
+    opacity: 0;
+  }
+
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }

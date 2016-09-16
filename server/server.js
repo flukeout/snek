@@ -23,6 +23,7 @@ var players = {};
 
 app.use(express.static(path.join(__dirname,'..','view')));
 app.use("/pad", express.static(path.join(__dirname,'..','pad')));
+app.use("/sounds", express.static(path.join(__dirname,'..','sounds')));
 
 app.get('/socket.io.js', function(req, res) {
   res.sendFile('socket.io.js', {
@@ -85,7 +86,14 @@ io.on('connection', function(socket) {
       id: player.id,
       direction: data.direction
     }
-    game.changeDirection(data);
+
+    for(var i = 0 ; i < game.snakes.length; i++) {
+      var snake = game.snakes[i];
+      if(snake.id === data.id){
+        // snake.changeDirection(data.direction);
+        snake.pushDirection(data.direction);
+      }
+    }
   });
 
   // client snake died... broadcast to all connected clients
@@ -103,9 +111,9 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 12,
-  width : 40,
-  height: 26,
+  size : 8, //snake size
+  width : 55,
+  height: 28,
   apples : [],
   snakes : [],
   player : {},
@@ -115,22 +123,6 @@ var game = {
       if(snake.id === id){
         var snakeIndex = this.snakes.indexOf(snake);
         this.snakes.splice(snakeIndex, 1);
-      }
-    }
-  },
-  changeDirection : function(data){
-
-    var newDirection = data.direction;
-    var id = data.id;
-
-    for(var i = 0 ; i < this.snakes.length; i++) {
-      var snake = this.snakes[i];
-      if(snake.id === id){
-        snake.changeDirection(data.direction);
-        data.x = snake.x;
-        data.y = snake.y;
-        data.ticks = snake.ticks;
-        io.emit('direction', data);
       }
     }
   },
@@ -199,6 +191,8 @@ var game = {
 function collider(one,two){
   if(one.x == two.x && one.y == two.y ) {
     return true;
+  } else {
+    return false;
   }
 }
 
@@ -218,43 +212,49 @@ function makeSnake(details){
     id : id,
     size : 4,
     length: length,
-    moving : false,
+    moved : false,
     ticks : 0,
-    moves : 0,
     color : color,
-    speed : 5, // every 10 frames?
     direction : undefined,
     segments : [],
-    changeDirection : function(direction){
+    nextDirection : "",
+    directionQ : [],
+    pushDirection: function(direction){
+      this.directionQ.push(direction);
+    },
+    changeDirection : function(newDirection){
 
-      if((this.direction == "up" && direction == "down") || (this.direction == "down" && direction == "up")) {
+      if(this.segments.length == 1) {
+        this.nextDirection = newDirection;
         return;
       }
-      if((this.direction == "left" && direction == "right") || (this.direction == "right" && direction == "left")) {
+
+      if((this.direction == "up" && newDirection == "down") || (this.direction == "down" && newDirection == "up")) {
         return;
       }
-      this.direction = direction;
+
+      if((this.direction == "left" && newDirection == "right") || (this.direction == "right" && newDirection == "left")) {
+        return;
+      }
+
+      this.nextDirection = newDirection;
     },
     init : function(){
-      // this.direction = directions[getRandom(0,directions.length-1)];
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
       }
     },
     makeSegment : function(x,y,place){
-
-      // var segmentEl = $("<div class='snek'><div class='body'></div></div>");
-      var segmentDetails = {
+      var newSegment = {
         x : x,
         y : y,
       }
 
       if(place == "tail") {
-        this.segments.splice(0, 0, segmentDetails);
+        this.segments.splice(0, 0, newSegment);
       } else {
-        this.segments.push(segmentDetails);
+        this.segments.push(newSegment);
       }
-
     },
     eat : function(){
       this.length++;
@@ -263,33 +263,32 @@ function makeSnake(details){
       io.emit('snakeEat', this.id);
     },
     move : function(){
-      this.ticks++;
-      this.moves++;
-      this.moving = true;
 
-      var blocked = false;
+
+      if(this.directionQ.length > 0) {
+        var nextDirection = this.directionQ[0];
+        this.changeDirection(nextDirection);
+        this.directionQ.splice(0, 1);
+        this.direction = this.nextDirection;
+        this.moving = true;
+      }
+
+      var collide = false;
 
       var head = this.segments[this.segments.length - 1];
 
       if(head.x >= game.width - 1 && this.direction == "right"){
-        blocked = true;
-      } else if (head.x >= game.width - 1 && this.direction == "right"){
-        blocked = true;
+        collide = true;
       } else if (head.y >= game.height - 1 && this.direction == "down"){
-        blocked = true;
+        collide = true;
       } else if(head.x <= 0 && this.direction == "left"){
-        blocked = true;
+        collide = true;
       } else if (head.y <= 0 && this.direction == "up"){
-        blocked = true;
-      }
-
-      if(blocked){
-        this.die();
-        return;
+        collide = true;
       }
 
       // From here on in, we are moving...
-      game.checkCollisions();
+      // game.checkCollisions();
 
       var newHead = {
         x : parseInt(head.x),
@@ -311,52 +310,52 @@ function makeSnake(details){
           break;
       }
 
-      this.x = newHead.x;
-      this.y = newHead.y;
-
-      // check against other snakes
-      var collide = false;
 
       // check if it crashed into itself
-      if(this.moves > this.length) {
+      if(this.moving) {
         for(var i = 0; i < this.segments.length; i++) {
           var segment = this.segments[i];
-          collide = collider(newHead,segment);
-          if(collide){
+          var check = collider(newHead,segment);
+          if(!collide && check) {
+            collide = check;
             break;
           }
         }
       }
 
+
       // Other snakes...
 
-      for(var i = 0; i < game.snakes.length; i++) {
-        var otherSnake = game.snakes[i];
-
-        if(otherSnake != this) {
-          for(var j = 0; j < otherSnake.segments.length; j++) {
-            var seg = otherSnake.segments[j];
-            collide = collider(newHead,seg);
-            if(collide){
-              break;
-            }
-          }
-        }
-
-        if(collide){
-          break;
-        }
-      }
+      // for(var i = 0; i < game.snakes.length; i++) {
+      //   var otherSnake = game.snakes[i];
+      //
+      //   if(otherSnake != this) {
+      //     for(var j = 0; j < otherSnake.segments.length; j++) {
+      //       var seg = otherSnake.segments[j];
+      //       collide = collider(newHead,seg);
+      //       if(collide){
+      //         break;
+      //       }
+      //     }
+      //   }
+      //
+      //   if(collide){
+      //     break;
+      //   }
+      // }
 
       if(collide) {
-        this.die();
-        return;
+
+        if(this.segments.length > 1) {
+          io.emit('loseHead', {id: this.id,});
+          this.segments.splice(0,1);
+        } else {
+          this.die();
+        }
+      } else {
+        this.makeSegment(newHead.x,newHead.y,"head");
+        this.segments.splice(0,1);
       }
-
-      this.makeSegment(newHead.x,newHead.y,"head");
-
-      var lastSegment = this.segments[0];
-      this.segments.splice(0,1);
     },
     loseHead : function(){
       if(this.segments.length > 1) {
@@ -364,14 +363,18 @@ function makeSnake(details){
         this.segments.splice(this.segments.length - 1, 1);
       }
     },
+    getHead : function(){
+      return this.segments[this.segments.length - 1];
+    },
     die : function(){
-      this.loseHead();
 
-      return;
+      var head = this.getHead();
 
-      console.log("snake id " + this.id + " died at " + this.moves);
-
-      io.emit('killSnake', { id: this.id });
+      io.emit('killSnake', {
+        id: this.id,
+        x: head.x,
+        y: head.y
+      });
 
       for(var i = 0; i < this.segments.length; i++) {
         var tail = this.segments[i];
@@ -379,8 +382,6 @@ function makeSnake(details){
 
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
-
-      //respawns snake...
 
       var snakeDetails = {
         id : this.id,
@@ -392,6 +393,7 @@ function makeSnake(details){
     },
     loseTail : function(){
       if(this.segments.length > 1) {
+        io.emit('loseTail', {id: this.id,});
         var tail = this.segments[0];
         this.segments.splice(0,1);
       }
