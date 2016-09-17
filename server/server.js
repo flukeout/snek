@@ -399,12 +399,8 @@ function makeSnake(details){
         color: this.color
       }
 
-
       setTimeout(function(){
-
-
         game.addSnake(snakeDetails);
-
       },1000)
 
 

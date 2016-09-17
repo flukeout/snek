@@ -120,8 +120,8 @@ function makeBeam(x,y,direction, color){
     };
   }(particle.el),200);
 
-  $(".border").removeClass("shake").width($(".border").width());
-  $(".border").addClass("shake");
+  $(".border, .leader").removeClass("shake").width($(".border").width());
+  $(".border, .leader").addClass("shake");
   $(".board").append(particle.el);
 }
 
@@ -134,8 +134,9 @@ function makeAnimParticle(xPos, yPos){
   var x = xPos * 20 - offset;
   var y = yPos * 20 - offset;
 
-  $(".border").removeClass("shake").width($(".border").width());
-  $(".border").addClass("shake");
+  $(".border, .leader").removeClass("shake").width($(".border").width());
+  $(".border, .leader").addClass("shake");
+  // $(".board").append(particle.el);
 
   var particle = {};
   particle.el = $("<div class='boom'><div class='shock'/><div class='body'/></div>");

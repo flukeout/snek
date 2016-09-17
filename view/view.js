@@ -378,9 +378,6 @@ function makeSnake(id, x, y, color, direction, length){
       // Make an explosion
       makeAnimParticle(x, y);
 
-      $(".border").removeClass("crash").width($(".border").width());
-      $(".border").addClass("crash");
-
       for(var i = 0; i < this.segments.length; i++){
         var seg = this.segments[i];
         seg.el.remove();
@@ -403,6 +400,10 @@ function makeSnake(id, x, y, color, direction, length){
       var head = this.segments[this.segments.length - 1];
       head.el.removeClass("gone").width(head.el.width());
       head.el.addClass("gone");
+
+      console.log("adding crash");
+      $(".border").removeClass("crash shake").width($(".border").width());
+      $(".border").addClass("crash");
 
       // for(var i = 0; i < this.segments.length; i++) {
       //   var seg = this.segments[i];
