@@ -6,6 +6,10 @@ var sounds = {
   "boom" : {
     buffer : null,
     url : path + "../sounds/boom.wav"
+  },
+  "eat" : {
+    buffer : null,
+    url : path + "../sounds/eat.mp3"
   }
 };
 
@@ -31,6 +35,7 @@ function loadSound(name){
 }
 
 function playSound(name){
+  // return;
   var buffer = sounds[name].buffer;
   if(buffer){
     var source = context.createBufferSource(); // creates a sound source

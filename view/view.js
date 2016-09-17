@@ -7,9 +7,11 @@ $(document).ready(function(){
 
     var direction;
 
+    // console.log(e.keyCode);
+
     switch(e.keyCode) {
       case 65:
-        game.snakes[0].boom();
+        // game.snakes[0].boom();
         break;
       case 37:
         direction = "left";
@@ -23,6 +25,10 @@ $(document).ready(function(){
       case 40:
         direction = "down";
         break;
+      case 13:
+        chat.enterHit();
+        break;
+
       default:
         direction = false;
     }
@@ -33,6 +39,58 @@ $(document).ready(function(){
       });
     }
   });
+
+
+  chat.init();
+});
+
+
+var chat = {
+  state : "closed",
+  init : function(){
+    this.chatUI = $(".chat-ui");
+    this.chatInput = this.chatUI.find("input");
+  },
+  chatUI: "",
+  chatInput : "",
+  enterHit : function(){
+    if(this.state == "closed") {
+      this.startType();
+      this.state ="open";
+    } else {
+      this.state = "closed";
+      this.finishType();
+    }
+  },
+  startType: function(){
+    this.chatUI.show();
+    this.chatInput.focus();
+
+  },
+  finishType: function(){
+    this.chatUI.hide();
+    var message = this.chatInput.val();
+    this.chatInput.val("");
+    this.chatInput.blur();
+    if(message.length > 0) {
+      this.sendMessage(message);
+    }
+
+  },
+  sendMessage: function(message){
+    socket.emit('sendChat', {
+      message: message
+    });
+  }
+}
+
+socket.on('newChat', function(msg){
+  var snake = getSnake(msg.id);
+  snake.say(msg.message);
+
+
+
+
 });
 
 socket.on('serverTick', function(msg){
@@ -64,18 +122,17 @@ socket.on('playerDisconnect', function(msg){
   game.removePlayer(msg.id);
 });
 
-// socket.on('snakeEat', function(msg){
-//   var id = msg;
-//   var snake = getSnake(id);
-//   snake.eat();
-// });
+socket.on('snakeEat', function(msg){
+  var id = msg;
+  var snake = getSnake(id);
+  snake.eat();
+});
 
 socket.on('addApple', function(msg){
   var x = parseInt(msg.x);
   var y = parseInt(msg.y);
   var id = parseInt(msg.id);
   game.addApple(x,y,id);
-  console.log("add apple received");
 });
 
 socket.on('removeApple', function(id){
@@ -171,6 +228,13 @@ var game = {
 
   setup : function(width,height,id,apples,snakes) {
 
+
+    for(var i = 0; i < 25; i++) {
+      var box = $("<div class='box'>");
+      $(".leader-boxes").append(box);
+    }
+
+
     for(var i = 0; i < apples.length; i++) {
       var apple = apples[i];
       this.addApple(apple.x,apple.y,apple.id);
@@ -190,10 +254,24 @@ var game = {
     $(".board").css("height",this.size * this.height);
   },
   move : function(){
+
+    var max = 0;
+    var longest;
+
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
       s.move();
+      if(s.segments.length > max) {
+        longest = s;
+        max = s.segments.length;
+      }
     }
+
+    if(longest){
+      $(".leader-boxes .box").css("background","#222");
+      $(".leader-boxes .box:nth-child(-n+"+max+")").css("background",longest.color);
+    }
+
   },
   killSnake : function(id,x,y){
 
@@ -247,6 +325,29 @@ function makeSnake(id, x, y, color, direction, length){
         this.makeSegment(this.x,this.y,"head");
       }
     },
+    getHead : function(){
+      return this.segments[this.segments.length -1];
+    },
+    say : function(message){
+
+      console.log("Snake says:", message);
+
+      var head = this.getHead();
+      var messageEl = $("<div class='message'><div class='body'>"+message+"</div></div>");
+      $(".board").append(messageEl);
+
+      var position = head.el.position();
+      messageEl.css("transform","translateX("+head.x * 20+"px) translateY("+head.y*20+"px)");
+      console.log(position);
+
+
+      setTimeout(function(el) {
+        return function() {
+          el.remove();
+        };
+      }(messageEl), 2000);
+
+    },
     makeSegment : function(x,y,place){
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
 
@@ -269,8 +370,7 @@ function makeSnake(id, x, y, color, direction, length){
       }
     },
     eat : function(){
-      // var tail = this.segments[0];
-      // this.makeSegment(tail.x,tail.y,"tail");
+      playSound("eat");
     },
     move : function(){
       this.draw();
@@ -305,7 +405,17 @@ function makeSnake(id, x, y, color, direction, length){
       var head = this.segments[this.segments.length - 1];
       head.el.removeClass("gone").width(head.el.width());
       head.el.addClass("gone");
-      makeParticle(head.x * this.size,head.y * this.size,10, 225,this.color);
+
+      // for(var i = 0; i < this.segments.length; i++) {
+      //   var seg = this.segments[i];
+      //   var deg = getRandom(-5,5);
+      //   var x = getRandom(-1,1);
+      //   var y = getRandom(-1,1);
+      //   seg.el.find(".body").css('transform','rotateZ('+ deg + 'deg) translateY('+y+'px) translateX('+x+'px)');
+      // }
+
+      makeParticle(head.x * this.size, head.y * this.size, 10, 225, this.color);
+      // TODO Should pass the game x,y coordinates, not the pixel value...
     },
     loseTail : function(){
       if(this.segments.length > 1) {

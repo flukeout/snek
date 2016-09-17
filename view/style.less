@@ -21,6 +21,7 @@ body, html {
   transform: rotateX(20deg);
   position: relative;
   margin-top: -5%;
+  transform-style: preserve-3d;
 }
 
 .board {
@@ -47,8 +48,8 @@ body, html {
   position: absolute;
   top: 0;
   left: 0;
-  transform-style: preserve-3d;
   z-index: 2;
+  transform-style: preserve-3d;
 
   .body {
     position: absolute;
@@ -293,5 +294,87 @@ body, html {
 
   100% {
     opacity: 0;
+  }
+}
+
+
+.chat-ui {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  padding-bottom: 20px;
+  width: 100%;
+  text-align: center;
+
+  input {
+    outline: none;
+    background: transparent;
+    color: rgba(255,255,255,.6);
+    border: none;
+    font-size: 26px;
+    width: 50%;
+    padding: 0 0 8px 0px;
+    border-bottom: solid 2px rgba(255,255,255,.2);
+
+    &::-webkit-input-placeholder {
+    color: rgba(255,255,255,.2);
+    }
+  }
+}
+
+.message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+    z-index: 3;
+    transform-style: preserve-3d;
+
+  .body {
+    background: white;
+    color: black;
+    z-index: 3;
+    padding: 5px 8px 5px 8px;
+    position: absolute;
+    font-size: 18px;
+    opacity: .9;
+    top: 0;
+    left: 0;
+    transform: translateY(-25px) translateX(10px) translateZ(20px) rotateX(-45deg);
+  }
+
+  // transition: linear .2s all;
+  // transform: translateY(-25px) translateX(10px);
+
+}
+
+
+
+.leader {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  padding-top: 25px;
+  color: rgba(255,255,255,.4);
+  font-weight: bold;
+
+  .leader-boxes {
+    display: inline-block;
+  }
+
+  span {
+    position: relative;
+    top: -4px;
+    padding: 0 5px;
+  }
+
+  .box {
+    width: 16px;
+    height: 16px;
+    margin: 2px;
+    display: inline-block;
+    background: #222;
   }
 }

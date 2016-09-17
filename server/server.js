@@ -31,6 +31,12 @@ app.get('/socket.io.js', function(req, res) {
   });
 });
 
+
+// A player sends a message
+// io.emit('chatMessage', {
+//   message: message
+// });
+
 // A player joins the game
 io.on('connection', function(socket) {
 
@@ -68,6 +74,15 @@ io.on('connection', function(socket) {
       id: player.id
     })
     game.removePlayer(player.id);
+  });
+
+  socket.on('sendChat',function(data){
+    console.log("Chat message from" + player.id);
+
+    io.emit('newChat',{
+      id: player.id,
+      message: data.message
+    });
   });
 
   // client requests a new snake, server spawns a new snake
@@ -111,9 +126,9 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 12, //snake size
-  width : 42, //55
-  height: 28,  //28
+  size : 5,    // starting snake size
+  width : 42,   // board width
+  height: 28,   // board height
   apples : [],
   snakes : [],
   player : {},
@@ -204,8 +219,6 @@ function makeSnake(details){
   var y = details.y;
   var length = details.length;
   var color = details.color;
-
-  // console.log("making snake", id, x, y, length, color);
 
   var snek = {
     x : x,
@@ -409,6 +422,7 @@ var elapsedHistory = [];
 function getRandom(min, max){
   return Math.round(min + Math.random() * (max-min));
 }
+
 var elapsed = 0;
 var ms = 80;
 
