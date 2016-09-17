@@ -10,6 +10,10 @@ var sounds = {
   "eat" : {
     buffer : null,
     url : path + "../sounds/eat.mp3"
+  },
+  "bonk" : {
+    buffer : null,
+    url : path + "../sounds/bonk.mp3"
   }
 };
 

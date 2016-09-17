@@ -228,12 +228,10 @@ var game = {
 
   setup : function(width,height,id,apples,snakes) {
 
-
-    for(var i = 0; i < 25; i++) {
+    for(var i = 0; i < 20; i++) {
       var box = $("<div class='box'>");
       $(".leader-boxes").append(box);
     }
-
 
     for(var i = 0; i < apples.length; i++) {
       var apple = apples[i];
@@ -413,7 +411,7 @@ function makeSnake(id, x, y, color, direction, length){
       //   var y = getRandom(-1,1);
       //   seg.el.find(".body").css('transform','rotateZ('+ deg + 'deg) translateY('+y+'px) translateX('+x+'px)');
       // }
-
+      playSound("bonk");
       makeParticle(head.x * this.size, head.y * this.size, 10, 225, this.color);
       // TODO Should pass the game x,y coordinates, not the pixel value...
     },

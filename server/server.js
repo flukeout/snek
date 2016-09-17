@@ -391,6 +391,7 @@ function makeSnake(details){
       }
 
       var snakeIndex = game.snakes.indexOf(this);
+
       game.snakes.splice(snakeIndex, 1);
 
       var snakeDetails = {
@@ -398,7 +399,14 @@ function makeSnake(details){
         color: this.color
       }
 
-      game.addSnake(snakeDetails);
+
+      setTimeout(function(){
+
+
+        game.addSnake(snakeDetails);
+
+      },1000)
+
 
     },
     loseTail : function(){
