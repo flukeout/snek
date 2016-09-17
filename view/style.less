@@ -15,12 +15,10 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 .board-wrapper {
   transform: rotateX(20deg);
-  transform-style: preserve-3d;
   position: relative;
   margin-top: -5%;
 }
@@ -29,6 +27,8 @@ body, html {
   position: relative;
   background: #111;
   margin: 0 auto;
+  width: 0;
+  height: 0;
   transform-style: preserve-3d;
 }
 
@@ -67,17 +67,16 @@ body, html {
 }
 
 .gone .body {
-  background: white !important;
   animation: blam .1s ease-out;
-  // animation-fill-mode: forwards;
 }
 
 @keyframes blam {
   0% {
-    transform: scale(1);
+    // transform: scale(1);
   }
   100% {
-    transform: scale(0);
+    // transform: scale(.8);
+    background: white;
   }
 
 }
@@ -184,7 +183,8 @@ body, html {
 .boom {
   position: absolute;
   z-index: 1;
-  opacity: .6;
+  opacity: 1;
+  transform-style: preserve-3d;
 
   .body {
     animation: boom .5s ease-out;
@@ -212,7 +212,7 @@ body, html {
 
 @keyframes boom {
   0% {
-    transform: scale(.95);
+    transform: scale(.95) translateZ(0);
     opacity: 1;
     background: white;
   }
@@ -220,7 +220,7 @@ body, html {
     background: #ffb806;
   }
   40% {
-    transform: scale(1);
+    transform: scale(1) translateZ(4px);
     opacity: 1;
     background: #ffb806;
     animation-timing-function: ease-in;
@@ -230,7 +230,7 @@ body, html {
   }
   100% {
     opacity: 0;
-    transform: scale(.75);
+    transform: scale(.75) translateZ(20px);
   }
 }
 

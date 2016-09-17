@@ -35,37 +35,6 @@ $(document).ready(function(){
   });
 });
 
-loop();
-
-function loop(){
-  for(var i = 0; i < particles.length; i++){
-    var p = particles[i];
-    p.move();
-  }
-  requestAnimationFrame(loop);
-}
-
-
-function updateSnakes(snakes){
-  for(var i = 0; i < snakes.length; i++){
-    var snake = snakes[i];
-
-    for(var j = 0; j < game.snakes.length; j++) {
-      var gameSnake = game.snakes[j];
-      if(snake.id === gameSnake.id) {
-        gameSnake.direction = snake.direction;
-        for(var k = 0; k < gameSnake.segments.length; k++) {
-          var serverSegment = snake.segments[k];
-          if(serverSegment){
-            gameSnake.segments[k].x = serverSegment.x;
-            gameSnake.segments[k].y = serverSegment.y;
-          }
-        }
-      }
-    }
-  }
-}
-
 socket.on('serverTick', function(msg){
   var snakes = msg.snakes;
   updateSnakes(snakes);
@@ -77,10 +46,10 @@ socket.on('loseHead', function(msg){
   snake.loseHead();
 });
 
-socket.on('loseTail', function(msg){
-  var snake = getSnake(msg.id);
-  snake.loseTail();
-});
+// socket.on('loseTail', function(msg){
+  // var snake = getSnake(msg.id);
+  // snake.loseTail();
+// });
 
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
@@ -95,26 +64,18 @@ socket.on('playerDisconnect', function(msg){
   game.removePlayer(msg.id);
 });
 
-socket.on('snakeEat', function(msg){
-  var id = msg;
-  var snake = getSnake(id);
-  snake.eat();
-});
-
-function getSnake(id){
-  for(var i = 0; i < game.snakes.length; i++){
-    var s = game.snakes[i];
-    if(s.id === id) {
-      return s;
-    }
-  }
-}
+// socket.on('snakeEat', function(msg){
+//   var id = msg;
+//   var snake = getSnake(id);
+//   snake.eat();
+// });
 
 socket.on('addApple', function(msg){
   var x = parseInt(msg.x);
   var y = parseInt(msg.y);
   var id = parseInt(msg.id);
   game.addApple(x,y,id);
+  console.log("add apple received");
 });
 
 socket.on('removeApple', function(id){
@@ -137,11 +98,47 @@ socket.on('spawnSnake', function(msg){
 });
 
 socket.on('killSnake', function(msg){
+
   var id = msg.id;
   var x = msg.x;
   var y = msg.y;
-  game.killSnake(id,x,y);
+
+  var snake = getSnake(msg.id);
+  snake.die(x,y);
+
 });
+
+// Updates all of the snakes...
+
+function updateSnakes(snakes){
+  for(var i = 0; i < snakes.length; i++){
+    var serverSnake = snakes[i];
+
+    for(var j = 0; j < game.snakes.length; j++) {
+      var gameSnake = game.snakes[j];
+      if(serverSnake.id === gameSnake.id) {
+        gameSnake.direction = serverSnake.direction;
+
+        if(gameSnake.segments.length > serverSnake.segments.length){
+          // Game snake is longer - need to kill a piece
+          gameSnake.removeSegment(gameSnake.segments[0]);
+        } else if (gameSnake.segments.length < serverSnake.segments.length) {
+          // Game snake is shorter - need to add a piece
+          gameSnake.makeSegment(0,0);
+        }
+
+        // Then set all the pieces to equal each other
+        for(var k = 0; k < gameSnake.segments.length; k++) {
+          var serverSegment = serverSnake.segments[k];
+          if(serverSegment){
+            gameSnake.segments[k].x = serverSegment.x;
+            gameSnake.segments[k].y = serverSegment.y;
+          }
+        }
+      }
+    }
+  }
+}
 
 
 var game = {
@@ -171,6 +168,7 @@ var game = {
       }
     }
   },
+
   setup : function(width,height,id,apples,snakes) {
 
     for(var i = 0; i < apples.length; i++) {
@@ -198,13 +196,7 @@ var game = {
     }
   },
   killSnake : function(id,x,y){
-    makeAnimParticle(x, y); // explosion
-    for(var i = 0; i < this.snakes.length; i++){
-      var snake = this.snakes[i];
-      if(snake.id === id) {
-        snake.die();
-      }
-    }
+
   },
   addSnake : function(id, x, y, color, direction, length){
     var snake = makeSnake(id, x, y, color, direction, length);
@@ -259,8 +251,8 @@ function makeSnake(id, x, y, color, direction, length){
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
 
       var segmentDetails = {
-        x : x,
-        y : y,
+        x : x | 0,
+        y : y | 0,
         el : segmentEl
       }
 
@@ -275,28 +267,25 @@ function makeSnake(id, x, y, color, direction, length){
       } else {
         this.segments.push(segmentDetails);
       }
-
     },
     eat : function(){
-      this.length++;
-      var tail = this.segments[0];
-      this.makeSegment(tail.x,tail.y,"tail");
+      // var tail = this.segments[0];
+      // this.makeSegment(tail.x,tail.y,"tail");
     },
     move : function(){
       this.draw();
     },
-    die : function(){
+    die : function(x,y){
+
+      // Make an explosion
+      makeAnimParticle(x, y);
+
       $(".border").removeClass("crash").width($(".border").width());
       $(".border").addClass("crash");
 
-      for(var i = 0; i < this.segments.length; i++) {
-        var tail = this.segments[i];
-        tail.el.addClass("gone");
-        setTimeout(function(tail) {
-          return function(){
-            tail.el.remove();
-          };
-        }(tail), 1000);
+      for(var i = 0; i < this.segments.length; i++){
+        var seg = this.segments[i];
+        seg.el.remove();
       }
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
@@ -305,27 +294,18 @@ function makeSnake(id, x, y, color, direction, length){
       var head = this.segments[this.segments.length - 1];
       makeBeam(head.x, head.y, this.direction, this.color);
     },
+    removeSegment : function(segment){
+      // This removes the element and the segment from the array;
+      var segmentIndex = this.segments.indexOf(segment);
+      var el = segment.el;
+      el.remove();
+      this.segments.splice(segmentIndex,1);
+    },
     loseHead : function(){
-      console.log("loseHead");
-      if(this.segments.length > 1) {
-
-        var head = this.segments[this.segments.length - 1];
-
-        makeParticle(head.x * this.size,head.y * this.size,10,          225,this.color);
-        // makeParticle(head.x * this.size,head.y * this.size + 10,10,     315,this.color);
-        // makeParticle(head.x * this.size + 10,head.y * this.size,10,     135,this.color);
-        // makeParticle(head.x * this.size + 10,head.y * this.size + 10,10,45,this.color);
-        // makeAnimParticle(head.x * this.size, head.y * this.size);
-
-        head.el.addClass("gone");
-
-        setTimeout(function(el) {
-          return function(){
-            el.remove();
-          };
-        }(head.el), 200);
-        this.segments.splice(this.segments.length - 1,1);
-      }
+      var head = this.segments[this.segments.length - 1];
+      head.el.removeClass("gone").width(head.el.width());
+      head.el.addClass("gone");
+      makeParticle(head.x * this.size,head.y * this.size,10, 225,this.color);
     },
     loseTail : function(){
       if(this.segments.length > 1) {
@@ -348,4 +328,26 @@ function makeSnake(id, x, y, color, direction, length){
     }
   }
   return snek;
+}
+
+
+
+// Animation loop for the Particle Effects
+loop();
+function loop(){
+  for(var i = 0; i < particles.length; i++){
+    var p = particles[i];
+    p.move();
+  }
+  requestAnimationFrame(loop);
+}
+
+
+function getSnake(id){
+  for(var i = 0; i < game.snakes.length; i++){
+    var s = game.snakes[i];
+    if(s.id === id) {
+      return s;
+    }
+  }
 }

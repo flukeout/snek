@@ -3,7 +3,6 @@ var particles = [];
 function makeParticle(xPos, yPos, speed, angle, color){
 
   var particle = {
-    // type : "particle",
     x : xPos,
     y : yPos,
     z : 0,
@@ -11,39 +10,27 @@ function makeParticle(xPos, yPos, speed, angle, color){
     height: 20,
     yV : 0,
     xV : 0,
-    zV : 10,
+    zV : getRandom(5,10),
     gravity : .4,
     xR : 0,
     xRv : getRandom(0,3),
     yR : 0,
     yRv : getRandom(0,3),
     zR : 0,
-
-    // zRv : getRandom(-20,20),
+    zRv : getRandom(-20,20),
     o : 1,
-    oV : -.01,
+    oV : -.0,
     scale : 1,
     scaleV : -.02,
     lifespan : 15,
   };
 
-  speed = 20 + getRandom(-2,2);
-
-  angle = angle + getRandom(-15,15);
-
-  // particle.xV = Math.sin(angle * (Math.PI/180)) * speed;
-  // particle.yV = Math.cos(angle * (Math.PI/180)) * speed;
-
-  particle.xV = getRandom(-5,5);
-  particle.yV = getRandom(-5,5);
-
-
+  particle.xV = getRandom(-3,3);
+  particle.yV = getRandom(-3,3);
   particle.el = $("<div class='particle'></div>");
   particle.el.css("height",particle.height);
   particle.el.css("width",particle.width);
   particle.el.css("background",color);
-
-  //Move function
 
   particle.move = function(){
 
@@ -70,16 +57,14 @@ function makeParticle(xPos, yPos, speed, angle, color){
     p.xR = p.xR + p.xRv;
     // p.zR = p.zR + p.zRv;
     p.yR = p.yR + p.yRv;
-    // p.el.css("transform","translate3d("+p.x+"px,"+p.y+"px,0) scale("+p.scale+")");
     p.el.css("transform","translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale(1)");
     p.el.css("opacity",p.o);
   }
 
-    particles.push(particle);
+  particles.push(particle);
 
-    particle.el.css("opacity",0);
-    $(".board").append(particle.el);
-
+  particle.el.css("opacity",0);
+  $(".board").append(particle.el);
 }
 
 function getRandom(min, max){
@@ -87,10 +72,8 @@ function getRandom(min, max){
 }
 
 
+//Laser Beam
 function makeBeam(x,y,direction, color){
-  // console.log(direction);
-
-
   var snakeX = x * 20; // starting point
   var snakeY = y * 20; //starting point
 
@@ -143,13 +126,13 @@ function makeBeam(x,y,direction, color){
 }
 
 function makeAnimParticle(xPos, yPos){
+  playSound("boom");
+
   var size = 3;
   var width = 3 * 20;
   var offset = (width - 20) / 2;
   var x = xPos * 20 - offset;
   var y = yPos * 20 - offset;
-
-  playSound("boom");
 
   $(".border").removeClass("shake").width($(".border").width());
   $(".border").addClass("shake");
@@ -166,8 +149,6 @@ function makeAnimParticle(xPos, yPos){
     };
   }(particle.el),500);
 
-
   //Move function
   $(".board").append(particle.el);
-
 }

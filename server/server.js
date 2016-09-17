@@ -111,9 +111,9 @@ http.listen(process.env.PORT || 3000, function(){
 });
 
 var game = {
-  size : 8, //snake size
-  width : 55,
-  height: 28,
+  size : 12, //snake size
+  width : 42, //55
+  height: 28,  //28
   apples : [],
   snakes : [],
   player : {},
@@ -127,6 +127,7 @@ var game = {
     }
   },
   start : function(data){
+    this.addApple();
     this.addApple();
   },
   move : function(){
@@ -152,6 +153,7 @@ var game = {
     this.snakes.push(snake);
     if(this.apples.length == 0) {
       this.addApple();
+      this.addApple();
     }
   },
   addApple : function(){
@@ -160,7 +162,6 @@ var game = {
       y : getRandom(0,this.height - 1),
       id: uuid()
     };
-
     io.emit('addApple', apple);
     this.apples.push(apple);
   },
@@ -264,7 +265,6 @@ function makeSnake(details){
     },
     move : function(){
 
-
       if(this.directionQ.length > 0) {
         var nextDirection = this.directionQ[0];
         this.changeDirection(nextDirection);
@@ -287,7 +287,7 @@ function makeSnake(details){
         collide = true;
       }
 
-      // From here on in, we are moving...
+      // Check collisions with apples..
       game.checkCollisions();
 
       var newHead = {
@@ -310,9 +310,10 @@ function makeSnake(details){
           break;
       }
 
+      // Check if it has collided with itself
+      // But only if it hasn't collided with a wall / edge
 
-      // check if it crashed into itself
-      if(this.moving) {
+      if(this.moving && !collide) {
         for(var i = 0; i < this.segments.length; i++) {
           var segment = this.segments[i];
           var check = collider(newHead,segment);
@@ -323,30 +324,27 @@ function makeSnake(details){
         }
       }
 
-
-      // Other snakes...
-
-      for(var i = 0; i < game.snakes.length; i++) {
-        var otherSnake = game.snakes[i];
-
-        if(otherSnake != this) {
-          for(var j = 0; j < otherSnake.segments.length; j++) {
-            var segment = otherSnake.segments[j];
-            var check = collider(newHead,segment);
-            if(!collide && check) {
-              collide = check;
-              break;
+      // If it hasn't yet collided with itself...
+      // Check collisions with other snakes
+      if(!collide) {
+        for(var i = 0; i < game.snakes.length; i++) {
+          var otherSnake = game.snakes[i];
+          if(otherSnake != this) {
+            for(var j = 0; j < otherSnake.segments.length; j++) {
+              var segment = otherSnake.segments[j];
+              var check = collider(newHead,segment);
+              if(!collide && check) {
+                collide = check;
+                break;
+              }
             }
           }
         }
-
-
       }
 
       if(collide) {
-
+        io.emit('loseHead', {id: this.id,});
         if(this.segments.length > 1) {
-          io.emit('loseHead', {id: this.id,});
           this.segments.splice(0,1);
         } else {
           this.die();
