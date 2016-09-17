@@ -127,6 +127,7 @@ http.listen(process.env.PORT || 3000, function(){
 
 var game = {
   size : 5,    // starting snake size
+  winLength : 10,
   width : 42,   // board width
   height: 28,   // board height
   apples : [],
@@ -146,10 +147,20 @@ var game = {
     this.addApple();
   },
   move : function(){
+
+    var winnerIDs = [];
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
       s.move();
+      if(s.segments.length >= this.winLength) {
+        winnerIDs.push(s.id);
+      }
     }
+
+    if(winnerIDs.length > 0){
+      io.emit('winnerSnakes', winnerIDs);
+    }
+
   },
   addSnake : function(data){
     var snakeDetails = {

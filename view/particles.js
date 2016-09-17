@@ -134,9 +134,10 @@ function makeAnimParticle(xPos, yPos){
   var x = xPos * 20 - offset;
   var y = yPos * 20 - offset;
 
-  $(".border, .leader").removeClass("shake").width($(".border").width());
   $(".border, .leader").addClass("shake");
-  // $(".board").append(particle.el);
+  $(".border").one("animationend",function(){
+    $(".border, .leader").removeClass("shake");
+  })
 
   var particle = {};
   particle.el = $("<div class='boom'><div class='shock'/><div class='body'/></div>");

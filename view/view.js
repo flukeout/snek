@@ -87,11 +87,14 @@ var chat = {
 socket.on('newChat', function(msg){
   var snake = getSnake(msg.id);
   snake.say(msg.message);
+});
 
-
-
+socket.on('winnerSnakes', function(msg){
+  var winners = msg;
+  console.log("we have a winners: ", winners);
 
 });
+
 
 socket.on('serverTick', function(msg){
   var snakes = msg.snakes;
@@ -228,7 +231,7 @@ var game = {
 
   setup : function(width,height,id,apples,snakes) {
 
-    for(var i = 0; i < 20; i++) {
+    for(var i = 0; i < 10; i++) {
       var box = $("<div class='box'>");
       $(".leader-boxes").append(box);
     }
