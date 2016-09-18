@@ -89,10 +89,13 @@ socket.on('newChat', function(msg){
   snake.say(msg.message);
 });
 
-socket.on('winnerSnakes', function(msg){
+var winMessage = function(msg){
   var winners = msg;
   console.log("we have a winners: ", winners);
+}
 
+socket.on('winnerSnakes', function(msg) {
+  winMessage(msg);
 });
 
 
@@ -179,6 +182,7 @@ function updateSnakes(snakes){
       if(serverSnake.id === gameSnake.id) {
         gameSnake.direction = serverSnake.direction;
 
+try {
         if(gameSnake.segments.length > serverSnake.segments.length){
           // Game snake is longer - need to kill a piece
           gameSnake.removeSegment(gameSnake.segments[0]);
@@ -186,6 +190,11 @@ function updateSnakes(snakes){
           // Game snake is shorter - need to add a piece
           gameSnake.makeSegment(0,0);
         }
+} catch (e) {
+  console.log(gameSnake);
+  console.error(e);
+  this.updateSnakes = game.move = winMessage = function(){};
+}
 
         // Then set all the pieces to equal each other
         for(var k = 0; k < gameSnake.segments.length; k++) {
