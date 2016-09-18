@@ -8,11 +8,16 @@ var Game = function(io) {
 };
 
 Game.prototype = {
-  size : 5,    // starting snake size
+  size : 25,    // starting snake size
   winLength : 10,
   width : 42,   // board width
   height: 28,   // board height
   apples : [],
+  
+  bombs :  [],
+  bombLifeSpan: 40,
+  bombRadius: 3,
+
   snakes : [],
   player : {},
 
@@ -44,6 +49,13 @@ Game.prototype = {
     if(winnerIDs.length > 0){
       this.io.emit('winnerSnakes', winnerIDs);
     }
+
+    this.bombs.forEach(bomb => {
+      bomb.timeleft--;
+      if (bomb.timeleft <= 0) {
+        this.explodeBomb(bomb);
+      }
+    });
   },
 
   addSnake : function(data){
@@ -67,10 +79,10 @@ Game.prototype = {
     }
   },
 
-  addApple : function(){
+  addApple : function(x, y ){
     var apple = {
-      x : getRandom(0,this.width - 1),
-      y : getRandom(0,this.height - 1),
+      x : parseFloat(x)==x? x : getRandom(0,this.width - 1),
+      y : parseFloat(y)==y? y : getRandom(0,this.height - 1),
       id: uuid()
     };
     this.io.emit('addApple', apple);
@@ -81,6 +93,41 @@ Game.prototype = {
     var appleIndex = this.apples.indexOf(apple);
     this.apples.splice(appleIndex, 1);
     this.io.emit('removeApple', apple.id);
+  },
+
+  addBomb : function(x, y) {
+    var bomb = {
+      x : parseFloat(x)==x? x : getRandom(0,this.width - 1),
+      y : parseFloat(y)==y? y : getRandom(0,this.height - 1),
+      id: uuid(),
+      timeleft: this.bombLifeSpan
+    };
+    this.io.emit('addBomb', bomb);
+    this.bombs.push(bomb);
+  },
+
+  explodeBomb: function(bomb) {
+    var x = bomb.x,
+        y = bomb.y;
+
+    this.snakes.forEach( (snake,id) => {
+      var segments = snake.getSegmentsNear(x,y, this.bombRadius);
+      if (segments.length > 0) {
+        if (segments.length >= snake.segments.length) {
+          snake.die();
+        } else {
+          segments.forEach(s => snake.loseSegment(s));
+        }
+      }
+    });
+
+    this.removeBomb(bomb);
+  },
+
+  removeBomb: function(bomb) {
+    var bombIndex = this.bombs.indexOf(bomb);
+    this.bombs.splice(bombIndex, 1);
+    this.io.emit('removeBomb', bomb.id);
   },
 
   checkCollisions(){

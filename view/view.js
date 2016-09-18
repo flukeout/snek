@@ -5,13 +5,25 @@ $(document).ready(function(){
 
   $(document).on("keydown",function(e){
 
-    var direction;
+    var direction, bomb;
 
     // console.log(e.keyCode);
+    var keys = {};
+    for (var start=65, end=90, i=start, key; i<=end; i++) {
+      key = String.fromCharCode(i);
+      keys[key] = i;
+      key = String.fromCharCode(i+32);
+      keys[key] = i+32;
+    }
 
     switch(e.keyCode) {
-      case 65:
-        // game.snakes[0].boom();
+      case keys.a:
+      case keys.A:
+        game.snakes[0].boom();
+        break;
+      case keys.b:
+      case keys.B:
+        bomb = true;
         break;
       case 37:
         direction = "left";
@@ -31,12 +43,17 @@ $(document).ready(function(){
 
       default:
         direction = false;
+        bomb = false;
     }
 
     if(direction){
       socket.emit('direction', {
         direction: direction
       });
+    }
+
+    if(bomb) {
+      socket.emit('dropBomb')
     }
   });
 
@@ -89,13 +106,9 @@ socket.on('newChat', function(msg){
   snake.say(msg.message);
 });
 
-var winMessage = function(msg){
-  var winners = msg;
-  console.log("we have a winners: ", winners);
-}
 
 socket.on('winnerSnakes', function(msg) {
-  winMessage(msg);
+//  winMessage(msg);
 });
 
 
@@ -110,10 +123,12 @@ socket.on('loseHead', function(msg){
   snake.loseHead();
 });
 
-// socket.on('loseTail', function(msg){
-  // var snake = getSnake(msg.id);
-  // snake.loseTail();
-// });
+socket.on('loseSegment', function(msg) {
+  var snake = getSnake(msg.id);
+  var x = parseInt(msg.x);
+  var y = parseInt(msg.y);
+  snake.loseSegment(x, y);
+});
 
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
@@ -143,6 +158,17 @@ socket.on('addApple', function(msg){
 
 socket.on('removeApple', function(id){
   game.removeApple(id);
+});
+
+socket.on('addBomb', function(msg){
+  var x = parseInt(msg.x);
+  var y = parseInt(msg.y);
+  var id = parseInt(msg.id);
+  game.addBomb(x,y,id);
+});
+
+socket.on('removeBomb', function(id){
+  game.removeBomb(id);
 });
 
 socket.on('message', function(msg){
@@ -215,6 +241,7 @@ var game = {
   width : 40,
   height: 28,
   apples : [],
+  bombs: [],
   tickSpeed : 200,  // 8 frames difference
   tickSpeedModifier : 0,
   snakes : [],
@@ -292,18 +319,16 @@ var game = {
     this.snakes.push(snake);
   },
   addApple : function(x,y,id){
-
     var apple = {
       el : $("<div class='apple'><div class='body'></div></div>"),
       x : x,
       y : y,
       id : id
     }
-
     $(".board").append(apple.el);
 
     apple.el.css("width",this.size).css("height",this.size);
-    apple.el.css("transform","translateX(" + this.size * apple.x + "px) translateY("+this.size * apple.y+"px)");
+    apple.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
     this.apples.push(apple);
   },
   removeApple: function(id){
@@ -313,6 +338,33 @@ var game = {
         apple.el.remove();
         var appleIndex = this.apples.indexOf(apple);
         this.apples.splice(appleIndex, 1);
+      }
+    }
+  },
+  addBomb: function(x, y, id) {
+    console.log("Adding bomb at ",x,y);
+    var bomb = {
+      el : $("<div class='bomb'><div class='body'></div></div>"),
+      x : x,
+      y : y,
+      id : id
+    }
+    $(".board").append(bomb.el);
+
+    bomb.el.css("width",this.size).css("height",this.size);
+    bomb.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
+    this.bombs.push(bomb);
+  },
+  removeBomb: function(id) {
+    for(var i = 0; i < this.bombs.length; i++){
+      var bomb = this.bombs[i];
+      if(id === bomb.id){
+        // Make an explosion
+        makeAnimParticle(bomb.x, bomb.y);
+
+        bomb.el.remove();
+        var bombIndex = this.bombs.indexOf(bomb);
+        this.bombs.splice(bombIndex, 1);
       }
     }
   }
@@ -399,7 +451,7 @@ function makeSnake(id, x, y, color, direction, length){
     },
     boom : function(){
       var head = this.segments[this.segments.length - 1];
-      makeBeam(head.x, head.y, this.direction, this.color);
+      makeBeam(head.x, head.y, this.direction || "left", this.color);
     },
     removeSegment : function(segment){
       // This removes the element and the segment from the array;
@@ -407,6 +459,25 @@ function makeSnake(id, x, y, color, direction, length){
       var el = segment.el;
       el.remove();
       this.segments.splice(segmentIndex,1);
+    },
+    loseSegment: function(x, y) {
+      // lose a segment at the tail
+      if(this.segments.length > 1) {
+        var tail = this.segments[0];
+        tail.el.addClass("gone");
+        setTimeout(function(el) {
+          return function(){
+            el.remove();
+          };
+        }(tail.el), 200);
+        this.segments.splice(0,1);
+      }
+      // adn show a particle effect
+      playSound("bonk");
+      var tail = this.segments[0];
+      x = tail.x;
+      y = tail.y;
+      makeParticle(x * this.size, y * this.size, 10, 225, this.color);
     },
     loseHead : function(){
       var head = this.segments[this.segments.length - 1];
@@ -427,18 +498,6 @@ function makeSnake(id, x, y, color, direction, length){
       playSound("bonk");
       makeParticle(head.x * this.size, head.y * this.size, 10, 225, this.color);
       // TODO Should pass the game x,y coordinates, not the pixel value...
-    },
-    loseTail : function(){
-      if(this.segments.length > 1) {
-        var tail = this.segments[0];
-        tail.el.addClass("gone");
-        setTimeout(function(el) {
-          return function(){
-            el.remove();
-          };
-        }(tail.el), 200);
-        this.segments.splice(0,1);
-      }
     },
     draw : function(){
       for(var i = 0; i < this.segments.length; i++) {

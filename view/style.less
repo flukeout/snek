@@ -115,6 +115,20 @@ body, html {
     }
   }
 }
+
+.bomb {
+  .apple;
+  .body {
+    background: red;
+    box-shadow: 0px 0px 0 10px orange,
+                0px 0px 0 20px yellow;
+    &:after {
+      background: red;
+    }
+  }
+}
+
+
 @keyframes pop {
   0% {
     transform: scale(.6);

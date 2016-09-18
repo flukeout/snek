@@ -1,6 +1,12 @@
 var collider = require('./collider');
 var game, io;
 
+var dist = function(x1, y1, x2, y2) {
+  var dx = x1 - x2;
+  var dy = y1 - y2;
+  return Math.sqrt(dx*dx + dy*dy);
+};
+
 var Snake = function(details, _game) {
   // this SHOULD be safe?
   game = _game;
@@ -67,6 +73,17 @@ Snake.prototype = {
     }
   },
 
+  getSegmentsNear: function(x, y, distance) {
+    var d = Math.ceil((distance-1)/2);
+    var segments = [];
+    this.segments.forEach(segment => {
+      if(dist(segment.x, segment.y, x, y) <= d) {
+        segments.push(segment);
+      }
+    });
+    return segments;
+  },
+
   eat : function(){
     this.length++;
     var tail = this.segments[0];
@@ -75,7 +92,6 @@ Snake.prototype = {
   },
 
   move : function() {
-
     if(this.directionQ.length > 0) {
       var nextDirection = this.directionQ[0];
       this.changeDirection(nextDirection);
@@ -166,6 +182,11 @@ Snake.prototype = {
     }
   },
 
+  getHead : function(){
+    // return this.segments[this.segments.length - 1];
+    return this.segments.slice(-1)[0];
+  },
+
   loseHead : function(){
     if(this.segments.length > 1) {
       io.emit('loseHead', {id: this.id,});
@@ -173,12 +194,25 @@ Snake.prototype = {
     }
   },
 
-  getHead : function(){
-    return this.segments[this.segments.length - 1];
+  getTail : function(){
+    return this.segments[0];
+  },
+
+  loseSegment: function(segment) {
+    segment.id = this.id;
+    io.emit('loseSegment', segment);
+    // remove segment at the tail
+    if(this.segments.length > 1) {
+      this.segments.splice(0,1);
+    }
+  },
+
+  dropBomb : function() {
+    var tail = this.getTail();
+    game.addBomb(tail.x, tail.y);
   },
 
   die : function() {
-
     var head = this.getHead();
 
     io.emit('killSnake', {
@@ -203,15 +237,5 @@ Snake.prototype = {
     setTimeout(function(){
       game.addSnake(snakeDetails);
     },1000)
-
-
-  },
-
-  loseTail : function(){
-    if(this.segments.length > 1) {
-      io.emit('loseTail', {id: this.id,});
-      var tail = this.segments[0];
-      this.segments.splice(0,1);
-    }
   }
 };
