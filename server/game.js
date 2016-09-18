@@ -8,7 +8,7 @@ var Game = function(io) {
 };
 
 Game.prototype = {
-  size : 25,    // starting snake size
+  size : 5,    // starting snake size
   winLength : 10,
   width : 42,   // board width
   height: 28,   // board height

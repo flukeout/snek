@@ -208,8 +208,11 @@ Snake.prototype = {
   },
 
   dropBomb : function() {
-    var tail = this.getTail();
-    game.addBomb(tail.x, tail.y);
+    if (this.segments.length>1) {
+      var tail = this.getTail();
+      game.addBomb(tail.x, tail.y);
+      this.loseSegment(this.segments[0]);
+    }
   },
 
   die : function() {
