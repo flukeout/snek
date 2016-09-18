@@ -15,7 +15,7 @@ Game.prototype = {
   apples : [],
   
   bombs :  [],
-  bombLifeSpan: 40,
+  bombLifeSpan: 20,
   bombRadius: 3,
 
   snakes : [],
