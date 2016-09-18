@@ -50,12 +50,18 @@ Game.prototype = {
       this.io.emit('winnerSnakes', winnerIDs);
     }
 
-    this.bombs.forEach(bomb => {
+    this.checkBombs();
+  },
+
+  checkBombs : function(){
+    var b = this.bombs, l=b.length;
+    for (var i=l-1; i>=0; i--) {
+      var bomb = b[i];
       bomb.timeleft--;
       if (bomb.timeleft <= 0) {
         this.explodeBomb(bomb);
       }
-    });
+    };
   },
 
   addSnake : function(data){
@@ -95,33 +101,37 @@ Game.prototype = {
     this.io.emit('removeApple', apple.id);
   },
 
-  addBomb : function(x, y) {
+  addBomb : function(x, y, color) {
     var bomb = {
       x : parseFloat(x)==x? x : getRandom(0,this.width - 1),
       y : parseFloat(y)==y? y : getRandom(0,this.height - 1),
       id: uuid(),
-      timeleft: this.bombLifeSpan
+      timeleft: this.bombLifeSpan,
+      color: color
     };
     this.io.emit('addBomb', bomb);
     this.bombs.push(bomb);
   },
 
   explodeBomb: function(bomb) {
-    var x = bomb.x,
-        y = bomb.y;
-
-    this.snakes.forEach( (snake,id) => {
-      var segments = snake.getSegmentsNear(x,y, this.bombRadius);
-      if (segments.length > 0) {
-        if (segments.length >= snake.segments.length) {
-          snake.die();
-        } else {
-          segments.forEach(s => snake.loseSegment(s));
-        }
-      }
+    var x = bomb.x;
+    var y = bomb.y;
+    this.snakes.forEach(snake => {
+      this.checkSnakeSplosion(snake, x, y);
     });
-
     this.removeBomb(bomb);
+  },
+
+  checkSnakeSplosion: function(snake, x, y) {
+    var segments = snake.getSegmentsNear(x,y, this.bombRadius);
+    // SNAKESPLOSIONS
+    if (segments.length > 0) {
+      segments.forEach(s => snake.loseSegment(s));
+    }
+    // is snake dead now?
+    if (segments.length >= snake.segments.length) {
+      snake.die();
+    }
   },
 
   removeBomb: function(bomb) {
@@ -136,12 +146,22 @@ Game.prototype = {
       var snake = this.snakes[i];
       var head = snake.segments[snake.segments.length - 1];
 
+      // apples are segments
       for(var j = 0; j < this.apples.length; j++) {
         var apple = this.apples[j];
         if(collider(apple, head)){
           snake.eat();
           this.removeApple(apple);
           this.addApple();
+        }
+      }
+
+      // bombs are bad news
+      for(var j = this.bombs.length-1; j >= 0; j--) {
+        var bomb = this.bombs[j];
+        if(collider(bomb, head)) {
+          this.removeBomb(bomb);
+          this.checkSnakeSplosion(snake, bomb.x, bomb.y);
         }
       }
     }

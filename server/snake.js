@@ -210,7 +210,7 @@ Snake.prototype = {
   dropBomb : function() {
     if (this.segments.length>1) {
       var tail = this.getTail();
-      game.addBomb(tail.x, tail.y);
+      game.addBomb(tail.x, tail.y, this.color);
       this.loseSegment(this.segments[0]);
     }
   },
