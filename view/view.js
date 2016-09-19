@@ -134,12 +134,8 @@ socket.on('loseSegment', function(msg) {
   var x = parseInt(msg.x);
   var y = parseInt(msg.y);
   var showParticle = msg.showParticle;
-
-
-
   snake.loseSegment(x, y, showParticle);
 });
-
 
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
@@ -213,8 +209,6 @@ socket.on('killSnake', function(msg){
 // Updates all of the snakes...
 
 function updateSnakes(snakes){
-
-
   for(var i = 0; i < snakes.length; i++){
     var serverSnake = snakes[i];
 
@@ -224,12 +218,19 @@ function updateSnakes(snakes){
         gameSnake.direction = serverSnake.direction;
         gameSnake.points = serverSnake.points;
 
-        if(gameSnake.segments.length > serverSnake.segments.length){
-          // Game snake is longer - need to kill a piece
-          gameSnake.removeSegment(gameSnake.segments[0]);
-        } else if (gameSnake.segments.length < serverSnake.segments.length) {
+        var diff = gameSnake.segments.length - serverSnake.segments.length;
+        if(diff > 0){
+          // Game snake is longer - need to kill [diff] pieces
+          while (diff--) {
+            gameSnake.removeSegment(gameSnake.segments[0]);
+          }
+        } else {
           // Game snake is shorter - need to add a piece
-          gameSnake.makeSegment(0,0);
+          var tail = gameSnake.segments[0];
+          diff = Math.abs(diff);
+          while (diff--) {
+            gameSnake.makeSegment(tail.x, tail.y, "tail");
+          }
         }
 
         // Then set all the pieces to equal each other

@@ -58,7 +58,7 @@ Snake.prototype = {
 
   init : function(io){
     this.io = io;
-    for(var i = 0; i < this.length; i++) {
+    for(var i = 0, segCount=this.length; i < segCount; i++) {
       this.makeSegment(this.x,this.y,"head");
     }
   },
@@ -74,6 +74,8 @@ Snake.prototype = {
     } else {
       this.segments.push(newSegment);
     }
+
+    this.length++;
   },
 
   getSegmentsNear: function(x, y, distance) {
@@ -88,14 +90,12 @@ Snake.prototype = {
   },
 
   eat : function(){
-    this.length++;
     var tail = this.segments[0];
     this.makeSegment(tail.x,tail.y,"tail");
     io.emit('snakeEat', this.id);
   },
 
   move : function() {
-
     if(this.eventQ.length > 0) {
       var nextEvent = this.eventQ[0];
 
@@ -108,7 +108,6 @@ Snake.prototype = {
       // this.moving = true;
       this.eventQ.splice(0, 1);
     }
-
 
     if(this.directionQ.length > 0) {
       var nextDirection = this.directionQ[0];
@@ -240,7 +239,7 @@ Snake.prototype = {
   dropBomb : function() {
     if (this.segments.length>1) {
       var tail = this.getTail();
-      game.addBomb(tail.x, tail.y, this.color);
+      game.addBomb(tail.x, tail.y, this.color, this.id);
       this.loseSegment(this.segments[0], false);
     }
   },

@@ -51,16 +51,11 @@ Game.prototype = {
       mode : "game"
     });
   },
+
   endGame : function(){
-
-
-
   },
+
   move : function(){
-
-
-
-
     var winnerIDs = [];
 
     for(var i = 0 ; i < this.snakes.length; i++ ){
@@ -122,6 +117,7 @@ Game.prototype = {
       }
     };
   },
+
   addSnake : function(data){
     var snakeDetails = {
       id : data.id,
@@ -159,11 +155,12 @@ Game.prototype = {
     this.io.emit('removeApple', apple.id);
   },
 
-  addBomb : function(x, y, color) {
+  addBomb : function(x, y, color, snakeid) {
     var bomb = {
       x : parseFloat(x)==x? x : getRandom(0,this.width - 1),
       y : parseFloat(y)==y? y : getRandom(0,this.height - 1),
       id: uuid(),
+      snakeid: snakeid,
       timeleft: this.bombLifeSpan,
       color: color
     };
@@ -174,11 +171,31 @@ Game.prototype = {
   explodeBomb: function(bomb) {
     var x = bomb.x;
     var y = bomb.y;
+    var sid = bomb.snakeid;
+
+    var hitCount = 0;
     this.snakes.forEach(snake => {
-      this.checkSnakeSplosion(snake, x, y);
+      var segments = this.checkSnakeSplosion(snake, x, y);
+      hitCount += segments.length;
     });
+
+    var victor = false;
+    this.snakes.forEach(snake => {
+      if (snake.id === sid) {
+        victor = snake;
+      }
+    });
+    
+    if (hitCount > 0 && victor) {
+      while(hitCount--) {
+        var tail = victor.segments[0];
+        victor.makeSegment(tail.x, tail.y, "tail");
+      }
+    }
+
     this.removeBomb(bomb);
   },
+
   checkSnakeSplosion: function(snake, x, y) {
     var segments = snake.getSegmentsNear(x,y, this.bombRadius);
     // SNAKESPLOSIONS
@@ -189,6 +206,7 @@ Game.prototype = {
     if (segments.length >= snake.segments.length) {
       snake.die();
     }
+    return segments;
   },
 
   removeBomb: function(bomb) {
