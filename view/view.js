@@ -7,7 +7,6 @@ $(document).ready(function(){
 
     var direction, bomb;
 
-
     // console.log(e.keyCode);
     var keys = {};
     for (var start=65, end=90, i=start, key; i<=end; i++) {
@@ -200,9 +199,10 @@ socket.on('killSnake', function(msg){
   var id = msg.id;
   var x = msg.x;
   var y = msg.y;
+  var type = msg.type;
 
   var snake = getSnake(msg.id);
-  snake.die(x,y);
+  snake.die(x,y,type);
 
 });
 
@@ -250,15 +250,23 @@ var scoreBoard = {
   update : function(players,winner){
 
     $(".scoreboard li").remove();
-    $(".scoreboard .winning-snake").text(winner + " wins!!");
+
+    var winnerName = "";
+
+    players.sort(function(a,b){
+      return a.points < b.points;
+    })
 
     for(var i = 0; i < players.length; i++){
       var s = players[i];
+      if(s.id == winner) {
+        winnerName = s.name;
+      }
       var item = $("<li><span class='name'>"+s.name+"</span><span class='points'>"+s.points+" pts.</span>");
       $(".scoreboard ul").append(item);
     }
 
-
+    $(".scoreboard .winning-snake").text(winnerName + " wins!!");
   }
 }
 
@@ -276,13 +284,18 @@ var game = {
   mode : "game",
   winLength : 0,
   gameWon : function(players,winner){
-    console.log(players,winner);
 
-    // var winner = winners[0];
-    // var that = this;
-    //
+    playSound("winner");
+
+    $("[mode=game]").addClass("winner");
     scoreBoard.update(players, winner);
-    //
+
+    var winnerSnake = getSnake(winner);
+
+    setTimeout(function(){
+      $("[mode=game]").removeClass("winner");
+    },2500)
+
     var that = this;
 
     setTimeout(function(){
@@ -358,9 +371,6 @@ var game = {
       $(".leader-boxes .box").css("background","#222");
       $(".leader-boxes .box:nth-child(-n+"+max+")").css("background",longest.color);
     }
-
-  },
-  killSnake : function(id,x,y){
 
   },
   addSnake : function(id, x, y, color, direction, length){
@@ -439,22 +449,21 @@ function makeSnake(id, x, y, color, direction, length){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
       }
+
+      makeSpawnParticle(x, y, this.color);
+
     },
     getHead : function(){
       return this.segments[this.segments.length -1];
     },
     say : function(message){
-
-      console.log("Snake says:", message);
-
+      // For displaying chat messages
       var head = this.getHead();
       var messageEl = $("<div class='message'><div class='body'>"+message+"</div></div>");
       $(".board").append(messageEl);
 
       var position = head.el.position();
       messageEl.css("transform","translateX("+head.x * 20+"px) translateY("+head.y*20+"px)");
-      console.log(position);
-
 
       setTimeout(function(el) {
         return function() {
@@ -490,10 +499,12 @@ function makeSnake(id, x, y, color, direction, length){
     move : function(){
       this.draw();
     },
-    die : function(x,y){
+    die : function(x,y,type){
 
       // Make an explosion
-      makeAnimParticle(x, y);
+      if(type != "quiet"){
+        makeAnimParticle(x, y);
+      }
 
       for(var i = 0; i < this.segments.length; i++){
         var seg = this.segments[i];

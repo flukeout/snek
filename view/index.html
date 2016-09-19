@@ -2,6 +2,7 @@
   <head>
     <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
     <link rel="stylesheet/less" href="style.less" type="text/css">
+    <title>Snakes on a Plane</title>
     <script src="jquery.js"></script>
     <script src="hammer.js"></script>
     <script src="particles.js"></script>
@@ -29,7 +30,7 @@
 
   <body>
 
-    <div mode="game">
+    <div mode="game" class="hidden">
       <div class="leader">
         <span class="label">LEADER</span>
         <div class="leader-boxes"></div>
@@ -46,7 +47,7 @@
       </div>
     </div>
 
-    <div mode="winner">
+    <div mode="winner" class="hidden">
       <div class="scoreboard">
         <p class="winning-snake">BOB WINS</p>
         <ul>

@@ -114,7 +114,7 @@ function makeBeam(x,y,direction, color){
   particle.el.css("width", width);
   particle.el.css("transform","translate3d("+x+"px,"+y+"px,0)");
 
-  playSound("boom");
+  // playSound("boom");
 
   setTimeout(function(el) {
     return function(){
@@ -152,6 +152,32 @@ function makeAnimParticle(xPos, yPos){
       el.remove();
     };
   }(particle.el),500);
+
+  //Move function
+  $(".board").append(particle.el);
+}
+
+
+function makeSpawnParticle(xPos, yPos, color){
+
+  var size = 1;
+  var width = size * 20;
+  var offset = (width - 20) / 2;
+  var x = xPos * 20 - offset;
+  var y = yPos * 20 - offset;
+
+  var particle = {};
+  particle.el = $("<div class='spawn'><div class='body'/></div>");
+  particle.el.css("height", width);
+  particle.el.css("width", width);
+  particle.el.find(".body").css("border-color", color);
+  particle.el.css("transform","translate3d("+x+"px,"+y+"px,0)");
+
+  setTimeout(function(el) {
+    return function(){
+      el.remove();
+    };
+  }(particle.el),2000);
 
   //Move function
   $(".board").append(particle.el);

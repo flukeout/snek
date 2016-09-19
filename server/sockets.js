@@ -17,7 +17,6 @@ var findPlayerSnake = function(playerid) {
   return false;
 };
 
-
 module.exports = function(app) {
 
   var server = http.Server(app);
@@ -29,20 +28,24 @@ module.exports = function(app) {
   // });
 
   // A player joins the game
-  io.on('connection', function(socket) {
+  io.sockets.on('connection', function(socket) {
 
     var player = {
       id: uuid(),
       socket: socket,
       color: nextColor(),
-      name : "SnakePerson",
+      name : "",
       points : 0
     };
+
+    player.name = "Snake_" + player.id;
 
     players[player.id] = player;
 
     // welcome user, send them their snake color (may be user-changeble later)
     console.log('a user connected, giving it snake id', player.id);
+    console.log('Number of players', Object.keys(players).length);
+    // console.log(plaers);
 
     // send in response to connecting:
     socket.emit('gameSetup', {
@@ -68,6 +71,9 @@ module.exports = function(app) {
         id: player.id
       })
       game.removePlayer(player.id);
+      delete players[player.id];
+      console.log('Player left');
+      console.log('Number of players', Object.keys(players).length);
     });
 
     socket.on('sendChat',function(data){

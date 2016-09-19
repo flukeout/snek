@@ -9,10 +9,10 @@ var Game = function(io,players) {
 };
 
 Game.prototype = {
-  size : 5,    // starting snake size
-  winLength : 15,
-  width : 42,   // board width
-  height: 28,   // board height
+  size : 5,         // starting snake size
+  winLength : 6,   // How long a snakes needs to bo to win the round
+  width : 42,       // board width
+  height: 28,       // board height
   apples : [],
 
   bombs :  [],
@@ -38,31 +38,24 @@ Game.prototype = {
     this.addApple();
   },
   resetGame : function(){
+
     this.mode = "game";
 
     for(var i = 0; i < this.snakes.length; i++){
       var s = this.snakes[i];
-      s.die();
+      s.die("quiet");
     }
-    // kill all the snakes
-    // spawn all snakes...
 
     this.io.emit('gameMode', {
       mode : "game"
     });
   },
-
-  endGame : function(){
-  },
-
   move : function(){
     var winnerIDs = [];
 
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
       s.move();
-
-      // console.log(this.players);
 
       if(this.mode == "game") {
         if(s.segments.length >= this.winLength) {
@@ -98,6 +91,13 @@ Game.prototype = {
         });
 
         this.mode = "winner"
+
+        this.snakes.forEach(snake => {
+          if(winnerIDs.indexOf(snake.id) < 0 ){
+            snake.die("quiet");
+          }
+        });
+
         setTimeout(function(){
           that.resetGame();
         },5000)
@@ -192,7 +192,6 @@ Game.prototype = {
         victor.makeSegment(tail.x, tail.y, "tail");
       }
     }
-
     this.removeBomb(bomb);
   },
 

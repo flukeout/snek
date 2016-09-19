@@ -14,7 +14,12 @@ var sounds = {
   "bonk" : {
     buffer : null,
     url : path + "../sounds/bonk.mp3"
+  },
+  "winner" : {
+    buffer : null,
+    url : path + "../sounds/winner.wav"
   }
+
 };
 
 for(var key in sounds) {
@@ -39,7 +44,7 @@ function loadSound(name){
 }
 
 function playSound(name){
-  // return;
+
   var buffer = sounds[name].buffer;
   if(buffer){
     var source = context.createBufferSource(); // creates a sound source

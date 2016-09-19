@@ -186,6 +186,10 @@ Snake.prototype = {
       }
     }
 
+    if(game.mode != "game" ) {
+      collide = false;
+    }
+
     if(collide) {
       io.emit('loseHead', {id: this.id,});
       if(this.segments.length > 1) {
@@ -243,14 +247,16 @@ Snake.prototype = {
       this.loseSegment(this.segments[0], false);
     }
   },
+  die : function(type) {
+    console.log("A " + type  + " death");
 
-  die : function() {
     var head = this.getHead();
 
     io.emit('killSnake', {
       id: this.id,
       x: head.x,
-      y: head.y
+      y: head.y,
+      type : type
     });
 
     for(var i = 0; i < this.segments.length; i++) {
@@ -267,11 +273,11 @@ Snake.prototype = {
     }
 
     setTimeout(function(){
-      game.addSnake(snakeDetails);
+      if(game.mode == "game"){
+        game.addSnake(snakeDetails);
+      }
     },1000);
-
   },
-
   loseTail : function(){
     if(this.segments.length > 1) {
       io.emit('loseTail', {id: this.id,});
