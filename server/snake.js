@@ -1,6 +1,12 @@
 var collider = require('./collider');
 var game, io;
 
+var dist = function(x1, y1, x2, y2) {
+  var dx = x1 - x2;
+  var dy = y1 - y2;
+  return Math.sqrt(dx*dx + dy*dy);
+};
+
 var Snake = function(details, _game) {
   // this SHOULD be safe?
   game = _game;
@@ -20,7 +26,8 @@ var Snake = function(details, _game) {
   this.moved = false;
   this.direction = undefined;
   this.nextDirection = "";
-  this.directionQ = [];
+  this.directionQ = []; // This should be genereal
+  this.eventQ = [];
 };
 
 module.exports = Snake;
@@ -69,6 +76,17 @@ Snake.prototype = {
     }
   },
 
+  getSegmentsNear: function(x, y, distance) {
+    var d = Math.ceil((distance-1)/2);
+    var segments = [];
+    this.segments.forEach(segment => {
+      if(dist(segment.x, segment.y, x, y) <= d) {
+        segments.push(segment);
+      }
+    });
+    return segments;
+  },
+
   eat : function(){
     this.length++;
     var tail = this.segments[0];
@@ -77,6 +95,20 @@ Snake.prototype = {
   },
 
   move : function() {
+
+    if(this.eventQ.length > 0) {
+      var nextEvent = this.eventQ[0];
+
+      if(nextEvent == "bomb") {
+        this.dropBomb();
+      }
+
+      // this.changeDirection(nextDirection);
+      // this.direction = this.nextDirection;
+      // this.moving = true;
+      this.eventQ.splice(0, 1);
+    }
+
 
     if(this.directionQ.length > 0) {
       var nextDirection = this.directionQ[0];
@@ -168,6 +200,11 @@ Snake.prototype = {
     }
   },
 
+  getHead : function(){
+    // return this.segments[this.segments.length - 1];
+    return this.segments.slice(-1)[0];
+  },
+
   loseHead : function(){
     if(this.segments.length > 1) {
       io.emit('loseHead', {id: this.id,});
@@ -175,9 +212,10 @@ Snake.prototype = {
     }
   },
 
-  getHead : function(){
-    return this.segments[this.segments.length - 1];
+  getTail : function(){
+    return this.segments[0];
   },
+
   respawn : function(){
     // var snakeDetails = {
     //     id : this.id,
@@ -188,8 +226,26 @@ Snake.prototype = {
     //     game.addSnake(snakeDetails);
     //   },1000)
   },
-  die : function() {
+  loseSegment: function(segment, showParticle) {
+    segment.id = this.id;
 
+    segment.showParticle = showParticle;
+    io.emit('loseSegment', segment);
+
+    // remove segment at the tail
+    if(this.segments.length > 1) {
+      this.segments.splice(0,1);
+    }
+  },
+  dropBomb : function() {
+    if (this.segments.length>1) {
+      var tail = this.getTail();
+      game.addBomb(tail.x, tail.y, this.color);
+      this.loseSegment(this.segments[0], false);
+    }
+  },
+
+  die : function() {
     var head = this.getHead();
 
     io.emit('killSnake', {

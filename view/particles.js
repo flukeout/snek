@@ -22,7 +22,7 @@ function makeParticle(xPos, yPos, speed, angle, color){
     oV : -.0,
     scale : 1,
     scaleV : -.02,
-    lifespan : 15,
+    lifespan : 150,
   };
 
   particle.xV = getRandom(-3,3);
@@ -114,7 +114,7 @@ function makeBeam(x,y,direction, color){
   particle.el.css("width", width);
   particle.el.css("transform","translate3d("+x+"px,"+y+"px,0)");
 
-  // playSound("boom");
+  playSound("boom");
 
   setTimeout(function(el) {
     return function(){
