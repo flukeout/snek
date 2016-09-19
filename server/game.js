@@ -17,7 +17,7 @@ Game.prototype = {
 
   bombs :  [],
   bombLifeSpan: 7,
-  bombRadius: 3,
+  bombRadius: 5,
 
   snakes : [],
   player : {},
