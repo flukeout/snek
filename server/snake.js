@@ -220,15 +220,15 @@ Snake.prototype = {
   },
 
   respawn : function(){
-    // var snakeDetails = {
-    //     id : this.id,
-    //     color: this.color
-    //   }
-    //
-    //   setTimeout(function(){
-    //     game.addSnake(snakeDetails);
-    //   },1000)
+    // console.log("Respawn Snake");
+    var snakeDetails = {
+      id : this.id,
+      color: this.color
+    }
+
+    game.addSnake(snakeDetails);
   },
+
   loseSegment: function(segment, showParticle) {
     segment.id = this.id;
 
@@ -248,7 +248,7 @@ Snake.prototype = {
     }
   },
   die : function(type) {
-    console.log("A " + type  + " death");
+    // console.log("A " + type  + " death");
 
     var head = this.getHead();
 
@@ -267,14 +267,11 @@ Snake.prototype = {
 
     game.snakes.splice(snakeIndex, 1);
 
-    var snakeDetails = {
-      id : this.id,
-      color: this.color
-    }
 
+    var that = this;
     setTimeout(function(){
       if(game.mode == "game"){
-        game.addSnake(snakeDetails);
+        that.respawn();
       }
     },1000);
   },

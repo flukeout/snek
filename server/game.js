@@ -10,11 +10,10 @@ var Game = function(io,players) {
 
 Game.prototype = {
   size : 5,         // starting snake size
-  winLength : 20,   // How long a snakes needs to bo to win the round
+  winLength : 6,   // How long a snakes needs to bo to win the round
   width : 42,       // board width
   height: 28,       // board height
   apples : [],
-
   bombs :  [],
   bombLifeSpan: 7,
   bombRadius: 5,
@@ -33,18 +32,33 @@ Game.prototype = {
       }
     }
   },
+
   start : function(data){
     this.addApple();
     this.addApple();
   },
   resetGame : function(){
 
-    this.mode = "game";
+    // console.log("Reset game with ", this.players.length, " players");
+
+    // We have nuked the snakes... so there is
+    // only the winner left to be respawned....
 
     for(var i = 0; i < this.snakes.length; i++){
       var s = this.snakes[i];
       s.die("quiet");
     }
+
+    // For each player in the game, add a snake
+    Object.keys(this.players).forEach(key => {
+      var snakeDetails = {
+        id : parseInt(key),
+        color: this.players[key].color
+      }
+      this.addSnake(snakeDetails);
+    })
+
+    this.mode = "game";
 
     this.io.emit('gameMode', {
       mode : "game"
@@ -125,6 +139,17 @@ Game.prototype = {
       y: (Math.random() * this.height)  | 0,
       color: data.color,
       length: this.size,
+    }
+
+    for(var i = 0; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      var id = snake.id;
+      if(id == data.id){
+        console.log("Already have this snake");
+        return;
+      } else {
+        console.log("Don't have it, making");
+      }
     }
 
     this.io.emit('spawnSnake', snakeDetails);
