@@ -10,7 +10,7 @@ var Game = function(io,players) {
 
 Game.prototype = {
   size : 5,         // starting snake size
-  winLength : 6,   // How long a snakes needs to bo to win the round
+  winLength : 20,   // How long a snakes needs to bo to win the round
   width : 42,       // board width
   height: 28,       // board height
   apples : [],
