@@ -185,7 +185,7 @@ Game.prototype = {
         victor = snake;
       }
     });
-    
+
     if (hitCount > 0 && victor) {
       while(hitCount--) {
         var tail = victor.segments[0];
@@ -200,7 +200,7 @@ Game.prototype = {
     var segments = snake.getSegmentsNear(x,y, this.bombRadius);
     // SNAKESPLOSIONS
     if (segments.length > 0) {
-      segments.forEach(s => snake.loseSegment(s));
+      segments.forEach(s => snake.loseSegment(s,true));
     }
     // is snake dead now?
     if (segments.length >= snake.segments.length) {

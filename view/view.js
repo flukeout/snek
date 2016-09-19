@@ -514,6 +514,8 @@ function makeSnake(id, x, y, color, direction, length){
       this.segments.splice(segmentIndex,1);
     },
     loseSegment: function(x, y, showParticle) {
+      console.log("lose segment", showParticle);
+
       // lose a segment at the tail
       if(this.segments.length > 1) {
         var tail = this.segments[0];
@@ -531,6 +533,9 @@ function makeSnake(id, x, y, color, direction, length){
       x = tail.x;
       y = tail.y;
 
+      if(showParticle == undefined){
+        showParticle = false;
+      }
       if(!showParticle) {
 
       } else {
@@ -539,21 +544,15 @@ function makeSnake(id, x, y, color, direction, length){
 
     },
     loseHead : function(){
+      console.log("loadHead");
       var head = this.segments[this.segments.length - 1];
       head.el.removeClass("gone").width(head.el.width());
       head.el.addClass("gone");
 
-      console.log("adding crash");
       $(".border").removeClass("crash shake").width($(".board").width());
       $(".border").addClass("crash");
 
-      // for(var i = 0; i < this.segments.length; i++) {
-      //   var seg = this.segments[i];
-      //   var deg = getRandom(-5,5);
-      //   var x = getRandom(-1,1);
-      //   var y = getRandom(-1,1);
-      //   seg.el.find(".body").css('transform','rotateZ('+ deg + 'deg) translateY('+y+'px) translateX('+x+'px)');
-      // }
+
       playSound("bonk");
       makeParticle(head.x * this.size, head.y * this.size, 10, 225, this.color);
       // TODO Should pass the game x,y coordinates, not the pixel value...

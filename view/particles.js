@@ -22,7 +22,7 @@ function makeParticle(xPos, yPos, speed, angle, color){
     oV : -.0,
     scale : 1,
     scaleV : -.02,
-    lifespan : 150,
+    lifespan : 25,
   };
 
   particle.xV = getRandom(-3,3);
@@ -156,3 +156,4 @@ function makeAnimParticle(xPos, yPos){
   //Move function
   $(".board").append(particle.el);
 }
+
