@@ -13,4 +13,3 @@ app.get('/socket.io.js', function(req, res) {
   	root: path.join(__dirname, '..', 'node_modules', 'socket.io-client')
   });
 });
-

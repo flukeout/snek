@@ -3,18 +3,21 @@ var Snake = require('./snake');
 var collider = require('./collider');
 var getRandom = require('./getrandom');
 
-var Game = function(io) {
+var Game = function(io,players) {
   this.io = io;
+  this.players = players;
 };
 
 Game.prototype = {
   size : 5,    // starting snake size
-  winLength : 10,
+  winLength : 15,
   width : 42,   // board width
   height: 28,   // board height
   apples : [],
   snakes : [],
   player : {},
+  players : "",
+  mode : "game",
 
   removePlayer : function(id){
     for(var i = 0 ; i < this.snakes.length; i++) {
@@ -25,27 +28,83 @@ Game.prototype = {
       }
     }
   },
-
   start : function(data){
     this.addApple();
     this.addApple();
   },
+  resetGame : function(){
+    this.mode = "game";
 
+    for(var i = 0; i < this.snakes.length; i++){
+      var s = this.snakes[i];
+      s.die();
+    }
+    // kill all the snakes
+    // spawn all snakes...
+
+    this.io.emit('gameMode', {
+      mode : "game"
+    });
+  },
+  endGame : function(){
+
+
+
+  },
   move : function(){
+
+
+
+
     var winnerIDs = [];
+
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
       s.move();
-      if(s.segments.length >= this.winLength) {
-        winnerIDs.push(s.id);
+
+      // console.log(this.players);
+
+      if(this.mode == "game") {
+        if(s.segments.length >= this.winLength) {
+          var id = s.id;
+          winnerIDs.push(s.id);
+        }
       }
     }
 
-    if(winnerIDs.length > 0){
-      this.io.emit('winnerSnakes', winnerIDs);
-    }
-  },
+    var that = this;
 
+    if(this.mode == "game") {
+      if(winnerIDs.length > 0){
+
+        for(var i = 0; i < winnerIDs.length; i++){
+          var winnerID = winnerIDs[i];
+          this.players[winnerID].points++;
+        }
+
+        var sendPlayers = [];
+
+        Object.keys(this.players).forEach(key => {
+          sendPlayers.push({
+            id: key,
+            name: this.players[key].name,
+            points : this.players[key].points
+          })
+        })
+
+        this.io.emit('gameOver', {
+          players : sendPlayers,
+          winner : winnerIDs[0]
+        });
+
+        this.mode = "winner"
+        setTimeout(function(){
+          that.resetGame();
+        },5000)
+      }
+    }
+
+  },
   addSnake : function(data){
     var snakeDetails = {
       id : data.id,
@@ -102,7 +161,7 @@ Game.prototype = {
 };
 
 module.exports = function(io, players) {
-  var game = new Game(io);
+  var game = new Game(io,players);
   var totalFrames = 0;
   var avgFrame = 0;
   var time = new Date().getTime();

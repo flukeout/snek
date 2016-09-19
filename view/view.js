@@ -7,11 +7,15 @@ $(document).ready(function(){
 
     var direction;
 
-    // console.log(e.keyCode);
-
     switch(e.keyCode) {
+      case 71:
+        game.changeMode("game");
+        break;
+      case 87:
+        game.changeMode("winner");
+        break;
       case 65:
-        // game.snakes[0].boom();
+        game.snakes[0].boom();
         break;
       case 37:
         direction = "left";
@@ -43,7 +47,6 @@ $(document).ready(function(){
 
   chat.init();
 });
-
 
 var chat = {
   state : "closed",
@@ -89,15 +92,16 @@ socket.on('newChat', function(msg){
   snake.say(msg.message);
 });
 
-var winMessage = function(msg){
-  var winners = msg;
-  console.log("we have a winners: ", winners);
-}
-
-socket.on('winnerSnakes', function(msg) {
-  winMessage(msg);
+socket.on('gameOver', function(msg) {
+  var players = msg.players;
+  var winner = msg.winner;
+  game.gameWon(players,winner);
 });
 
+socket.on('gameMode', function(msg) {
+  var mode = msg.mode;
+  game.changeMode(mode);
+});
 
 socket.on('serverTick', function(msg){
   var snakes = msg.snakes;
@@ -110,18 +114,14 @@ socket.on('loseHead', function(msg){
   snake.loseHead();
 });
 
-// socket.on('loseTail', function(msg){
-  // var snake = getSnake(msg.id);
-  // snake.loseTail();
-// });
-
 socket.on('gameSetup', function(msg){
   var width = parseInt(msg.width);
   var height = parseInt(msg.height);
   var id = parseInt(msg.id);
   var apples = msg.apples;
   var snakes = msg.snakes;
-  game.setup(width,height,id, apples, snakes);
+  var winLength = msg.winLength;
+  game.setup(width,height,id, apples, snakes, winLength);
 });
 
 socket.on('playerDisconnect', function(msg){
@@ -174,6 +174,8 @@ socket.on('killSnake', function(msg){
 // Updates all of the snakes...
 
 function updateSnakes(snakes){
+
+
   for(var i = 0; i < snakes.length; i++){
     var serverSnake = snakes[i];
 
@@ -181,8 +183,8 @@ function updateSnakes(snakes){
       var gameSnake = game.snakes[j];
       if(serverSnake.id === gameSnake.id) {
         gameSnake.direction = serverSnake.direction;
+        gameSnake.points = serverSnake.points;
 
-try {
         if(gameSnake.segments.length > serverSnake.segments.length){
           // Game snake is longer - need to kill a piece
           gameSnake.removeSegment(gameSnake.segments[0]);
@@ -190,11 +192,6 @@ try {
           // Game snake is shorter - need to add a piece
           gameSnake.makeSegment(0,0);
         }
-} catch (e) {
-  console.log(gameSnake);
-  console.error(e);
-  this.updateSnakes = game.move = winMessage = function(){};
-}
 
         // Then set all the pieces to equal each other
         for(var k = 0; k < gameSnake.segments.length; k++) {
@@ -209,6 +206,21 @@ try {
   }
 }
 
+var scoreBoard = {
+  update : function(players,winner){
+
+    $(".scoreboard li").remove();
+    $(".scoreboard .winning-snake").text(winner + " wins!!");
+
+    for(var i = 0; i < players.length; i++){
+      var s = players[i];
+      var item = $("<li><span class='name'>"+s.name+"</span><span class='points'>"+s.points+" pts.</span>");
+      $(".scoreboard ul").append(item);
+    }
+
+
+  }
+}
 
 var game = {
   size : 20,
@@ -220,7 +232,28 @@ var game = {
   snakes : [],
   playerId : 0,
   elapsed : 0,
-  time : new Date().getTime(),
+  mode : "game",
+  winLength : 0,
+  gameWon : function(players,winner){
+    console.log(players,winner);
+
+    // var winner = winners[0];
+    // var that = this;
+    //
+    scoreBoard.update(players, winner);
+    //
+    var that = this;
+
+    setTimeout(function(){
+      that.changeMode("winner");
+    },2000);
+
+  },
+  changeMode : function(type){
+    this.game = type;
+    $("[mode]").addClass("hidden");
+    $("[mode="+type+"]").removeClass("hidden");
+  },
   removePlayer : function(id){
     for(var i = 0 ; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -237,10 +270,13 @@ var game = {
       }
     }
   },
+  setup : function(width,height,id,apples,snakes,winlength) {
+    console.log(width,height);
 
-  setup : function(width,height,id,apples,snakes) {
+    this.winLength = winlength;
+    this.changeMode("game");
 
-    for(var i = 0; i < 10; i++) {
+    for(var i = 0; i < this.winLength; i++) {
       var box = $("<div class='box'>");
       $(".leader-boxes").append(box);
     }
@@ -324,6 +360,8 @@ function makeSnake(id, x, y, color, direction, length){
     y : y,
     id : id,
     size : 20,
+    name : "Snakeman",
+    points : 0,
     length: length,
     moving : false,
     color : color,
@@ -399,7 +437,7 @@ function makeSnake(id, x, y, color, direction, length){
     },
     boom : function(){
       var head = this.segments[this.segments.length - 1];
-      makeBeam(head.x, head.y, this.direction, this.color);
+      makeBeam(head.x, head.y, "left", this.color);
     },
     removeSegment : function(segment){
       // This removes the element and the segment from the array;
@@ -414,7 +452,7 @@ function makeSnake(id, x, y, color, direction, length){
       head.el.addClass("gone");
 
       console.log("adding crash");
-      $(".border").removeClass("crash shake").width($(".border").width());
+      $(".border").removeClass("crash shake").width($(".board").width());
       $(".border").addClass("crash");
 
       // for(var i = 0; i < this.segments.length; i++) {

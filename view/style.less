@@ -1,20 +1,24 @@
 @import "variables.less";
 
+
 body, html {
   font-family: "Helvetica Neue";
   padding: 0;
+  font-family: "Lato";
+  font-weight: 700;
   margin: 0;
   background: black;
-  perspective: 1200px;
   overflow: hidden;
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
   bottom:0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  perspective: 1200px;
+}
+
+* {
+  font-family: inherit;
 }
 
 .board-wrapper {
@@ -374,7 +378,6 @@ body, html {
   text-align: center;
   padding-top: 25px;
   color: rgba(255,255,255,.4);
-  font-weight: bold;
 
   .leader-boxes {
     display: inline-block;
@@ -393,4 +396,88 @@ body, html {
     display: inline-block;
     background: #222;
   }
+}
+
+
+// modes
+
+[mode] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  animation: modeChange .5s ease-out;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+
+  &.hidden {
+    display: none;
+  }
+}
+
+@keyframes modeChange {
+  0% {
+    opacity: 0;
+    transform: scale(.95);
+
+  }
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+[mode='winner'] {
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+
+  .scoreboard {
+    width: 40%;
+
+    .winning-snake {
+      font-size: 40px;
+      text-align: center;
+      font-weight: 900;
+      margin-top:0;
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    font-size: 20px;
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+
+      li {
+        border-bottom: solid 2px rgba(255,255,255,.2);
+        padding: 10px 0;
+        color: white;
+
+        .points {
+          float: right;
+        }
+
+        &:last-child {
+          border: none;
+        }
+
+      }
+    }
+  }
+
 }

@@ -13,6 +13,8 @@ var Snake = function(details, _game) {
   this.color = details.color;
 
   this.ticks = 0;
+  this.points = 0;
+  this.name = "ServerSnake";
   this.size = 4;
   this.segments = [];
   this.moved = false;
@@ -176,7 +178,16 @@ Snake.prototype = {
   getHead : function(){
     return this.segments[this.segments.length - 1];
   },
-
+  respawn : function(){
+    // var snakeDetails = {
+    //     id : this.id,
+    //     color: this.color
+    //   }
+    //
+    //   setTimeout(function(){
+    //     game.addSnake(snakeDetails);
+    //   },1000)
+  },
   die : function() {
 
     var head = this.getHead();
@@ -202,8 +213,7 @@ Snake.prototype = {
 
     setTimeout(function(){
       game.addSnake(snakeDetails);
-    },1000)
-
+    },1000);
 
   },
 

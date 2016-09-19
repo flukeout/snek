@@ -23,7 +23,9 @@ module.exports = function(app) {
     var player = {
       id: uuid(),
       socket: socket,
-      color: nextColor()
+      color: nextColor(),
+      name : "SnakePerson",
+      points : 0
     };
 
     players[player.id] = player;
@@ -38,7 +40,8 @@ module.exports = function(app) {
       id: player.id,
       color: player.color,
       apples: game.apples,
-      snakes: game.snakes
+      snakes: game.snakes,
+      winLength : game.winLength,
     });
 
     // inform everyone a new player joined

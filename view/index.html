@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900" rel="stylesheet">
     <link rel="stylesheet/less" href="style.less" type="text/css">
     <script src="jquery.js"></script>
     <script src="hammer.js"></script>
@@ -27,19 +28,31 @@
   </head>
 
   <body>
-    <div class="leader">
-      <span class="label">LEADER</span>
-      <div class="leader-boxes"></div>
-      <span class="label">WIN</span>
-    </div>
 
-    <div class="board-wrapper">
-      <div class="board">
-        <div class="border"></div>
+    <div mode="game">
+      <div class="leader">
+        <span class="label">LEADER</span>
+        <div class="leader-boxes"></div>
+        <span class="label">WIN</span>
+      </div>
+
+      <div class="board-wrapper">
+        <div class="board">
+          <div class="border"></div>
+        </div>
+      </div>
+      <div class="chat-ui">
+        <input type="text" placeholder="send a message"/>
       </div>
     </div>
-    <div class="chat-ui">
-      <input type="text" placeholder="send a message"/>
+
+    <div mode="winner">
+      <div class="scoreboard">
+        <p class="winning-snake">BOB WINS</p>
+        <ul>
+          <li><span class="name">Bob</span><span class="points">10</span></li>
+        </ul>
+      </div>
     </div>
 
   </body>

@@ -74,6 +74,8 @@ function getRandom(min, max){
 
 //Laser Beam
 function makeBeam(x,y,direction, color){
+
+  console.log(x,y,direction,color);
   var snakeX = x * 20; // starting point
   var snakeY = y * 20; //starting point
 
