@@ -477,6 +477,20 @@ body, html {
   }
 }
 
+.winning-snake {
+  position: absolute;
+  top: 60px;
+  width: 100%;
+  font-size: 40px;
+  text-align: center;
+  font-weight: 900;
+  margin-top:0;
+  color: white;
+  z-index: 88;
+  opacity: 0;
+  transition: opacity .2s ease-out;
+}
+
 
 [mode='winner'] {
   color: white;
@@ -486,15 +500,12 @@ body, html {
   .scoreboard {
     width: 40%;
 
-    .winning-snake {
-      font-size: 40px;
+    h1 {
+      font-size: 30px;
       text-align: center;
       font-weight: 900;
       margin-top:0;
-    }
-
-    h1 {
-      font-size: 20px;
+      color: white;
     }
 
     font-size: 20px;
@@ -523,6 +534,11 @@ body, html {
 }
 
 .winner {
+  .keys-helper {
+    opacity: 0;
+    transition: all .2s ease-out;
+  }
+
   .apple {
     opacity: 0;
         transition: all .2s ease-out;
@@ -539,12 +555,6 @@ body, html {
   .leader {
     transition: all .2s ease-out;
     opacity: 0;
-  }
-
-  .snek {
-
-    // transition: opacity 2.5s ease-in;
-    // opacity: 0;
   }
 }
 
@@ -581,4 +591,41 @@ body, html {
     border-width: 1px;
     transform: scale(5) rotate(180deg);
   }
+}
+
+
+.keys-helper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: rgba(255,255,255,.3);
+  padding: 0 0 25px 20px;
+
+  .single-key {
+    background: rgba(255,255,255,.3);
+    border-bottom: solid 3px rgba(0,0,0,.3);
+    color: black;
+    display: inline-block;
+    padding: 1px 0 1px 0;
+    text-align: center;
+    width: 26px;
+    border-radius: 2px;
+    &.enter-key {
+      width: auto;
+      padding: 1px 6px;
+    }
+    &:last-of-type {
+      margin-right: 3px;
+    }
+  }
+
+  .command {
+    display: inline-block;
+    margin: 0 10px;
+    height: 25px;
+    line-height: 25px;
+  }
+
 }

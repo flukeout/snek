@@ -31,6 +31,9 @@
   <body>
 
     <div mode="game" class="hidden">
+
+      <div class="winning-snake">BOB WINS</div>
+
       <div class="leader">
         <span class="label">LEADER</span>
         <div class="leader-boxes"></div>
@@ -45,11 +48,33 @@
       <div class="chat-ui">
         <input type="text" placeholder="send a message"/>
       </div>
+
+
+      <div class="keys-helper">
+        <div class="command">
+          <div class="single-key">&larr;</div>
+          <div class="single-key">&uarr;</div>
+          <div class="single-key">&darr;</div>
+          <div class="single-key">&rarr;</div>
+          Move
+        </div>
+
+        <div class="command">
+          <div class="single-key">B</div> Bomb
+        </div>
+
+        <div class="command">
+          <div class="single-key enter-key">Enter</div> Chat
+        </div>
+      </div>
+
+
     </div>
 
     <div mode="winner" class="hidden">
       <div class="scoreboard">
-        <p class="winning-snake">BOB WINS</p>
+
+        <h1>Scores</h1>
         <ul>
           <li><span class="name">Bob</span><span class="points">10</span></li>
         </ul>

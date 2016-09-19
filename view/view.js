@@ -57,7 +57,6 @@ $(document).ready(function(){
     }
   });
 
-
   chat.init();
 });
 
@@ -72,18 +71,19 @@ var chat = {
   enterHit : function(){
     if(this.state == "closed") {
       this.startType();
-      this.state ="open";
+      this.state = "open";
     } else {
       this.state = "closed";
       this.finishType();
     }
   },
   startType: function(){
+    $(".keys-helper").hide();
     this.chatUI.show();
     this.chatInput.focus();
-
   },
   finishType: function(){
+    $(".keys-helper").show();
     this.chatUI.hide();
     var message = this.chatInput.val();
     this.chatInput.val("");
@@ -266,7 +266,7 @@ var scoreBoard = {
       $(".scoreboard ul").append(item);
     }
 
-    $(".scoreboard .winning-snake").text(winnerName + " wins!!");
+    $(".winning-snake").text(winnerName + " wins!!").css("opacity","1");
   }
 }
 
@@ -288,6 +288,7 @@ var game = {
     playSound("winner");
 
     $("[mode=game]").addClass("winner");
+
     scoreBoard.update(players, winner);
 
     var winnerSnake = getSnake(winner);
@@ -300,6 +301,7 @@ var game = {
 
     setTimeout(function(){
       that.changeMode("winner");
+      $(".winning-snake").css("opacity","0");
     },2000);
 
   },
@@ -449,9 +451,7 @@ function makeSnake(id, x, y, color, direction, length){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
       }
-
       makeSpawnParticle(x, y, this.color);
-
     },
     getHead : function(){
       return this.segments[this.segments.length -1];
