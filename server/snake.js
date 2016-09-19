@@ -77,7 +77,7 @@ Snake.prototype = {
   },
 
   getSegmentsNear: function(x, y, distance) {
-    var d = Math.ceil((distance-1)/2);
+    var d = Math.ceil(distance/2);
     var segments = [];
     this.segments.forEach(segment => {
       if(dist(segment.x, segment.y, x, y) <= d) {
