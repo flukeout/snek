@@ -119,10 +119,33 @@ module.exports = function(app) {
         id: player.id
       });
     });
+
+    // ==== DEBUG SOCKET MESSAGES ====
+
+    function noDebug() {
+      return game.snakes.length!==1;
+    }
+
+    socket.on('generateDebugSnake', function() {
+      if (noDebug()) return;
+
+      var player = game.snakes[0], ds;
+      var d = game.addSnake({
+        id: (Number.MAX_SAFE_INTEGER - 1),
+        color: 'rgba(255,255,255,0.2)',
+        debug: true
+      });
+
+      player.segments.forEach((segment,pos) => {
+        d.segments[pos] = {
+          x: game.width - segment.x,
+          y: game.height - segment.y
+        };
+      });
+    });
   });
 
-
-  // boring old server
+  // and fire up a boring ol' server
   server.listen(process.env.PORT || 3000, function(){
     console.log('listening on *:3000');
     game = startGame(io,players);

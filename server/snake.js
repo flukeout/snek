@@ -17,6 +17,7 @@ var Snake = function(details, _game) {
   this.y = details.y;
   this.length = details.length;
   this.color = details.color;
+  this.debug = details.debug;
 
   this.ticks = 0;
   this.points = 0;

@@ -69,7 +69,10 @@ Game.prototype = {
 
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
-      s.move();
+
+      if (!s.debug) {
+        s.move();
+      }
 
       if(this.mode == "game") {
         if(s.segments.length >= this.winLength) {
@@ -133,13 +136,11 @@ Game.prototype = {
   },
 
   addSnake : function(data){
-    var snakeDetails = {
-      id : data.id,
+    var snakeDetails = Object.assign({
       x: (Math.random() * this.width)  | 0,
       y: (Math.random() * this.height)  | 0,
-      color: data.color,
-      length: this.size,
-    }
+      length: this.size
+    }, data);
 
     for(var i = 0; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -162,6 +163,8 @@ Game.prototype = {
       this.addApple();
       this.addApple();
     }
+
+    return snake;
   },
 
   addApple : function(x, y ){
