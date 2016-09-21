@@ -126,22 +126,25 @@ module.exports = function(app) {
       return game.snakes.length!==1;
     }
 
-    socket.on('generateDebugSnake', function() {
+    socket.on('generateDebugSnake', function(method) {
       if (noDebug()) return;
 
-      var player = game.snakes[0], ds;
       var d = game.addSnake({
         id: (Number.MAX_SAFE_INTEGER - game.snakes.length),
         color: 'rgba(255,255,255,0.2)',
         debug: true
       });
 
-      player.segments.forEach((segment,pos) => {
-        d.segments[pos] = {
-          x: game.width - segment.x,
-          y: game.height - segment.y
-        };
-      });
+      if (method==='fullsnake') {
+        var player = game.snakes[0], ds;
+
+        player.segments.forEach((segment,pos) => {
+          d.segments[pos] = {
+            x: game.width - segment.x,
+            y: game.height - segment.y
+          };
+        });
+      }
     });
 
   });

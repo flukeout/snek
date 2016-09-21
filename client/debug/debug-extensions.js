@@ -20,8 +20,15 @@ handleKeyDown = function(event, resultTracker) {
 
   switch(event.keyCode) {
     case keys['1']:
+      console.log("generating full-length debug snake");
+      socket.emit("generateDebugSnake",'fullsnake');
+      break;
+
+    case keys['2']:
       console.log("generating debug snake");
       socket.emit("generateDebugSnake");
+      break;
+
   }
 };
 

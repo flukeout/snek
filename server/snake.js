@@ -207,6 +207,7 @@ Snake.prototype = {
         this.segments.splice(0,1);
       } else {
         this.die();
+        game.cleanupDebug();
       }
     } else {
       this.makeSegment(newHead.x,newHead.y,"head");
@@ -264,7 +265,7 @@ Snake.prototype = {
       this.loseSegment(this.segments[0], false);
     }
   },
-  die : function(type) {
+  die : function(type, norespawn) {
     // console.log("A " + type  + " death");
 
     var head = this.segments.length > 0 ? this.getHead() : this.tombStone;
@@ -279,12 +280,14 @@ Snake.prototype = {
     var snakeIndex = game.snakes.indexOf(this);
     game.snakes.splice(snakeIndex, 1);
 
-    var that = this;
-    setTimeout(function(){
-      if(game.mode == "game"){
-        that.respawn();
-      }
-    },1000);
+    if (!norespawn) {
+      var that = this;
+      setTimeout(function(){
+        if(game.mode == "game"){
+          that.respawn();
+        }
+      },1000);
+    }
   },
   loseTail : function(){
     if(this.segments.length > 1) {

@@ -33,6 +33,15 @@ Game.prototype = {
     }
   },
 
+  cleanupDebug: function() {
+    for (var i=this.snakes.length-1; i>=0; i--) {
+      if (this.snakes[i].debug) {
+        this.snakes[i].die('debug', true);
+      }
+    }
+  },
+
+
   start : function(data){
     this.addApple();
     this.addApple();
