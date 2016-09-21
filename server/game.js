@@ -9,7 +9,7 @@ var Game = function(io,players) {
 };
 
 Game.prototype = {
-  size : 5,         // starting snake size
+  size : 10,         // starting snake size
   winLength : 15,   // How long a snakes needs to bo to win the round
   width : 42,       // board width
   height: 28,       // board height
@@ -203,7 +203,10 @@ Game.prototype = {
 
     var hitCount = 0;
     this.snakes.forEach(snake => {
-      var segments = this.checkSnakeSplosion(snake, x, y);
+      var segments = this.processSnakeSplosion(snake, x, y);
+      // if (segments.length > 0) {
+      //   console.log(`${segments.length} were sploded, ${snake.segments.length} remain for this snake.`);
+      // }
       hitCount += segments.length;
     });
 
@@ -223,14 +226,14 @@ Game.prototype = {
     this.removeBomb(bomb);
   },
 
-  checkSnakeSplosion: function(snake, x, y) {
+  processSnakeSplosion: function(snake, x, y) {
     var segments = snake.getSegmentsNear(x,y, this.bombRadius);
     // SNAKESPLOSIONS
     if (segments.length > 0) {
       segments.forEach(s => snake.loseSegment(s,true));
     }
     // is snake dead now?
-    if (segments.length >= snake.segments.length) {
+    if (snake.segments.length === 0) {
       snake.die();
     }
     return segments;
@@ -263,7 +266,7 @@ Game.prototype = {
         var bomb = this.bombs[j];
         if(collider(bomb, head)) {
           this.removeBomb(bomb);
-          this.checkSnakeSplosion(snake, bomb.x, bomb.y);
+          this.processSnakeSplosion(snake, bomb.x, bomb.y);
         }
       }
     }

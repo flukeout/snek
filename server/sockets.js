@@ -131,7 +131,7 @@ module.exports = function(app) {
 
       var player = game.snakes[0], ds;
       var d = game.addSnake({
-        id: (Number.MAX_SAFE_INTEGER - 1),
+        id: (Number.MAX_SAFE_INTEGER - game.snakes.length),
         color: 'rgba(255,255,255,0.2)',
         debug: true
       });
@@ -143,6 +143,7 @@ module.exports = function(app) {
         };
       });
     });
+
   });
 
   // and fire up a boring ol' server
