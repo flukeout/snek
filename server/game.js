@@ -214,7 +214,7 @@ Game.prototype = {
       }
     });
 
-    if (hitCount > 0 && victor) {
+    if (hitCount > 0 && victor.id !==sid && victor) {
       while(hitCount--) {
         var tail = victor.segments[0];
         victor.makeSegment(tail.x, tail.y, "tail");
