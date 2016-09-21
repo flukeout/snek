@@ -79,14 +79,18 @@ Snake.prototype = {
     this.length++;
   },
 
+  // we're using a 5x5 bomb kernel
   getSegmentsNear: function(x, y, distance) {
-    var d = Math.ceil(distance/2);
-    var segments = [];
+    var segments=[], sx, sy;
+
     this.segments.forEach(segment => {
-      if(dist(segment.x, segment.y, x, y) <= d) {
-        segments.push(segment);
+      sx = segment.x;
+      sy = segment.y;
+      if (sx >= x-2 && sx <= x+2 && sy >= y-2 && sy <= y+2) {
+        hit.push(segment);
       }
     });
+
     return segments;
   },
 
