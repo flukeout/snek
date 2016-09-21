@@ -41,11 +41,11 @@ Game.prototype = {
     }
   },
 
-
   start : function(data){
     this.addApple();
     this.addApple();
   },
+
   resetGame : function(){
 
     // console.log("Reset game with ", this.players.length, " players");
@@ -67,11 +67,14 @@ Game.prototype = {
       this.addSnake(snakeDetails);
     })
 
+    this.cleanupDebug();
+
     this.mode = "game";
 
     this.io.emit('gameMode', {
       mode : "game"
     });
+
   },
   move : function(){
     var winnerIDs = [];
