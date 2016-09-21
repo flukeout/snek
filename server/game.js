@@ -201,10 +201,12 @@ Game.prototype = {
     var y = bomb.y;
     var sid = bomb.snakeid;
 
-    var hitCount = 0;
+    var rewardSegments = 0;
     this.snakes.forEach(snake => {
       var segments = this.processSnakeSplosion(snake, x, y);
-      hitCount += segments.length;
+      if (snake.id !== sid) {
+        rewardSegments += segments.length;
+      }
     });
 
     var victor = false;
@@ -214,8 +216,8 @@ Game.prototype = {
       }
     });
 
-    if (hitCount > 0 && victor.id !==sid && victor) {
-      while(hitCount--) {
+    if (rewardSegments > 0 && victor) {
+      while(rewardSegments--) {
         var tail = victor.segments[0];
         victor.makeSegment(tail.x, tail.y, "tail");
       }

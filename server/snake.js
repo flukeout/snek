@@ -24,6 +24,7 @@ var Snake = function(details, _game) {
   this.name = "ServerSnake";
   this.size = 4;
   this.segments = [];
+  this.deathBed = false;
   this.moved = false;
   this.direction = undefined;
   this.nextDirection = "";
@@ -237,8 +238,14 @@ Snake.prototype = {
     io.emit('loseSegment', segment);
 
     // remove segment at the tail
-    if(this.segments.length > 1) {
-      this.segments.splice(0,1);
+    var lastRemoved = false;
+    if(this.segments.length > 0) {
+      lastRemoved = this.segments.splice(0,1)[0];
+    }
+
+    // we need the last segment if the snake is now dead
+    if(this.segments.length === 0) {
+      this.deathBed = lastRemoved;
     }
   },
   dropBomb : function() {
@@ -251,7 +258,7 @@ Snake.prototype = {
   die : function(type) {
     // console.log("A " + type  + " death");
 
-    var head = this.getHead();
+    var head = this.segments.length > 0 ? this.getHead() : this.deathBed;
 
     io.emit('killSnake', {
       id: this.id,
@@ -260,14 +267,8 @@ Snake.prototype = {
       type : type
     });
 
-    for(var i = 0; i < this.segments.length; i++) {
-      var tail = this.segments[i];
-    }
-
     var snakeIndex = game.snakes.indexOf(this);
-
     game.snakes.splice(snakeIndex, 1);
-
 
     var that = this;
     setTimeout(function(){
