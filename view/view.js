@@ -472,7 +472,7 @@ function makeSnake(id, x, y, color, direction, length){
     speed : 5, // every 10 frames?
     segments : [],
     changes : [],
-    phrases : ["ow","T_T","No!","Damn",'ahh',"!!?","wut", "u wot","fek","why??","BS","GG"],
+    phrases : ["ow","T_T","No!","Damn",'ahh',"!!?","wut", "u wot","fek","why??","BS","GG","l8r","lame"],
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
@@ -533,7 +533,7 @@ function makeSnake(id, x, y, color, direction, length){
       setTimeout(function(){
         var index = parseInt(getRandom(0,that.phrases.length));
         that.say(that.phrases[index]);
-      },140)
+      },220);
 
       // Make an explosion
       if(type != "quiet"){
