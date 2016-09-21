@@ -1,36 +1,56 @@
 var particles = [];
 
-function makeParticle(xPos, yPos, speed, angle, color){
+function makeParticle(options){
 
   var particle = {
-    x : xPos,
-    y : yPos,
-    z : 0,
-    width : 20,
-    height: 20,
-    yV : 0,
-    xV : 0,
-    zV : getRandom(5,10),
-    gravity : .4,
-    xR : 0,
-    xRv : getRandom(0,3),
-    yR : 0,
-    yRv : getRandom(0,3),
-    zR : 0,
-    zRv : getRandom(-20,20),
-    o : 1,
-    oV : -.0,
-    scale : 1,
-    scaleV : -.02,
-    lifespan : 25,
+    x :     options.x || 0,
+    xV :    options.xV || 0,
+    y :     options.y || 0,
+    yV :    options.yV || 0,
+    z :     options.z || 0,
+    zV :    options.zV || 0,
+
+    xR : options.xR || 0,
+    xRv : options.xRv || 0,
+    yR : options.yR || 0,
+    yRv : options.yRv || 0,
+    zR : options.zR || 0,
+    zRv : options.zRv || 0,
+
+    o : options.o || 1,
+    oV : options.oV || 0,
+
+    scale : options.scale || 1,
+    scaleV : options.scaleV || 0,
+
+    speed : options.speed || false,
+    angle : options.angle || false,
+
+    color:  options.color || false,
+    width : options.width || 20,
+    height: options.height || 20,
+
+    gravity : options.gravity || 0,
+
+    className : options.className || false,
+
+    lifespan : options.lifespan || 0,
   };
 
-  particle.xV = getRandom(-3,3);
-  particle.yV = getRandom(-3,3);
+
+  if(particle.angle) {
+    particle.angle =  particle.angle - 180;
+    particle.xV = Math.sin(particle.angle * (Math.PI/180)) * particle.speed;
+    particle.yV = Math.cos(particle.angle * (Math.PI/180)) * particle.speed;
+  }
+  // console.log(particle.gravity);
+  // need to do the offset... thing
+
   particle.el = $("<div class='particle'></div>");
-  particle.el.css("height",particle.height);
-  particle.el.css("width",particle.width);
-  particle.el.css("background",color);
+  particle.el.css("height", particle.height);
+  particle.el.css("width",  particle.width);
+  particle.el.addClass(particle.className);
+  particle.el.css("background",particle.color);
 
   particle.move = function(){
 
@@ -54,16 +74,17 @@ function makeParticle(xPos, yPos, speed, angle, color){
     p.zV = p.zV - p.gravity
 
     p.scale = p.scale + p.scaleV;
+
     p.xR = p.xR + p.xRv;
-    // p.zR = p.zR + p.zRv;
+    p.zR = p.zR + p.zRv;
     p.yR = p.yR + p.yRv;
-    p.el.css("transform","translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale(1)");
+    p.el.css("transform","translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale("+p.scale+")");
     p.el.css("opacity",p.o);
   }
 
   particles.push(particle);
-
   particle.el.css("opacity",0);
+
   $(".board").append(particle.el);
 }
 

@@ -1,3 +1,8 @@
+**Left off**
+
+* Trying to make one makeParcile only and passing all the variables into it
+* have to put in all the options for the snake particle that i took out, put them into the { options }
+
 **Errors**
 
 * Snakes not respawning at the start of game.resetGame()

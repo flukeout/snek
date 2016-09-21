@@ -7,7 +7,6 @@ $(document).ready(function(){
 
     var direction, bomb;
 
-    // console.log(e.keyCode);
     var keys = {};
     for (var start=65, end=90, i=start, key; i<=end; i++) {
       key = String.fromCharCode(i);
@@ -327,7 +326,6 @@ var game = {
     }
   },
   setup : function(width,height,id,apples,snakes,winlength) {
-    console.log(width,height);
 
     this.winLength = winlength;
     this.changeMode("game");
@@ -422,6 +420,36 @@ var game = {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
+
+        // Make Bomb Puffs
+        for(var i = 0; i < 8; i++){
+
+          var options = {
+            x : bomb.x * this.size,     // absolute non-relative position on gameboard
+            y : bomb.y * this.size,     // absolute non-relative position on gameboard
+            speed : getRandom(1,2),     // just on the x,y plane, works with angle
+            angle: getRandom(0,359),    // just on the x,y plane, works with speed
+            zR : getRandom(-15,15),      // zRotation velocity
+            // zRv : getRandom(-1,1),      // zRotation velocity
+            oV : -.008,                 // opacity velocity
+            width : getRandom(20,55),   // size of the particle
+            className : 'puff',         // adds this class to the particle <div/>
+            lifespan: 125,              // how many frames it lives
+          }
+
+          // Need to put this offset code into the makeParticle function
+          // You should pass it an x,y of 0
+
+          var offset = (options.width - this.size) / 2;
+          options.x = options.x - offset;
+          options.y = options.y - offset;
+          options.height = options.width;
+
+          options.speed = 1 + (2 * (1 - options.width / 50));
+
+          makeParticle(options);
+        }
+
         // Make an explosion
         makeAnimParticle(bomb.x, bomb.y);
 
@@ -524,49 +552,44 @@ function makeSnake(id, x, y, color, direction, length){
       el.remove();
       this.segments.splice(segmentIndex,1);
     },
-    loseSegment: function(x, y, showParticle) {
-      console.log("lose segment", showParticle);
+    loseSegment: function(x, y, showParticle, position) {
 
-      // lose a segment at the tail
       if(this.segments.length > 1) {
-        var tail = this.segments[0];
-        tail.el.addClass("gone");
-        setTimeout(function(el) {
-          return function(){
-            el.remove();
-          };
-        }(tail.el), 200);
-        this.segments.splice(0,1);
+        if(position == "head") {
+          var segment = this.segments[this.segments.length - 1];
+          segment.el.removeClass("gone").width(segment.el.width());
+          segment.el.addClass("gone");
+        }
       }
-      // adn show a particle effect
+
       playSound("bonk");
-      var tail = this.segments[0];
-      x = tail.x;
-      y = tail.y;
 
-      if(showParticle == undefined){
-        showParticle = false;
-      }
-      if(!showParticle) {
-
-      } else {
-        makeParticle(x * this.size, y * this.size, 10, 225, this.color);
+      if(showParticle || false) {
+        var options = {
+          x : x * this.size,
+          y : y * this.size,
+          angle : getRandom(0,359),
+          speed : getRandom(0,2),
+          // Ideas for random or range
+          // speed : { range:  [0,10] },  // Picks random from 0 to 10
+          // speed : { random: [0,10] },  // Picks random value in array. 0 or 10
+          // speed : 10,                  // Sets speed to 10
+          zV : getRandom(5,10),
+          xRv : getRandom(0,3),
+          yRv : getRandom(0,3),
+          zRv : getRandom(0,3),
+          gravity : .4,
+          // oV : -.02,
+          lifespan : getRandom(15,18),
+          color: this.color,
+        }
+        makeParticle(options);
       }
 
     },
     loseHead : function(){
-      console.log("loadHead");
       var head = this.segments[this.segments.length - 1];
-      head.el.removeClass("gone").width(head.el.width());
-      head.el.addClass("gone");
-
-      $(".border").removeClass("crash shake").width($(".board").width());
-      $(".border").addClass("crash");
-
-
-      playSound("bonk");
-      makeParticle(head.x * this.size, head.y * this.size, 10, 225, this.color);
-      // TODO Should pass the game x,y coordinates, not the pixel value...
+      this.loseSegment(head.x,head.y,true, "head")
     },
     draw : function(){
       for(var i = 0; i < this.segments.length; i++) {
@@ -578,8 +601,6 @@ function makeSnake(id, x, y, color, direction, length){
   }
   return snek;
 }
-
-
 
 // Animation loop for the Particle Effects
 loop();

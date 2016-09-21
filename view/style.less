@@ -1,6 +1,3 @@
-@import "variables.less";
-
-
 body, html {
   font-family: "Helvetica Neue";
   padding: 0;
@@ -78,17 +75,17 @@ body, html {
 
 .gone .body {
   animation: blam .1s ease-out;
+  // background: white !important;
 }
 
 @keyframes blam {
   0% {
-    // transform: scale(1);
+    background: white;
+    transform: scale(1);
   }
   100% {
-    // transform: scale(.8);
-    background: white;
+    transform: scale(.8);
   }
-
 }
 
 .apple {
@@ -234,7 +231,7 @@ body, html {
 }
 
 .particle {
-  background: pink;
+  // background: pink;
   position: absolute;
   top:0;
   left: 0;
@@ -242,7 +239,7 @@ body, html {
 
 .boom {
   position: absolute;
-  z-index: 1;
+  z-index: 99999999;
   opacity: 1;
   transform-style: preserve-3d;
 
@@ -253,7 +250,6 @@ body, html {
     height: 100%;
     background: #ffb806;
     opacity: 0;
-
   }
 
   .shock {
@@ -627,5 +623,10 @@ body, html {
     height: 25px;
     line-height: 25px;
   }
+}
 
+
+.puff {
+  background: rgba(255,255,255,.4);
+  background: #555;
 }
