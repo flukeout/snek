@@ -9,8 +9,8 @@ var dist = function(x1, y1, x2, y2) {
 
 var Snake = function(details, _game) {
   // this SHOULD be safe?
-  game = _game;
-  io = _game.io;
+  game = details.game || _game;
+  io = details.io || _game.io;
 
   this.id = details.id;
   this.x = details.x;
@@ -21,14 +21,14 @@ var Snake = function(details, _game) {
 
   this.ticks = 0;
   this.points = 0;
-  this.name = "ServerSnake";
-  this.size = 4;
-  this.segments = [];
-  this.moved = false;
-  this.direction = undefined;
-  this.nextDirection = "";
-  this.directionQ = []; // This should be genereal
-  this.eventQ = [];
+  this.name = details.name || "ServerSnake";
+  this.size = details.size || 4;
+  this.segments = (details.segments || []).slice();
+  this.moved = details.moved || false;
+  this.direction = details.direction || undefined;
+  this.nextDirection = details.nextDirection || "";
+  this.directionQ = (details.directionQ || []).slice();
+  this.eventQ = (details.eventQ || []).slice();
 };
 
 module.exports = Snake;
@@ -106,7 +106,7 @@ Snake.prototype = {
     io.emit('snakeEat', this.id);
   },
 
-  move : function() {
+  move : function(futureSnakes) {
     if(this.eventQ.length > 0) {
       var nextEvent = this.eventQ[0];
 
@@ -132,10 +132,10 @@ Snake.prototype = {
     var newHead = { x: head.x, y: head.y };
     var collide = false;
 
-    if(game.mode === "game" ) {
+    if(game.mode === "game" && futureSnakes) {
       // check if any collisions will occur for this snake,
       // but don't resolve them quite yet.
-      collide = this.processCollisions(head, newHead);
+      collide = this.processCollisions(futureSnakes, head, newHead);
     }
 
     // resolve any collisions, if any were detected.
@@ -153,7 +153,7 @@ Snake.prototype = {
     }
   },
 
-  processCollisions: function(head, newHead) {
+  processCollisions: function(futureSnakes, head, newHead) {
     // check for collisions with the level wall
     var collide = (head.x >= game.width - 1 && this.direction == "right") |
                   (head.y >= game.height - 1 && this.direction == "down") |
@@ -181,11 +181,12 @@ Snake.prototype = {
       });
     }
 
-    // If it hasn't yet collided with itself...
-    // Check collisions with other snakes
+    // If it hasn't yet collided with the wall, or
+    // itself, check collisions with other snakes.
+    // (as they exist next frame)
     if(!collide) {
-      game.snakes.forEach( (snake,i) => {
-        if(snake === this) return;
+      futureSnakes.forEach( snake => {
+        if(snake.id === this.id) return;
         snake.segments.some(segment => {
           if(collider(newHead,segment)) {
             collide = true;

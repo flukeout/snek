@@ -21,7 +21,7 @@ handleKeyDown = function(event, resultTracker) {
   switch(event.keyCode) {
     case keys['1']:
       console.log("generating full-length debug snake");
-      socket.emit("generateDebugSnake",'fullsnake');
+      socket.emit("generateDebugSnake","fullsnake");
       break;
 
     case keys['2']:
@@ -29,6 +29,10 @@ handleKeyDown = function(event, resultTracker) {
       socket.emit("generateDebugSnake");
       break;
 
+    case keys['3']:
+      console.log("generating a head-on collision");
+      socket.emit("generateDebugSnake", "collisionsnake");
+      break
   }
 };
 

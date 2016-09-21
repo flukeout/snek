@@ -78,13 +78,15 @@ Game.prototype = {
   },
   move : function(){
     var winnerIDs = [];
+    var futureSnakes = this.getFutureSnakes();
 
-    //
-    for(var i = 0 ; i < this.snakes.length; i++ ){
-      var s = this.snakes[i];
-
-      if (!s.debug) {
-        s.move();
+    this.snakes.forEach(s => {
+      if (!s.debug || s.moveDebugSnake) {
+        // move this snake, with collisions checked
+        // against the hypothetical future in which
+        // snakes were allowed to move without any
+        // collision detection worked into their move.
+        s.move(futureSnakes);
       }
 
       if(this.mode == "game") {
@@ -93,9 +95,19 @@ Game.prototype = {
           winnerIDs.push(s.id);
         }
       }
-    }
+    });
 
     this.checkWinners(winnerIDs);
+  },
+
+  getFutureSnakes: function() {
+    // copy all snakes, move them without collision detection
+    // (for use with proper collision-on-next-tick detection)
+    return this.snakes.map(snake => {
+      var s = new Snake(snake, this);
+      s.move();
+      return s;
+    });
   },
 
   checkWinners: function(winnerIDs){
