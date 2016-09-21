@@ -24,7 +24,7 @@ var Snake = function(details, _game) {
   this.name = "ServerSnake";
   this.size = 4;
   this.segments = [];
-  this.deathBed = false;
+  this.tombStone = false;
   this.moved = false;
   this.direction = undefined;
   this.nextDirection = "";
@@ -245,7 +245,7 @@ Snake.prototype = {
 
     // we need the last segment if the snake is now dead
     if(this.segments.length === 0) {
-      this.deathBed = lastRemoved;
+      this.tombStone = lastRemoved;
     }
   },
   dropBomb : function() {
@@ -258,7 +258,7 @@ Snake.prototype = {
   die : function(type) {
     // console.log("A " + type  + " death");
 
-    var head = this.segments.length > 0 ? this.getHead() : this.deathBed;
+    var head = this.segments.length > 0 ? this.getHead() : this.tombStone;
 
     io.emit('killSnake', {
       id: this.id,
