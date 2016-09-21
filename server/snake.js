@@ -24,7 +24,6 @@ var Snake = function(details, _game) {
   this.name = "ServerSnake";
   this.size = 4;
   this.segments = [];
-  this.tombStone = false;
   this.moved = false;
   this.direction = undefined;
   this.nextDirection = "";
