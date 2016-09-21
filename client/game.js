@@ -1,0 +1,188 @@
+var game = {
+  size : 20,
+  width : 40,
+  height: 28,
+  apples : [],
+  bombs: [],
+  tickSpeed : 200,  // 8 frames difference
+  tickSpeedModifier : 0,
+  snakes : [],
+  playerId : 0,
+  elapsed : 0,
+  mode : "game",
+  winLength : 0,
+  gameWon : function(players,winner){
+
+    playSound("winner");
+
+    $("[mode=game]").addClass("winner");
+
+    scoreBoard.update(players, winner);
+
+    var winnerSnake = getSnake(winner);
+
+    setTimeout(function(){
+      $("[mode=game]").removeClass("winner");
+    },2500)
+
+    var that = this;
+
+    setTimeout(function(){
+      that.changeMode("winner");
+      $(".winning-snake").css("opacity","0");
+    },2000);
+
+  },
+  changeMode : function(type){
+    this.game = type;
+    $("[mode]").addClass("hidden");
+    $("[mode="+type+"]").removeClass("hidden");
+  },
+  removePlayer : function(id){
+    for(var i = 0 ; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      if(snake.id === id){
+        snake.die();
+      }
+    }
+  },
+  changeDirection : function(id,direction,ticks, x, y){
+    for(var i = 0; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      if(id === snake.id){
+        snake.changeDirection(direction, ticks, x ,y);
+      }
+    }
+  },
+  setup : function(width,height,id,apples,snakes,winlength) {
+
+    this.winLength = winlength;
+    this.changeMode("game");
+
+    for(var i = 0; i < this.winLength; i++) {
+      var box = $("<div class='box'>");
+      $(".leader-boxes").append(box);
+    }
+
+    for(var i = 0; i < apples.length; i++) {
+      var apple = apples[i];
+      this.addApple(apple.x,apple.y,apple.id);
+    }
+
+    // Adds snakes from the server...
+    for(var i = 0; i < snakes.length; i++) {
+      var snake = snakes[i];
+      this.addSnake(snake.id,snake.x, snake.y, snake.color, "", snake.length);
+    }
+
+    this.height = height;
+    this.width = width;
+    this.playerId = id;
+
+    $(".board").css("width",this.size * this.width);
+    $(".board").css("height",this.size * this.height);
+  },
+  move : function(){
+
+    var max = 0;
+    var longest;
+
+    for(var i = 0 ; i < this.snakes.length; i++ ){
+      var s = this.snakes[i];
+      s.move();
+      if(s.segments.length > max) {
+        longest = s;
+        max = s.segments.length;
+      }
+    }
+
+    if(longest){
+      $(".leader-boxes .box").css("background","#222");
+      $(".leader-boxes .box:nth-child(-n+"+max+")").css("background",longest.color);
+    }
+
+  },
+  addSnake : function(id, x, y, color, direction, length){
+    var snake = makeSnake(id, x, y, color, direction, length);
+    snake.init();
+    this.snakes.push(snake);
+  },
+  addApple : function(x,y,id){
+    var apple = {
+      el : $("<div class='apple'><div class='body'></div></div>"),
+      x : x,
+      y : y,
+      id : id
+    }
+    $(".board").append(apple.el);
+
+    apple.el.css("width",this.size).css("height",this.size);
+    apple.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
+    this.apples.push(apple);
+  },
+  removeApple: function(id){
+    for(var i = 0; i < this.apples.length; i++){
+      var apple = this.apples[i];
+      if(id === apple.id){
+        apple.el.remove();
+        var appleIndex = this.apples.indexOf(apple);
+        this.apples.splice(appleIndex, 1);
+      }
+    }
+  },
+  addBomb: function(x, y, id,color) {
+    console.log("Adding bomb at ",x,y);
+    var bomb = {
+      el : $("<div class='bomb'><div class='body'></div></div>"),
+      x : x,
+      y : y,
+      id : id,
+    }
+    $(".board").append(bomb.el);
+
+    bomb.el.css("width",this.size).css("height",this.size);
+    bomb.el.find(".body").css("background", color);
+    bomb.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
+    this.bombs.push(bomb);
+  },
+  removeBomb: function(id) {
+    for(var i = 0; i < this.bombs.length; i++){
+      var bomb = this.bombs[i];
+      if(id === bomb.id){
+
+        // Make Bomb Puffs
+        for(var i = 0; i < 8; i++){
+
+          var options = {
+            x : bomb.x * this.size,     // absolute non-relative position on gameboard
+            y : bomb.y * this.size,     // absolute non-relative position on gameboard
+            angle: getRandom(0,359),    // just on the x,y plane, works with speed
+            zR : getRandom(-15,15),     // zRotation velocity
+            oV : -.008,                 // opacity velocity
+            width : getRandom(20,55),   // size of the particle
+            className : 'puff',         // adds this class to the particle <div/>
+            lifespan: 125,              // how many frames it lives
+          }
+
+          // Need to put this offset code into the makeParticle function
+          // You should pass it an x,y of 0
+
+          var offset = (options.width - this.size) / 2;
+          options.x = options.x - offset;
+          options.y = options.y - offset;
+          options.height = options.width;
+          options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
+
+          makeParticle(options);
+        }
+
+        // Make an explosion
+        makeAnimParticle(bomb.x, bomb.y);
+
+        bomb.el.remove();
+        var bombIndex = this.bombs.indexOf(bomb);
+        this.bombs.splice(bombIndex, 1);
+      }
+    }
+  }
+};
