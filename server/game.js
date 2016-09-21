@@ -16,11 +16,11 @@ Game.prototype = {
   apples : [],
   bombs :  [],
   bombLifeSpan: 7,
-  bombRadius: 5,
+  bombRadius: 5,    // should we move this to the Bomb object init?
 
-  snakes : [],
+  snakes : [],      // Array here
   player : {},
-  players : "",
+  players : {},     // But object here - why? Should we standardize?
   mode : "game",
 
   removePlayer : function(id){

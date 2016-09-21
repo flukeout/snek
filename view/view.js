@@ -427,10 +427,8 @@ var game = {
           var options = {
             x : bomb.x * this.size,     // absolute non-relative position on gameboard
             y : bomb.y * this.size,     // absolute non-relative position on gameboard
-            speed : getRandom(1,2),     // just on the x,y plane, works with angle
             angle: getRandom(0,359),    // just on the x,y plane, works with speed
-            zR : getRandom(-15,15),      // zRotation velocity
-            // zRv : getRandom(-1,1),      // zRotation velocity
+            zR : getRandom(-15,15),     // zRotation velocity
             oV : -.008,                 // opacity velocity
             width : getRandom(20,55),   // size of the particle
             className : 'puff',         // adds this class to the particle <div/>
@@ -444,8 +442,7 @@ var game = {
           options.x = options.x - offset;
           options.y = options.y - offset;
           options.height = options.width;
-
-          options.speed = 1 + (2 * (1 - options.width / 50));
+          options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
 
           makeParticle(options);
         }
@@ -475,6 +472,7 @@ function makeSnake(id, x, y, color, direction, length){
     speed : 5, // every 10 frames?
     segments : [],
     changes : [],
+    phrases : ["ow","T_T","No!","Damn",'ahh',"!!?","wut", "u wot","fek","why??","BS","GG"],
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
@@ -492,12 +490,13 @@ function makeSnake(id, x, y, color, direction, length){
 
       var position = head.el.position();
       messageEl.css("transform","translateX("+head.x * 20+"px) translateY("+head.y*20+"px)");
+      messageEl.find(".body").css("color",this.color);
 
       setTimeout(function(el) {
         return function() {
           el.remove();
         };
-      }(messageEl), 2000);
+      }(messageEl), 1500);
 
     },
     makeSegment : function(x,y,place){
@@ -528,6 +527,13 @@ function makeSnake(id, x, y, color, direction, length){
       this.draw();
     },
     die : function(x,y,type){
+
+      // Say something
+      var that = this;
+      setTimeout(function(){
+        var index = parseInt(getRandom(0,that.phrases.length));
+        that.say(that.phrases[index]);
+      },140)
 
       // Make an explosion
       if(type != "quiet"){
