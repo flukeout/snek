@@ -93,7 +93,7 @@ Snake.prototype = {
       sx = segment.x;
       sy = segment.y;
       if (sx >= x1 && sx <= x2 && sy >= y1 && sy <= y2) {
-        hit.push(segment);
+        segments.push(segment);
       }
     });
 
