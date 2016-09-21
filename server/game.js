@@ -79,6 +79,7 @@ Game.prototype = {
   move : function(){
     var winnerIDs = [];
 
+    //
     for(var i = 0 ; i < this.snakes.length; i++ ){
       var s = this.snakes[i];
 
@@ -94,6 +95,10 @@ Game.prototype = {
       }
     }
 
+    this.checkWinners(winnerIDs);
+  },
+
+  checkWinners: function(winnerIDs){
     var that = this;
 
     if(this.mode == "game") {
