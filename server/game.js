@@ -9,7 +9,7 @@ var Game = function(io,players) {
 };
 
 Game.prototype = {
-  size : 10,         // starting snake size
+  size : 5,         // starting snake size
   winLength : 15,   // How long a snakes needs to bo to win the round
   width : 42,       // board width
   height: 28,       // board height
@@ -204,9 +204,6 @@ Game.prototype = {
     var hitCount = 0;
     this.snakes.forEach(snake => {
       var segments = this.processSnakeSplosion(snake, x, y);
-      // if (segments.length > 0) {
-      //   console.log(`${segments.length} were sploded, ${snake.segments.length} remain for this snake.`);
-      // }
       hitCount += segments.length;
     });
 
