@@ -34,7 +34,8 @@ function makeSnake(id, x, y, color, direction, length){
       "gah!",
       "but...",
       "O_O",
-      "abort!"
+      "abort!",
+      "brb"
     ],
     init : function(){
       for(var i = 0; i < this.length; i++) {
