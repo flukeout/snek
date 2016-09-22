@@ -9,6 +9,16 @@ $(document).ready(function(){
 
     handleKeyDown(event, keyDownResult);
 
+    var chatting = $(chat.chatInput).is(":focus");
+    
+    if (chatting) {
+      return;
+    }
+
+    // Only handle input "for game purposes" if
+    // the client isn't currently trying to write
+    // a chat message.
+
     var direction = keyDownResult.direction;
     if(direction){
       socket.emit('direction', {
