@@ -132,7 +132,7 @@ Snake.prototype = {
     var newNext = next==false ? false : { x: next.x, y: next.y };
     var collide = false;
 
-    if(game.mode === "game" && futureSnakes) {
+    if(this.moving && game.mode === "game" && futureSnakes) {
       // check if any collisions will occur for this snake,
       // but don't resolve them quite yet.
       collide = this.processCollisions(futureSnakes, head, newHead, newNext);
@@ -181,12 +181,12 @@ Snake.prototype = {
       });
     }
 
-    // If it hasn't yet collided with the wall, or
-    // itself, check collisions with other snakes.
-    // (as they exist next frame)
+    // If it hasn't yet collided with the wall, or itself, check collisions
+    // with other snakes (as they exist next frame).
     if(!collide) {
       futureSnakes.forEach( (snake,i) => {
-        if(snake.id === this.id) return;
+        if (!snake.moving && !snake.debug) return;
+        if (snake.id === this.id) return;
         snake.segments.some( (segment,si) => {
           if(collider(segment, newHead, newNext)) {
             collide = true;
