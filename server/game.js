@@ -35,8 +35,9 @@ Game.prototype = {
 
   cleanupDebug: function() {
     for (var i=this.snakes.length-1; i>=0; i--) {
-      if (this.snakes[i].debug) {
-        this.snakes[i].die('debug', true);
+      let s = this.snakes[i];
+      if (s.debug || s.moveDebugSnake) {
+        s.die('debug', true);
       }
     }
   },
