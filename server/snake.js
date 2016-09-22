@@ -185,8 +185,10 @@ Snake.prototype = {
     // with other snakes (as they exist next frame).
     if(!collide) {
       futureSnakes.forEach( (snake,i) => {
-        if (!snake.moving && !snake.debug) return;
         if (snake.id === this.id) return;
+
+        if (!snake.moving) return;
+
         snake.segments.some( (segment,si) => {
           if(collider(segment, newHead, newNext)) {
             collide = true;
