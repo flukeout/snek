@@ -227,11 +227,12 @@ Snake.prototype = {
   },
 
   respawn : function(debug){
-    // console.log("Respawn Snake");
+    console.log("Respawn Snake");
     var snakeDetails = {
       id : this.id,
       color: this.color,
-      debug: this.debug
+      debug: this.debug,
+      name : this.name || "jammer"
     }
 
     game.addSnake(snakeDetails);

@@ -85,12 +85,19 @@ module.exports = function(app) {
       });
     });
 
+    socket.on('changeName',function(data){
+      player.name = data.name;
+      var snake = findPlayerSnake(player.id);
+      snake.name = player.name;
+    });
+
     // client requests a new snake, server spawns a new snake
     socket.on('makeSnake', function() {
       // console.log("making a snake for player with id", player.id);
     	var data = {
         id: player.id,
-        color: player.color
+        color: player.color,
+        name : player.name
       };
       game.addSnake(data);
     });

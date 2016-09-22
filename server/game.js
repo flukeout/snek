@@ -169,6 +169,7 @@ Game.prototype = {
     var snakeDetails = Object.assign({
       x: (Math.random() * this.width)  | 0,
       y: (Math.random() * this.height)  | 0,
+      name : data.name,
       length: this.size
     }, data);
 

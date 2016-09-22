@@ -89,8 +89,9 @@ socket.on('spawnSnake', function(msg){
   var color = msg.color;
   var direction = msg.direction;
   var length = msg.length;
+  var name = msg.name || "no_name"
 
-  game.addSnake(id, x, y, color, direction,length);
+  game.addSnake(id, x, y, color, direction, length, name);
 });
 
 socket.on('killSnake', function(msg){
