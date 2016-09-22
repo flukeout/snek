@@ -28,6 +28,7 @@ body, html {
 .board {
   position: relative;
   background: #111;
+  // background: white;
   margin: 0 auto;
   width: 0;
   height: 0;
@@ -654,4 +655,19 @@ body, html {
 .puff {
   background: rgba(255,255,255,.4);
   background: #555;
+}
+
+
+.smear {
+  transform-origin: top;
+  opacity: .4;
+}
+
+.cover {
+  // border-radius: 50%;
+  // background: radial-gradient(pink 0%, pink 40%, blue 100%);
+  // background-image: radial-gradient(#00FFFF 0%, rgba(0, 0, 255, 0) 50%, #0000FF 95%);
+  background-image: radial-gradient(#111 40%, rgba(0,0,0,0) 60%);
+
+  opacity: .5;
 }
