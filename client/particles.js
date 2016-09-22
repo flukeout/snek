@@ -236,45 +236,35 @@ function makeSpawnParticle(xPos, yPos, color){
 
 
 
-function makeSmear(x, y, color){
+function makeSmear(x, y){
 
-  // Make Bomb Puffs
+  // Make Bomb blasts
   for(var i = 0; i < 12; i++){
-
     var options = {
-      x : x + 8,     // absolute non-relative position on gameboard
-      y : y + 8,     // absolute non-relative position on gameboard
-      zR : getRandom(0,360),     // zRotation velocity
+      x : x + 8,
+      y : y + 8,
+      zR : getRandom(0,360),
       width: 4,
       height: getRandom(60,100),
-      className : 'smear',         // adds this class to the particle <div/>
-      lifespan: 200,              // how many frames it lives
+      className : 'smear',
+      lifespan: 200,
       color: "linear-gradient(white,rgba(0,0,0,0)",
       o: .4,
       oV: -.01
     }
-
-    // Need to put this offset code into the makeParticle function
-    // You should pass it an x,y of 0
-
     makeParticle(options);
   }
 
-    var options = {
-      x : x - 10,     // absolute non-relative position on gameboard
-      y : y - 10,     // absolute non-relative position on gameboard
-      width: 40,
-      height: 40,
-      className : 'cover',         // adds this class to the particle <div/>
-      lifespan: 200,              // how many frames it lives
-      // color: "#111",
-      // o: .5
-    }
-    console.log(options.angle);
+  // Adds a dark patch over the blast marks above...
 
-    // Need to put this offset code into the makeParticle function
-    // You should pass it an x,y of 0
-
-    makeParticle(options);
+  var options = {
+    x : x - 10,     // absolute non-relative position on gameboard
+    y : y - 10,     // absolute non-relative position on gameboard
+    width: 40,
+    height: 40,
+    className : 'cover',         // adds this class to the particle <div/>
+    lifespan: 200,              // how many frames it lives
+  }
+  makeParticle(options);
 
 }

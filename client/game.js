@@ -148,6 +148,7 @@ var game = {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
+        makeSmear(bomb.x * game.size,bomb.y * game.size);
         makeExplosion(bomb.x, bomb.y);
         bomb.el.remove();
         var bombIndex = this.bombs.indexOf(bomb);

@@ -78,7 +78,7 @@ function makeSnake(id, x, y, color, direction, length){
       // Make an explosion!
       if(type != "quiet"){
         console.log("calling makeBomb from snake.die");
-        makeSmear(x * game.size,y * game.size, this.color);
+        makeSmear(x * game.size,y * game.size);
         makeExplosion(x, y);
       }
 
