@@ -102,8 +102,8 @@ var game = {
     }
 
   },
-  addSnake : function(id, x, y, color, direction, length){
-    var snake = makeSnake(id, x, y, color, direction, length);
+  addSnake : function(id, x, y, color, direction, length, name){
+    var snake = makeSnake(id, x, y, color, direction, length, name);
     snake.init();
     this.snakes.push(snake);
   },

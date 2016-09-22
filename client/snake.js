@@ -1,10 +1,10 @@
-function makeSnake(id, x, y, color, direction, length){
+function makeSnake(id, x, y, color, direction, length, name){
   var snek = {
     x : x,
     y : y,
     id : id,
     size : 20,
-    name : "Snakeman",
+    name : name,
     points : 0,
     length: length,
     moving : false,
@@ -41,6 +41,7 @@ function makeSnake(id, x, y, color, direction, length){
         this.makeSegment(this.x,this.y,"head");
       }
       makeSpawnParticle(x, y, this.color);
+      this.say(this.name);
     },
     getHead : function(){
       return this.segments[this.segments.length -1];

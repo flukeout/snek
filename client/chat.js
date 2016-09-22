@@ -26,10 +26,23 @@ var chat = {
     var message = this.chatInput.val();
     this.chatInput.val("");
     this.chatInput.blur();
+
+    if(message.indexOf("name") == 0) {
+      var newName = message.replace("name","");
+      newName = newName.trim();
+      this.changeName(newName);
+      return;
+    }
+
     if(message.length > 0) {
       this.sendMessage(message);
     }
 
+  },
+  changeName: function(newName){
+    socket.emit('changeName', {
+      name: newName
+    });
   },
   sendMessage: function(message){
     socket.emit('sendChat', {
