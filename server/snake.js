@@ -27,8 +27,8 @@ var Snake = function(details, _game) {
   this.moved = details.moved || false;
   this.direction = details.direction || undefined;
   this.nextDirection = details.nextDirection || "";
-  this.directionQ = (details.directionQ || []).slice();
-  this.eventQ = (details.eventQ || []).slice();
+  this.directionQ = [];
+  this.eventQ = [];
 };
 
 module.exports = Snake;
@@ -107,17 +107,13 @@ Snake.prototype = {
   },
 
   move : function(futureSnakes) {
+
     if(this.eventQ.length > 0) {
-      var nextEvent = this.eventQ[0];
+      var nextEvent = this.eventQ.splice(0, 1)[0];
 
       if(nextEvent == "bomb") {
         this.dropBomb();
       }
-
-      // this.changeDirection(nextDirection);
-      // this.direction = this.nextDirection;
-      // this.moving = true;
-      this.eventQ.splice(0, 1);
     }
 
     if(this.directionQ.length > 0) {

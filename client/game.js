@@ -148,7 +148,7 @@ var game = {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
-        makeBomb(bomb.x, bomb.y);
+        makeExplosion(bomb.x, bomb.y);
         bomb.el.remove();
         var bombIndex = this.bombs.indexOf(bomb);
         this.bombs.splice(bombIndex, 1);

@@ -108,9 +108,7 @@ module.exports = function(app) {
       var snake = findPlayerSnake(player.id);
       if (snake) {
         snake.eventQ.push("bomb");
-        // snake.dropBomb();
       }
-
     });
 
     // client snake died... broadcast to all connected clients

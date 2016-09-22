@@ -146,8 +146,8 @@ function makeBeam(x,y,direction, color){
 
 
 // Adds a bomb to the board at x,y
-function makeBomb(xPos, yPos){
-  console.log("makeBomb at ", xPos,yPos);
+function makeExplosion(xPos, yPos){
+  console.log("makeExplosion at ", xPos,yPos);
 
   playSound("boom");
 
