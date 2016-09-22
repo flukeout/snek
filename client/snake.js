@@ -12,7 +12,7 @@ function makeSnake(id, x, y, color, direction, length){
     speed : 5, // every 10 frames?
     segments : [],
     changes : [],
-    phrases : ["ow","T_T","No!","Damn",'ahh',"!!?","wut", "u wot","fek","why??","BS","GG","l8r","lame"],
+    phrases : ["ow","T_T","No!","Damn",'ahh',"!!?","wut", "FML","why??","BS","GG","l8r","peace","aww","fek","fuuuuuu","lag"],
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
