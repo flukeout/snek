@@ -43,8 +43,6 @@ function makeParticle(options){
     particle.xV = Math.sin(particle.angle * (Math.PI/180)) * particle.speed;
     particle.yV = Math.cos(particle.angle * (Math.PI/180)) * particle.speed;
   }
-  // console.log(particle.gravity);
-  // need to do the offset... thing
 
   particle.el = $("<div class='particle'></div>");
   particle.el.css("height", particle.height);
@@ -135,8 +133,6 @@ function makeBeam(x,y,direction, color){
   particle.el.css("width", width);
   particle.el.css("transform","translate3d("+x+"px,"+y+"px,0)");
 
-  // playSound("boom");
-
   setTimeout(function(el) {
     return function(){
       el.remove();
@@ -148,7 +144,11 @@ function makeBeam(x,y,direction, color){
   $(".board").append(particle.el);
 }
 
-function makeAnimParticle(xPos, yPos){
+
+// Adds a bomb to the board at x,y
+function makeBomb(xPos, yPos){
+  console.log("makeBomb at ", xPos,yPos);
+
   playSound("boom");
 
   var size = 3;
@@ -176,6 +176,32 @@ function makeAnimParticle(xPos, yPos){
 
   //Move function
   $(".board").append(particle.el);
+
+  // Make Bomb Puffs
+  for(var i = 0; i < 8; i++){
+
+    var options = {
+      x : xPos * 20,     // absolute non-relative position on gameboard
+      y : yPos * 20,     // absolute non-relative position on gameboard
+      angle: getRandom(0,359),    // just on the x,y plane, works with speed
+      zR : getRandom(-15,15),     // zRotation velocity
+      oV : -.008,                 // opacity velocity
+      width : getRandom(20,55),   // size of the particle
+      className : 'puff',         // adds this class to the particle <div/>
+      lifespan: 125,              // how many frames it lives
+    }
+
+    // Need to put this offset code into the makeParticle function
+    // You should pass it an x,y of 0
+
+    var offset = (options.width - 20) / 2;
+    options.x = options.x - offset;
+    options.y = options.y - offset;
+    options.height = options.width;
+    options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
+
+    makeParticle(options);
+  }
 }
 
 
@@ -202,5 +228,9 @@ function makeSpawnParticle(xPos, yPos, color){
 
   //Move function
   $(".board").append(particle.el);
+
+
+
+
 }
 

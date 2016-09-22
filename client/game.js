@@ -131,7 +131,6 @@ var game = {
     }
   },
   addBomb: function(x, y, id,color) {
-    console.log("Adding bomb at ",x,y);
     var bomb = {
       el : $("<div class='bomb'><div class='body'></div></div>"),
       x : x,
@@ -149,36 +148,7 @@ var game = {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
-
-        // Make Bomb Puffs
-        for(var i = 0; i < 8; i++){
-
-          var options = {
-            x : bomb.x * this.size,     // absolute non-relative position on gameboard
-            y : bomb.y * this.size,     // absolute non-relative position on gameboard
-            angle: getRandom(0,359),    // just on the x,y plane, works with speed
-            zR : getRandom(-15,15),     // zRotation velocity
-            oV : -.008,                 // opacity velocity
-            width : getRandom(20,55),   // size of the particle
-            className : 'puff',         // adds this class to the particle <div/>
-            lifespan: 125,              // how many frames it lives
-          }
-
-          // Need to put this offset code into the makeParticle function
-          // You should pass it an x,y of 0
-
-          var offset = (options.width - this.size) / 2;
-          options.x = options.x - offset;
-          options.y = options.y - offset;
-          options.height = options.width;
-          options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
-
-          makeParticle(options);
-        }
-
-        // Make an explosion
-        makeAnimParticle(bomb.x, bomb.y);
-
+        makeBomb(bomb.x, bomb.y);
         bomb.el.remove();
         var bombIndex = this.bombs.indexOf(bomb);
         this.bombs.splice(bombIndex, 1);

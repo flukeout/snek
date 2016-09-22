@@ -68,44 +68,17 @@ function makeSnake(id, x, y, color, direction, length){
     },
     die : function(x,y,type){
 
-      // Say something
+      // Death cry!
       var that = this;
       setTimeout(function(){
         var index = parseInt(getRandom(0,that.phrases.length));
         that.say(that.phrases[index]);
       },220);
 
-      // Make an explosion
+      // Make an explosion!
       if(type != "quiet"){
-
-
-        for(var i = 0; i < 8; i++){
-
-          var options = {
-            x : x * this.size,     // absolute non-relative position on gameboard
-            y : y * this.size,     // absolute non-relative position on gameboard
-            angle: getRandom(0,359),    // just on the x,y plane, works with speed
-            zR : getRandom(-15,15),     // zRotation velocity
-            oV : -.008,                 // opacity velocity
-            width : getRandom(20,55),   // size of the particle
-            className : 'puff',         // adds this class to the particle <div/>
-            lifespan: 125,              // how many frames it lives
-          }
-
-          // Need to put this offset code into the makeParticle function
-          // You should pass it an x,y of 0
-
-          var offset = (options.width - this.size) / 2;
-          options.x = options.x - offset;
-          options.y = options.y - offset;
-          options.height = options.width;
-          options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
-
-          makeParticle(options);
-        }
-
-        // UGH GRHOSS
-        makeAnimParticle(x, y);
+        console.log("calling makeBomb from snake.die");
+        makeBomb(x, y);
       }
 
       for(var i = 0; i < this.segments.length; i++){
@@ -144,16 +117,11 @@ function makeSnake(id, x, y, color, direction, length){
           y : y * this.size,
           angle : getRandom(0,359),
           speed : getRandom(0,2),
-          // Ideas for random or range
-          // speed : { range:  [0,10] },  // Picks random from 0 to 10
-          // speed : { random: [0,10] },  // Picks random value in array. 0 or 10
-          // speed : 10,                  // Sets speed to 10
           zV : getRandom(5,10),
           xRv : getRandom(0,3),
           yRv : getRandom(0,3),
           zRv : getRandom(0,3),
           gravity : .4,
-          // oV : -.02,
           lifespan : getRandom(15,18),
           color: this.color,
         }
