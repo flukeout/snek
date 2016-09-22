@@ -20,7 +20,6 @@ function makeSnake(id, x, y, color, direction, length){
       "ahh",
       "!!?",
       "wut",
-      "FML",
       "why??",
       "uhh...",
       "GG",
