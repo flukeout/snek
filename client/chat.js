@@ -44,6 +44,7 @@ var chat = {
     socket.emit('changeName', {
       name: newName
     });
+    this.sendMessage("Hi, I'm " + newName);
   },
   sendMessage: function(message){
     socket.emit('sendChat', {
