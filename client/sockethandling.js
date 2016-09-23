@@ -2,7 +2,9 @@ var socket = io();
 
 socket.on('newChat', function(msg){
   var snake = getSnake(msg.id);
-  snake.say(msg.message);
+  if(snake){
+    snake.say(msg.message);
+  }
 });
 
 socket.on('gameOver', function(msg) {
