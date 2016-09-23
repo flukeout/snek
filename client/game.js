@@ -148,6 +148,7 @@ var game = {
       id : id,
     }
     $(".board").append(bomb.el);
+    playSound("beep");
 
     bomb.el.css("width",this.size).css("height",this.size);
     bomb.el.find(".body").css("background", color);

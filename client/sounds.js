@@ -18,7 +18,12 @@ var sounds = {
   "winner" : {
     buffer : null,
     url : path + "../sounds/winner.wav"
+  },
+  "beep" : {
+    buffer : null,
+    url : path + "../sounds/beep.mp3"
   }
+
 
 };
 

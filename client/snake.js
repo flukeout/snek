@@ -36,6 +36,7 @@ function makeSnake(id, x, y, color, direction, length, name){
       "why??",
       "wut"
     ],
+    phrases: ["!!?"],
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
@@ -132,9 +133,8 @@ function makeSnake(id, x, y, color, direction, length, name){
         }
       }
 
-      playSound("bonk");
-
       if(showParticle || false) {
+        playSound("bonk");
         var options = {
           x : x * this.size,
           y : y * this.size,
