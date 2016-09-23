@@ -105,9 +105,10 @@ var game = {
       }
     }
 
+    $(".leader-boxes .box").css("background","#222");
+    $(".leader-name").text("???");
     if(longest){
       $(".leader-name").text(longest.name);
-      $(".leader-boxes .box").css("background","#222");
       $(".leader-boxes .box:nth-child(-n+"+max+")").css("background",longest.color);
     }
 
