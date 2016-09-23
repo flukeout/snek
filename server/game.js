@@ -102,6 +102,8 @@ Game.prototype = {
     // (for use with proper collision-on-next-tick detection)
     return this.snakes.map(snake => {
       var s = new Snake(snake, this);
+      s.debug = snake.debug;
+      s.moving = snake.moving;
       s.move();
       return s;
     });
