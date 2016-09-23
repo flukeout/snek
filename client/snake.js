@@ -36,7 +36,6 @@ function makeSnake(id, x, y, color, direction, length, name){
       "why??",
       "wut"
     ],
-    phrases: ["!!?"],
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
