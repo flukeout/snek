@@ -36,13 +36,14 @@ socket.on('loseSegment', function(msg) {
 });
 
 socket.on('gameSetup', function(msg){
+  // this is the first thing we get
   var width = parseInt(msg.width);
   var height = parseInt(msg.height);
   var id = parseInt(msg.id);
   var apples = msg.apples;
   var snakes = msg.snakes;
   var winLength = msg.winLength;
-  game.setup(width,height,id, apples, snakes, winLength);
+  game.setup(width, height, id, apples, snakes, winLength);
 });
 
 socket.on('playerDisconnect', function(msg){
@@ -95,7 +96,6 @@ socket.on('spawnSnake', function(msg){
 });
 
 socket.on('killSnake', function(msg){
-
   var id = msg.id;
   var x = msg.x;
   var y = msg.y;

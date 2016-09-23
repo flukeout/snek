@@ -368,7 +368,7 @@ body, html {
     color: rgba(255,255,255,.6);
     border: none;
     font-size: 26px;
-    width: 50%;
+    width: 65%;
     padding: 0 0 8px 0px;
     border-bottom: solid 2px rgba(255,255,255,.2);
 
@@ -424,11 +424,10 @@ body, html {
     transform: translateY(-25px) translateX(10px) translateZ(65px) rotateX(-45deg);
     opacity: 0;
   }
-
-
 }
 
 
+// Leader indicator at the top of the screen
 
 .leader {
   position: absolute;
@@ -438,14 +437,31 @@ body, html {
   padding-top: 25px;
   color: rgba(255,255,255,.4);
 
+  .leader-name {
+    text-transform: uppercase;
+    display: inline-block;
+    color: rgba(255,255,255,.8);
+  }
+
   .leader-boxes {
     display: inline-block;
   }
 
-  span {
+  .label {
     position: relative;
     top: -3px;
     padding: 0 7px;
+    display: inline-block;
+  }
+
+  .name-label {
+    width: 300px;
+    text-align: right;
+  }
+
+  .win-label {
+    width: 200px;
+    text-align: left;
   }
 
   .box {
@@ -620,7 +636,7 @@ body, html {
   width: 100%;
   text-align: center;
   color: rgba(255,255,255,.3);
-  padding: 0 0 25px 20px;
+  padding: 0 0 30px 0;
 
   .single-key {
     background: rgba(255,255,255,.3);

@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  socket.emit("makeSnake");
 
   $(document).on("keydown",function(event) {
     var keyDownResult = {
@@ -10,7 +9,7 @@ $(document).ready(function(){
     handleKeyDown(event, keyDownResult);
 
     var chatting = $(chat.chatInput).is(":focus");
-    
+
     if (chatting) {
       return;
     }

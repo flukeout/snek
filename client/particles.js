@@ -144,23 +144,26 @@ function makeBeam(x,y,direction, color){
   $(".board").append(particle.el);
 }
 
+// Shakes the UI elements on teh screen
+function shakeScreen(){
+  $(".border, .leader, .keys-helper").addClass("shake");
+  $(".border").one("animationend",function(){
+    $(".shake").removeClass("shake");
+  });
+}
 
 // Adds a bomb to the board at x,y
 function makeExplosion(xPos, yPos){
   console.log("makeExplosion at ", xPos,yPos);
 
   playSound("boom");
+  shakeScreen();
 
   var size = 3;
   var width = 3 * 20;
   var offset = (width - 20) / 2;
   var x = xPos * 20 - offset;
   var y = yPos * 20 - offset;
-
-  $(".border, .leader").addClass("shake");
-  $(".border").one("animationend",function(){
-    $(".border, .leader").removeClass("shake");
-  })
 
   var particle = {};
   particle.el = $("<div class='boom'><div class='shock'/><div class='body'/></div>");

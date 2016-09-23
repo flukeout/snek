@@ -10,6 +10,7 @@ var game = {
   playerId : 0,
   elapsed : 0,
   mode : "game",
+  playerName : "",
   winLength : 0,
   gameWon : function(players,winner){
 
@@ -79,8 +80,16 @@ var game = {
     this.width = width;
     this.playerId = id;
 
+    var storedName = localStorage.getItem("playerName");
+    if(storedName) {
+      this.playerName = storedName;
+      chat.changeName(storedName);
+    }
+
     $(".board").css("width",this.size * this.width);
     $(".board").css("height",this.size * this.height);
+
+    socket.emit("makeSnake");
   },
   move : function(){
 
@@ -97,6 +106,7 @@ var game = {
     }
 
     if(longest){
+      $(".leader-name").text(longest.name);
       $(".leader-boxes .box").css("background","#222");
       $(".leader-boxes .box:nth-child(-n+"+max+")").css("background",longest.color);
     }

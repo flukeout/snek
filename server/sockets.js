@@ -22,11 +22,6 @@ module.exports = function(app) {
   var server = http.Server(app);
   var io = socketio(server);
 
-  // A player sends a message
-  // io.emit('chatMessage', {
-  //   message: message
-  // });
-
   // A player joins the game
   io.sockets.on('connection', function(socket) {
 
@@ -43,9 +38,8 @@ module.exports = function(app) {
     players[player.id] = player;
 
     // welcome user, send them their snake color (may be user-changeble later)
-    console.log('a user connected, giving it snake id', player.id);
+    console.log('A user connected, giving it snake id', player.id);
     console.log('Number of players', Object.keys(players).length);
-    // console.log(plaers);
 
     // send in response to connecting:
     socket.emit('gameSetup', {
@@ -58,14 +52,7 @@ module.exports = function(app) {
       winLength : game.winLength,
     });
 
-    // inform everyone a new player joined
-    io.emit('playerJoin', {
-      id: player.id,
-      color: player.color
-    });
-
     // a client disconnects - we don't do much with that yet
-
     socket.on('disconnect', function(){
       io.emit('playerDisconnect', {
         id: player.id
@@ -78,7 +65,6 @@ module.exports = function(app) {
 
     socket.on('sendChat',function(data){
       console.log("Chat message from" + player.id);
-
       io.emit('newChat',{
         id: player.id,
         message: data.message
@@ -93,7 +79,6 @@ module.exports = function(app) {
 
     // client requests a new snake, server spawns a new snake
     socket.on('makeSnake', function() {
-      // console.log("making a snake for player with id", player.id);
     	var data = {
         id: player.id,
         color: player.color,

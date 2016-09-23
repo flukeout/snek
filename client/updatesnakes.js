@@ -1,5 +1,6 @@
 // Updates all of the snakes...
 function updateSnakes(snakes){
+
   for(var i = 0; i < snakes.length; i++){
     var serverSnake = snakes[i];
 
@@ -8,6 +9,7 @@ function updateSnakes(snakes){
       if(serverSnake.id === gameSnake.id) {
         gameSnake.direction = serverSnake.direction;
         gameSnake.points = serverSnake.points;
+        gameSnake.name = serverSnake.name;
 
         var diff = gameSnake.segments.length - serverSnake.segments.length;
         if(diff > 0){

@@ -40,6 +40,7 @@ var chat = {
 
   },
   changeName: function(newName){
+    localStorage.setItem("playerName",newName);
     socket.emit('changeName', {
       name: newName
     });

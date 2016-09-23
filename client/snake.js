@@ -92,16 +92,14 @@ function makeSnake(id, x, y, color, direction, length, name){
     },
     die : function(x,y,type){
 
-      // Death cry!
-      var that = this;
-      setTimeout(function(){
-        var index = parseInt(getRandom(0,that.phrases.length));
-        that.say(that.phrases[index]);
-      },220);
-
-      // Make an explosion!
       if(type != "quiet"){
-        console.log("calling makeBomb from snake.die");
+        // Death cry!
+        var that = this;
+        setTimeout(function(){
+          var index = parseInt(getRandom(0,that.phrases.length));
+          that.say(that.phrases[index]);
+        },220);
+        // Make an explosion!
         makeSmear(x * game.size,y * game.size);
         makeExplosion(x, y);
       }

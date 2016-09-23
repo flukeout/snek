@@ -49,11 +49,6 @@ Game.prototype = {
 
   resetGame : function(){
 
-    // console.log("Reset game with ", this.players.length, " players");
-
-    // We have nuked the snakes... so there is
-    // only the winner left to be respawned....
-
     for(var i = 0; i < this.snakes.length; i++){
       var s = this.snakes[i];
       s.die("quiet");
@@ -63,7 +58,8 @@ Game.prototype = {
     Object.keys(this.players).forEach(key => {
       var snakeDetails = {
         id : parseInt(key),
-        color: this.players[key].color
+        color: this.players[key].color,
+        name : this.players[key].name
       }
       this.addSnake(snakeDetails);
     })
