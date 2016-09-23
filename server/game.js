@@ -317,13 +317,13 @@ module.exports = function(io, players) {
     elapsed = elapsed + delta;
 
     while(elapsed >= ms) {
+      elapsed = elapsed - ms;
+      totalFrames++;
+      game.move();
       io.emit('serverTick', {
         message: elapsed,
         snakes : game.snakes
        });
-      elapsed = elapsed - ms;
-      totalFrames++;
-      game.move();
     }
 
     setTimeout(move,1);
