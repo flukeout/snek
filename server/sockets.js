@@ -77,6 +77,15 @@ module.exports = function(app) {
       snake.name = player.name;
     });
 
+    //Receive admin command from a client
+    socket.on('adminCommand',function(data){
+      var command = data.command;
+      if(command == "resetGame"){
+        game.resetGame();
+      }
+    });
+
+
     // client requests a new snake, server spawns a new snake
     socket.on('makeSnake', function() {
     	var data = {

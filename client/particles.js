@@ -229,7 +229,6 @@ function makeSpawnParticle(xPos, yPos, color){
     };
   }(particle.el),2000);
 
-  //Move function
   $(".board").append(particle.el);
 }
 

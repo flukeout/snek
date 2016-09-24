@@ -34,10 +34,21 @@ var chat = {
       return;
     }
 
+    if(message.indexOf("admin") == 0) {
+      var command = message.replace("admin","");
+      command = command.trim();
+      this.sendAdminCommand(command);
+      return;
+    }
+
     if(message.length > 0) {
       this.sendMessage(message);
     }
-
+  },
+  sendAdminCommand: function(command){
+    socket.emit('adminCommand', {
+      command: command
+    });
   },
   changeName: function(newName){
     localStorage.setItem("playerName",newName);
