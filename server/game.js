@@ -73,6 +73,20 @@ Game.prototype = {
     });
 
   },
+
+  cleanupGame : function(){
+    // Check each snake, if the associated player doesn't exist in this.players
+    // Kill it off without a respawn
+
+    for(var i = 0; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      var snakeID = snake.id;
+      if(!this.players[snakeID]){
+        snake.die("", true);
+      }
+    }
+  },
+
   move : function(){
     var winnerIDs = [];
     var futureSnakes = this.getFutureSnakes();

@@ -83,6 +83,9 @@ module.exports = function(app) {
       if(command == "resetGame"){
         game.resetGame();
       }
+      if(command == "cleanupGame"){
+        game.cleanupGame();
+      }
     });
 
 

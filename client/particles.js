@@ -1,4 +1,19 @@
-var particles = [];
+var particles = [];         // Holds all particle objects
+var blankParticles = [];    // Holdes reference to pre-appended particle elements
+var maxParticleCount = 100; // Number of pre-appended particle divs
+
+$(document).ready(function(){
+  for(var i = 0; i < maxParticleCount; i++){
+    var blankParticle = $("<div class='blank-particle'></div>");
+    $(".board").append(blankParticle);
+    blankParticles.push({
+      active: false,
+      el: blankParticle
+    });
+  }
+});
+
+// Makes a particle
 
 function makeParticle(options){
 
@@ -44,7 +59,22 @@ function makeParticle(options){
     particle.yV = Math.cos(particle.angle * (Math.PI/180)) * particle.speed;
   }
 
-  particle.el = $("<div class='particle'></div>");
+  for(var i = 0; i < blankParticles.length; i++){
+    var blankParticle = blankParticles[i];
+    if(blankParticle.active == false) {
+      blankParticle.active = true;
+      particle.referenceParticle = blankParticle;
+      particle.el = blankParticle.el;
+      break;
+    }
+  }
+
+  if(!particle.el){
+    return;
+  }
+
+  particle.referenceParticle = blankParticle;
+
   particle.el.css("height", particle.height);
   particle.el.css("width",  particle.width);
   particle.el.addClass(particle.className);
@@ -57,7 +87,10 @@ function makeParticle(options){
     p.lifespan--;
 
     if(p.lifespan < 0) {
-      p.el.remove();
+      p.referenceParticle.active = false;
+      p.el.removeAttr("style");
+      p.el.hide();
+
       for(var i = 0; i < particles.length; i++){
         if(p == particles[i]){
           particles.splice(i, 1);
@@ -81,9 +114,8 @@ function makeParticle(options){
   }
 
   particles.push(particle);
+  particle.el.css("display","block");
   particle.el.css("opacity",0);
-
-  $(".board").append(particle.el);
 }
 
 function getRandom(min, max){
@@ -94,7 +126,6 @@ function getRandom(min, max){
 //Laser Beam
 function makeBeam(x,y,direction, color){
 
-  console.log(x,y,direction,color);
   var snakeX = x * 20; // starting point
   var snakeY = y * 20; //starting point
 
@@ -154,7 +185,6 @@ function shakeScreen(){
 
 // Adds a bomb to the board at x,y
 function makeExplosion(xPos, yPos){
-  console.log("makeExplosion at ", xPos,yPos);
 
   playSound("boom");
   shakeScreen();
@@ -207,7 +237,7 @@ function makeExplosion(xPos, yPos){
   }
 }
 
-
+// Adds effect to a newly spawned snake
 function makeSpawnParticle(xPos, yPos, color){
 
   var size = 1;
@@ -232,6 +262,8 @@ function makeSpawnParticle(xPos, yPos, color){
   $(".board").append(particle.el);
 }
 
+// Adds explosion lines to a bomb effect
+// TODO - moe to makeBomb
 function makeSmear(x, y){
   // Make Bomb blast lines
   for(var i = 0; i < 12; i++){
