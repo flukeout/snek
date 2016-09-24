@@ -231,10 +231,6 @@ function makeSpawnParticle(xPos, yPos, color){
 
   //Move function
   $(".board").append(particle.el);
-
-
-
-
 }
 
 function makeSmear(x, y){
@@ -252,8 +248,8 @@ function makeSmear(x, y){
       oV: -.01
     }
 
-    var percentage = 100 * 20 / options.height;
-    options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, white "+ percentage + 3 +"%,  white 60%, rgba(0,0,0,0)";
+    var percentage = 100 * 15 / options.height; // Percent along blast line where the white should start.
+    options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
     makeParticle(options);
   }
 }
