@@ -237,11 +237,8 @@ function makeSpawnParticle(xPos, yPos, color){
 
 }
 
-
-
 function makeSmear(x, y){
-
-  // Make Bomb blasts
+  // Make Bomb blast lines
   for(var i = 0; i < 12; i++){
     var options = {
       x : x + 8,
@@ -251,23 +248,12 @@ function makeSmear(x, y){
       height: getRandom(60,100),
       className : 'smear',
       lifespan: 200,
-      color: "linear-gradient(white,rgba(0,0,0,0)",
       o: .4,
       oV: -.01
     }
+
+    var percentage = 100 * 20 / options.height;
+    options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, white "+ percentage + 3 +"%,  white 60%, rgba(0,0,0,0)";
     makeParticle(options);
   }
-
-  // Adds a dark patch over the blast marks above...
-
-  var options = {
-    x : x - 10,     // absolute non-relative position on gameboard
-    y : y - 10,     // absolute non-relative position on gameboard
-    width: 40,
-    height: 40,
-    className : 'cover',         // adds this class to the particle <div/>
-    lifespan: 200,              // how many frames it lives
-  }
-  makeParticle(options);
-
 }
