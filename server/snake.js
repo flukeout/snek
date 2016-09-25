@@ -240,7 +240,10 @@ Snake.prototype = {
       name : this.name || "jammer"
     }
 
-    game.addSnake(snakeDetails);
+    // Make sure the player whose snake this was is still in the game
+    if(game.players[this.id]){
+      game.addSnake(snakeDetails);
+    }
   },
 
   loseSegment: function(segment, showParticle) {
