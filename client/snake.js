@@ -47,21 +47,26 @@ function makeSnake(id, x, y, color, direction, length, name){
       return this.segments[this.segments.length -1];
     },
     say : function(message){
-      // For displaying chat messages
+      // Appends a chat message element at the head position
+
+      // Remove any other messages with this snake ID
+      $(".message[snake="+this.id+"]").remove();
+
       var head = this.getHead();
-      var messageEl = $("<div class='message'><div class='body'>"+message+"</div></div>");
-      $(".board").append(messageEl);
+
+      // Include the snake id in the message
+      var messageEl = $("<div snake='" + this.id + "' class='message'><div class='body'>"+message+"</div></div>");
 
       var position = head.el.position();
       messageEl.css("transform","translateX("+head.x * 20+"px) translateY("+head.y*20+"px)");
       messageEl.find(".body").css("color",this.color);
+      $(".board").append(messageEl);
 
       setTimeout(function(el) {
         return function() {
           el.remove();
         };
       }(messageEl), 1500);
-
     },
     makeSegment : function(x,y,place){
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
