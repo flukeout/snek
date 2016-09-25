@@ -73,6 +73,7 @@ function makeParticle(options){
     return;
   }
 
+  // Grabs an available particle from the blankParticles array
   particle.referenceParticle = blankParticle;
 
   particle.el.css("height", particle.height);
@@ -111,7 +112,8 @@ function makeParticle(options){
     p.yR = p.yR + p.yRv;
     p.el.css("transform","translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale("+p.scale+")");
     p.el.css("opacity",p.o);
-  }
+
+  } // particle.move()
 
   particles.push(particle);
   particle.el.css("display","block");
@@ -177,10 +179,92 @@ function makeBeam(x,y,direction, color){
 
 // Shakes the UI elements on teh screen
 function shakeScreen(){
-  $(".border, .leader, .keys-helper").addClass("shake");
-  $(".border").one("animationend",function(){
-    $(".shake").removeClass("shake");
+
+  // This is so GROSS
+  // var frameMs = 40;
+  var border = $(".border, .leader, .keys-helper");
+
+
+
+  border.each(function(index,el){
+
+    var styleTag = $("<style type='text/css'>* {background: pink;}</style>");
+    $("head").append(styleTag);
+
+    styleTag.html(`
+      @keyframes shake-`+index+` {
+        0% {
+          transform: translateX(`+ getRandom(-20,-10)+ `px) translateY(`+ getRandom(-20,-10)+ `px);
+        }
+        25% {
+          transform: translateX(`+ getRandom(10,15)+ `px) translateY(`+ getRandom(10,15)+ `px) rotate(`+getRandom(1,4)+`deg);
+        }
+        50% {
+          transform: translateX(`+ getRandom(-10,-5)+ `px) translateY(`+ getRandom(-10,-5)+ `px);
+        }
+        75% {
+          transform: translateX(`+ getRandom(5,10)+ `px) translateY(`+ getRandom(5,10)+ `px) rotate(`+getRandom(-1,-3)+`deg);
+        }
+      }
+    `);
+
+    $(el).css("animation","shake-" + index + " .2s ease-out");
+
+    setTimeout(function(styleTag,shakeEl) {
+      return function(){
+        styleTag.remove();
+        $(shakeEl).css("animation","");
+      };
+    }(styleTag,el),200);
+
   });
+
+
+
+
+  // $(".border, .leader, .keys-helper").addClass("shake");
+  //
+  // $(".border").one("animationend",function(){
+  //   $(".shake").removeClass("shake");
+  // });
+
+
+
+  // Frame 1
+  // border.css("transition","transform "+frameMs/1000+"s ease-out");
+  // border.css("transform", "translateX("+getRandom(-15,5)+"px) translateY("+getRandom(-15,5)+"px)");
+  //
+  // // Frame 2
+  // setTimeout(function(){
+  //   border.css("transition","transform "+frameMs/1000+"s ease-out");
+  //   border.each(function(index,el){
+  //     $(el).css("transform", "translateX("+getRandom(-5,15)+"px) translateY("+getRandom(-5,15)+"px) rotate("+getRandom(-1,2)+"deg)");
+  //   })
+  // },frameMs);
+  //
+  // // Frame 3
+  // setTimeout(function(){
+  //   border.css("transition","transform "+frameMs/1000+"s ease-out");
+  //   border.each(function(index,el){
+  //     $(el).css("transform", "translateX("+getRandom(-15,5)+"px) translateY("+getRandom(-15,5)+"px)");
+  //   })
+  // },100);
+  //
+  // // Frame 4
+  // setTimeout(function(){
+  //   border.css("transition","transform "+frameMs/1000+"s ease-out");
+  //   border.each(function(index,el){
+  //     $(el).css("transform", "translateX("+getRandom(-5,15)+"px) translateY("+getRandom(-5,15)+"px) rotate("+getRandom(-2,1)+"deg)");
+  //   })
+  // },150);
+
+  // Rest
+  // setTimeout(function(){
+  //   border.css("transform", "");
+  // },200);
+
+
+
 }
 
 // Adds a bomb to the board at x,y
