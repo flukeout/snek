@@ -156,12 +156,17 @@ Snake.prototype = {
 
   processCollisions: function(futureSnakes, head, newHead, newNext) {
     // check for collisions with the level wall
-    var collide = (head.x >= game.width - 1 && this.direction == "right") |
-                  (head.y >= game.height - 1 && this.direction == "down") |
-                  (head.x <= 0 && this.direction == "left") |
-                  (head.y <= 0 && this.direction == "up");
+    var wall  = (head.x >= game.width - 1 && this.direction == "right") |
+                (head.y >= game.height - 1 && this.direction == "down") |
+                (head.x <= 0 && this.direction == "left") |
+                (head.y <= 0 && this.direction == "up");
 
-    // Check collisions with apples or bombs
+    if (wall) {
+      return true;
+    }
+
+    // Check collisions with apples or bombs. These are soft
+    // scollisions and don't lead to actual collision detection
     game.checkCollisions();
 
     // See if we need to move the snake's head due to a collision
@@ -176,7 +181,6 @@ Snake.prototype = {
     if(!collide && this.moving) {
       this.segments.some(segment => {
         if(collider(segment, newHead)) {
-          collide = true;
           return true;
         }
       });
@@ -189,31 +193,29 @@ Snake.prototype = {
         if (snake.id === this.id) return;
 
 //        if (!snake.debug && !snake.moving) {
-//          collide = false;
-//          return;
+//          return false;
 //        }
 
         snake.segments.some( (segment,si) => {
+          // plain collision
           if(collider(segment, newHead, newNext)) {
-            collide = true;
-            return;
+            return true;
           }
-          // we need a secondary check if we're dealing with
-          // single-segment snakes.
+
+          // we need a secondary check if we're dealing with single-segment snakes.
           if (this.segments.length===1 && snake.segments.length===1) {
             let currentHead      = this.getHead();
             let currentOtherHead = game.snakes[i].getHead();
             let futureOtherHead  = snake.getHead();
             if(collider(currentOtherHead, newHead) || collider(futureOtherHead, currentHead)) {
-              collide = true;
-              return;
+              return true;
             }
           }
         });
       });
     }
 
-    return collide;
+    return false;
   },
 
   getHead : function(){
