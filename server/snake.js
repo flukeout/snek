@@ -161,10 +161,6 @@ Snake.prototype = {
                   (head.x <= 0 && this.direction == "left") |
                   (head.y <= 0 && this.direction == "up");
 
-    if (collide) {
-      return true;
-    }
-
     // Check collisions with apples or bombs
     game.checkCollisions();
 
@@ -180,6 +176,7 @@ Snake.prototype = {
     if(!collide && this.moving) {
       this.segments.some(segment => {
         if(collider(segment, newHead)) {
+          collide = true;
           return true;
         }
       });
@@ -191,13 +188,15 @@ Snake.prototype = {
       futureSnakes.forEach( (snake,i) => {
         if (snake.id === this.id) return;
 
-        if (!snake.debug && !snake.moving) {
-          return false;
-        }
+//        if (!snake.debug && !snake.moving) {
+//          collide = false;
+//          return;
+//        }
 
         snake.segments.some( (segment,si) => {
           if(collider(segment, newHead, newNext)) {
-            return true;
+            collide = true;
+            return;
           }
           // we need a secondary check if we're dealing with
           // single-segment snakes.
@@ -206,14 +205,15 @@ Snake.prototype = {
             let currentOtherHead = game.snakes[i].getHead();
             let futureOtherHead  = snake.getHead();
             if(collider(currentOtherHead, newHead) || collider(futureOtherHead, currentHead)) {
-              return true;
+              collide = true;
+              return;
             }
           }
         });
       });
     }
 
-    return false;
+    return collide;
   },
 
   getHead : function(){
