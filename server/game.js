@@ -219,13 +219,51 @@ Game.prototype = {
   },
 
   addApple : function(x, y ){
+
+    // Only adds apples to empty (non-snake) coordinates
+    var possible = this.getEmptyCoordinates();
+    while(!possible){
+      possible = this.getEmptyCoordinates();
+    }
+
     var apple = {
       x : parseFloat(x)==x? x : getRandom(0,this.width - 1),
       y : parseFloat(y)==y? y : getRandom(0,this.height - 1),
       id: uuid()
     };
+
     this.io.emit('addApple', apple);
     this.apples.push(apple);
+  },
+
+  // Retuns random x,y value with nothing on it
+  getEmptyCoordinates: function(){
+    var spot = {
+      x : getRandom(0,this.width - 1),
+      y : getRandom(0,this.height - 1)
+    }
+
+    var free = true;
+
+    for(var i = 0; i < this.snakes.length; i++){
+      var snake = this.snakes[i];
+      for(var j = 0; j < snake.segments.length; j++){
+        var segment = snake.segments[j];
+        if(collider(spot,segment)){
+          free = false;
+          break;
+        }
+      }
+      if(!free){
+        break;
+      }
+    }
+
+    if(free) {
+      return spot;
+    } else {
+      return false;
+    }
   },
 
   removeApple: function(apple){
