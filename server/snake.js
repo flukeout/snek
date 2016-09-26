@@ -187,7 +187,7 @@ Snake.prototype = {
       futureSnakes.forEach( (snake,i) => {
         if (snake.id === this.id) return;
 
-        if (!snake.debug && !snake.moving) {
+        if (!snake.moving) {
           collide = false;
           return;
         }
