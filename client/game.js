@@ -39,6 +39,7 @@ var game = {
     $("[mode]").addClass("hidden");
     $("[mode="+type+"]").removeClass("hidden");
   },
+
   removePlayer : function(id){
     for(var i = 0 ; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -47,6 +48,7 @@ var game = {
       }
     }
   },
+
   changeDirection : function(id,direction,ticks, x, y){
     for(var i = 0; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -55,6 +57,7 @@ var game = {
       }
     }
   },
+
   setup : function(width,height,id,apples,snakes,winlength) {
 
     this.winLength = winlength;
@@ -91,8 +94,8 @@ var game = {
 
     socket.emit("makeSnake");
   },
-  move : function(){
 
+  move : function(){
     var max = 0;
     var longest;
 
@@ -113,11 +116,13 @@ var game = {
     }
 
   },
+
   addSnake : function(id, x, y, color, direction, length, name){
     var snake = makeSnake(id, x, y, color, direction, length, name);
     snake.init();
     this.snakes.push(snake);
   },
+
   addApple : function(x,y,id){
     var apple = {
       el : $("<div class='apple'><div class='body'></div></div>"),
@@ -131,6 +136,7 @@ var game = {
     apple.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
     this.apples.push(apple);
   },
+
   removeApple: function(id){
     for(var i = 0; i < this.apples.length; i++){
       var apple = this.apples[i];
@@ -141,6 +147,7 @@ var game = {
       }
     }
   },
+
   addBomb: function(x, y, id,color) {
     var bomb = {
       el : $("<div class='bomb'><div class='body'></div></div>"),
@@ -156,11 +163,11 @@ var game = {
     bomb.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
     this.bombs.push(bomb);
   },
+
   removeBomb: function(id) {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
-        makeSmear(bomb.x * game.size,bomb.y * game.size);
         makeExplosion(bomb.x, bomb.y);
         bomb.el.remove();
         var bombIndex = this.bombs.indexOf(bomb);

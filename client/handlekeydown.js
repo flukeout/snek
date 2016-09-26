@@ -19,13 +19,8 @@ function handleKeyDown(event, resultTracker) {
   switch(event.keyCode) {
 
     // letter key handling
-    case keys.a:
-    case keys.A:
-      // game.snakes[0].boom();
-      break;
-
-    case keys.v:
-    case keys.V:
+    case keys.w:
+    case keys.W:
       resultTracker.warp = true;
       break;
 

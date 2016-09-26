@@ -111,7 +111,6 @@ function makeSnake(id, x, y, color, direction, length, name){
           that.say(that.phrases[index]);
         },220);
         // Make an explosion!
-        makeSmear(x * game.size,y * game.size);
         makeExplosion(x, y);
       }
 

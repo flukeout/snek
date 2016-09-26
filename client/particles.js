@@ -120,71 +120,11 @@ function makeParticle(options){
   particle.el.css("opacity",0);
 }
 
-function getRandom(min, max){
-  return min + Math.random() * (max-min);
-}
 
-
-//Laser Beam
-function makeBeam(x,y,direction, color){
-
-  var snakeX = x * 20; // starting point
-  var snakeY = y * 20; //starting point
-
-  if(direction == "left") {
-    var width = (game.width - (game.width - x) + 1) * 20;
-    var height = 20;
-    y = snakeY;
-    x = 0;
-  }
-
-  if(direction == "right") {
-    var width = (game.width - x) * 20;
-    var height = 20;
-    y = snakeY;
-    x = snakeX;
-  }
-
-  if(direction == "up") {
-    var width = 20;
-    var height = (game.height - (game.height - y) ) * 20;
-    y = 0;
-    x = snakeX;
-  }
-
-  if(direction == "down") {
-    var width = 20;
-    var height = (game.height - y ) * 20;
-    y = snakeY;
-    x = snakeX;
-  }
-
-  var particle = {};
-  particle.el = $("<div class='beam'><div class='body'/></div>");
-  particle.el.find(".body").css("background",color);
-  particle.el.css("height", height);
-  particle.el.css("width", width);
-  particle.el.css("transform","translate3d("+x+"px,"+y+"px,0)");
-
-  setTimeout(function(el) {
-    return function(){
-      el.remove();
-    };
-  }(particle.el),200);
-
-  $(".border, .leader").removeClass("shake").width($(".border").width());
-  $(".border, .leader").addClass("shake");
-  $(".board").append(particle.el);
-}
-
-// Shakes the UI elements on teh screen
+// Shakes the UI elements on the screen
 function shakeScreen(){
 
-  // This is so GROSS
-  // var frameMs = 40;
   var border = $(".border, .leader, .keys-helper");
-
-
 
   border.each(function(index,el){
 
@@ -218,53 +158,6 @@ function shakeScreen(){
     }(styleTag,el),200);
 
   });
-
-
-
-
-  // $(".border, .leader, .keys-helper").addClass("shake");
-  //
-  // $(".border").one("animationend",function(){
-  //   $(".shake").removeClass("shake");
-  // });
-
-
-
-  // Frame 1
-  // border.css("transition","transform "+frameMs/1000+"s ease-out");
-  // border.css("transform", "translateX("+getRandom(-15,5)+"px) translateY("+getRandom(-15,5)+"px)");
-  //
-  // // Frame 2
-  // setTimeout(function(){
-  //   border.css("transition","transform "+frameMs/1000+"s ease-out");
-  //   border.each(function(index,el){
-  //     $(el).css("transform", "translateX("+getRandom(-5,15)+"px) translateY("+getRandom(-5,15)+"px) rotate("+getRandom(-1,2)+"deg)");
-  //   })
-  // },frameMs);
-  //
-  // // Frame 3
-  // setTimeout(function(){
-  //   border.css("transition","transform "+frameMs/1000+"s ease-out");
-  //   border.each(function(index,el){
-  //     $(el).css("transform", "translateX("+getRandom(-15,5)+"px) translateY("+getRandom(-15,5)+"px)");
-  //   })
-  // },100);
-  //
-  // // Frame 4
-  // setTimeout(function(){
-  //   border.css("transition","transform "+frameMs/1000+"s ease-out");
-  //   border.each(function(index,el){
-  //     $(el).css("transform", "translateX("+getRandom(-5,15)+"px) translateY("+getRandom(-5,15)+"px) rotate("+getRandom(-2,1)+"deg)");
-  //   })
-  // },150);
-
-  // Rest
-  // setTimeout(function(){
-  //   border.css("transform", "");
-  // },200);
-
-
-
 }
 
 // Adds a bomb to the board at x,y
@@ -319,6 +212,27 @@ function makeExplosion(xPos, yPos){
 
     makeParticle(options);
   }
+
+
+  // Bomb blasts that eminate from the center of the bomb
+  for(var i = 0; i < getRandom(8,12); i++){
+    var options = {
+      x : (xPos * 20) + 8,
+      y : (yPos * 20) + 8,
+      zR : getRandom(0,360),
+      width: 4,
+      height: getRandom(60,100),
+      className : 'smear',
+      lifespan: 200,
+      o: .4,
+      oV: -.01
+    }
+
+    var percentage = 100 * 15 / options.height; // Percent along blast line where the white should start.
+    options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
+    makeParticle(options);
+  }
+
 }
 
 // Adds effect to a newly spawned snake
@@ -346,25 +260,7 @@ function makeSpawnParticle(xPos, yPos, color){
   $(".board").append(particle.el);
 }
 
-// Adds explosion lines to a bomb effect
-// TODO - moe to makeBomb
-function makeSmear(x, y){
-  // Make Bomb blast lines
-  for(var i = 0; i < 12; i++){
-    var options = {
-      x : x + 8,
-      y : y + 8,
-      zR : getRandom(0,360),
-      width: 4,
-      height: getRandom(60,100),
-      className : 'smear',
-      lifespan: 200,
-      o: .4,
-      oV: -.01
-    }
 
-    var percentage = 100 * 15 / options.height; // Percent along blast line where the white should start.
-    options.color = "linear-gradient(rgba(0,0,0,0) "+percentage+"%, rgba(255,255,255,.6) "+ percentage + 3 +"%, rgba(255,255,255,.6) 60%, rgba(0,0,0,0)";
-    makeParticle(options);
-  }
+function getRandom(min, max){
+  return min + Math.random() * (max-min);
 }
