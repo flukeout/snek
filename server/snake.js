@@ -41,6 +41,7 @@ Snake.prototype = {
   },
 
   changeDirection : function(newDirection){
+    this.moving = true;
 
     if(this.segments.length == 1) {
       this.nextDirection = newDirection;
@@ -122,7 +123,6 @@ Snake.prototype = {
       this.changeDirection(nextDirection);
       this.directionQ.splice(0, 1);
       this.direction = this.nextDirection;
-      this.moving = true;
     }
 
     var head = this.segments.slice(-1)[0];
@@ -131,6 +131,7 @@ Snake.prototype = {
 
     var newHead = { x: head.x, y: head.y };
     var newNext = next==false ? false : { x: next.x, y: next.y };
+
     var collide = false;
 
     if(this.moving && game.mode === "game" && futureSnakes) {
@@ -179,11 +180,15 @@ Snake.prototype = {
     // Check if the snake has collided with itself, if it
     // hasn't collided with the level wall
     if(this.moving) {
-      this.segments.some(segment => {
+      var selfCollision = this.segments.some(segment => {
         if(collider(segment, newHead)) {
           return true;
         }
       });
+
+      if (selfCollision) {
+        return true;
+      }
     }
 
     // If it hasn't yet collided with the wall, or itself, check collisions
