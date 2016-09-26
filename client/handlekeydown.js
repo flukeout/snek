@@ -24,6 +24,12 @@ function handleKeyDown(event, resultTracker) {
       // game.snakes[0].boom();
       break;
 
+    case keys.v:
+    case keys.V:
+      resultTracker.warp = true;
+      break;
+
+
     case keys.b:
     case keys.B:
       resultTracker.bomb = true;
@@ -51,5 +57,6 @@ function handleKeyDown(event, resultTracker) {
     default:
       resultTracker.direction = false;
       resultTracker.bomb = false;
+      resultTracker.warp = false;
   }
 }

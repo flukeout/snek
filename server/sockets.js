@@ -115,6 +115,15 @@ module.exports = function(app) {
       }
     });
 
+    // client warps
+    socket.on('warpSnake', function() {
+      var snake = findPlayerSnake(player.id);
+      if (snake) {
+        snake.eventQ.push("warp");
+      }
+    });
+
+
     // client snake died... broadcast to all connected clients
     socket.on('died', function() {
       io.emit('killSnake', {

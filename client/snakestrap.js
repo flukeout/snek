@@ -3,7 +3,8 @@ $(document).ready(function(){
   $(document).on("keydown",function(event) {
     var keyDownResult = {
       direction: false,
-      bomb: false
+      bomb: false,
+      warp : false
     };
 
     handleKeyDown(event, keyDownResult);
@@ -29,6 +30,12 @@ $(document).ready(function(){
     if(bomb) {
       socket.emit('dropBomb')
     }
+
+    var warp = keyDownResult.warp;
+    if(warp) {
+      socket.emit('warpSnake')
+    }
+
   });
 
   chat.init();

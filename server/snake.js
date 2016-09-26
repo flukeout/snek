@@ -115,6 +115,10 @@ Snake.prototype = {
       if(nextEvent == "bomb") {
         this.dropBomb();
       }
+
+      if(nextEvent == "warp") {
+        this.warp();
+      }
     }
 
     if(this.directionQ.length > 0) {
@@ -266,6 +270,7 @@ Snake.prototype = {
       this.tombStone = lastRemoved;
     }
   },
+
   dropBomb : function() {
     if (this.segments.length>1) {
       var tail = this.getTail();
@@ -273,6 +278,26 @@ Snake.prototype = {
       this.loseSegment(this.segments[0], false);
     }
   },
+
+  warp : function(){
+    // OK SO... what do.. mothefucker...
+
+    for(var i = 0; i  < 5; i++) {
+      var head = this.segments.slice(-1)[0];
+      var newHead = { x: head.x, y: head.y };
+
+      var d = this.direction;
+           if (d === "up")    { newHead.y--; }
+      else if (d === "down")  { newHead.y++; }
+      else if (d === "right") { newHead.x++; }
+      else if (d === "left")  { newHead.x--; }
+
+      this.makeSegment(newHead.x,newHead.y,"head");
+      this.segments.splice(0,1);
+    }
+
+  },
+
   die : function(type, norespawn) {
     // console.log("A " + type  + " death");
 
