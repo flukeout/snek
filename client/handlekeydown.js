@@ -29,7 +29,6 @@ function handleKeyDown(event, resultTracker) {
       resultTracker.warp = true;
       break;
 
-
     case keys.b:
     case keys.B:
       resultTracker.bomb = true;

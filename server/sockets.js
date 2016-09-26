@@ -107,7 +107,7 @@ module.exports = function(app) {
 
     // client warps
     socket.on('warpSnake', function() {
-      var snake = findPlayerSnake(player.id);
+      var snake = game.findPlayerSnake(player.id);
       if (snake) {
         snake.eventQ.push("warp");
       }
