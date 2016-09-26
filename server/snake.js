@@ -24,7 +24,7 @@ var Snake = function(details, _game) {
   this.name = details.name || "ServerSnake";
   this.size = details.size || 4;
   this.segments = (details.segments || []).slice();
-  this.moved = details.moved || false;
+  this.moving = details.moving || false;
   this.direction = details.direction || undefined;
   this.nextDirection = details.nextDirection || "";
   this.directionQ = [];
@@ -187,10 +187,10 @@ Snake.prototype = {
       futureSnakes.forEach( (snake,i) => {
         if (snake.id === this.id) return;
 
-//        if (!snake.debug && !snake.moving) {
-//          collide = false;
-//          return;
-//        }
+        if (!snake.debug && !snake.moving) {
+          collide = false;
+          return;
+        }
 
         snake.segments.some( (segment,si) => {
           if(collider(segment, newHead, newNext)) {
