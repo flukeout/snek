@@ -187,10 +187,10 @@ Snake.prototype = {
       futureSnakes.forEach( (snake,i) => {
         if (snake.id === this.id) return;
 
-//        if (!snake.debug && !snake.moving) {
-//          collide = false;
-//          return;
-//        }
+        if (!snake.debug && !snake.moving) {
+          collide = false;
+          return;
+        }
 
         snake.segments.some( (segment,si) => {
           if(collider(segment, newHead, newNext)) {
