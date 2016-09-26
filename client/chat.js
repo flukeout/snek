@@ -51,6 +51,9 @@ var chat = {
     });
   },
   changeName: function(newName){
+    if(newName.length > 12) {
+      newName = newName.substring(0,12) + "...";
+    }
     localStorage.setItem("playerName",newName);
     socket.emit('changeName', {
       name: newName
@@ -58,6 +61,9 @@ var chat = {
     this.sendMessage("Hi, I'm " + newName);
   },
   sendMessage: function(message){
+    if(message.length > 32) {
+      message = message.substring(0,32) + "...";
+    }
     socket.emit('sendChat', {
       message: message
     });
