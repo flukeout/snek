@@ -180,35 +180,39 @@ Snake.prototype = {
     // Check if the snake has collided with itself, if it
     // hasn't collided with the level wall
     if(this.moving) {
-      var selfCollision = this.segments.some(segment => {
+      for(var i=0; i<this.segments.length; i++) {
+        var segment = this.segments[i];
         if(collider(segment, newHead)) {
+          // collided with self!
           return true;
         }
-      });
-
-      if (selfCollision) {
-        return true;
       }
     }
 
-    // If it hasn't yet collided with the wall, or itself, check collisions
-    // with other snakes (as they exist next frame).
     var otherCollision = false;
 
-    futureSnakes.forEach( (snake,i) => {
+    // If it hasn't yet collided with the wall, or itself, check collisions
+    // with other snakes (as they exist next frame).
+    for (var i=0; i<futureSnakes.length; i++) {
+      var snake = futureSnakes[i];
+
+      // Ignore collisions with ourselves
       if (snake.id === this.id) {
-        return false;
+        continue;
       }
 
+      // Ignore collisions with just-spawned
+      // snakes (= not moving snake)
       if (!snake.debug && !snake.moving) {
-        return false;
+        continue;
       }
 
-      var otherCollision = snake.segments.some( (segment,si) => {
+      for(var si = 0; si<snake.segments.length; si++) {
+        var segment = snake.segments[si];
+
         // plain collision
         if(collider(segment, newHead, newNext)) {
           otherCollision = true;
-          return true;
         }
 
         // we need a secondary check if we're dealing with single-segment snakes.
@@ -218,15 +222,10 @@ Snake.prototype = {
           let futureOtherHead  = snake.getHead();
           if(collider(currentOtherHead, newHead) || collider(futureOtherHead, currentHead)) {
             otherCollision = true;
-            return true;
           }
         }
-      });
-
-      if (otherCollision) {
-        return true;
       }
-    });
+    }
 
     return otherCollision;
   },
