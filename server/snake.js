@@ -202,7 +202,7 @@ Snake.prototype = {
         return false;
       }
 
-      snake.segments.some( (segment,si) => {
+      var otherCollision = snake.segments.some( (segment,si) => {
         // plain collision
         if(collider(segment, newHead, newNext)) {
           return true;
@@ -218,6 +218,10 @@ Snake.prototype = {
           }
         }
       });
+
+      if (otherCollision) {
+        return true;
+      }
     });
 
     return false;
