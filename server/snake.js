@@ -193,6 +193,8 @@ Snake.prototype = {
 
     // If it hasn't yet collided with the wall, or itself, check collisions
     // with other snakes (as they exist next frame).
+    var otherCollision = false;
+
     futureSnakes.forEach( (snake,i) => {
       if (snake.id === this.id) {
         return false;
@@ -205,6 +207,7 @@ Snake.prototype = {
       var otherCollision = snake.segments.some( (segment,si) => {
         // plain collision
         if(collider(segment, newHead, newNext)) {
+          otherCollision = true;
           return true;
         }
 
@@ -214,6 +217,7 @@ Snake.prototype = {
           let currentOtherHead = game.snakes[i].getHead();
           let futureOtherHead  = snake.getHead();
           if(collider(currentOtherHead, newHead) || collider(futureOtherHead, currentHead)) {
+            otherCollision = true;
             return true;
           }
         }
@@ -224,7 +228,7 @@ Snake.prototype = {
       }
     });
 
-    return false;
+    return otherCollision;
   },
 
   getHead : function(){
