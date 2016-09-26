@@ -7,16 +7,6 @@ var nextColor = require('./colors');
 var game;
 var players = {};
 
-var findPlayerSnake = function(playerid) {
-  for(var i = 0 ; i < game.snakes.length; i++) {
-    var snake = game.snakes[i];
-    if(snake.id === playerid) {
-      return snake
-    }
-  }
-  return false;
-};
-
 module.exports = function(app) {
 
   var server = http.Server(app);
@@ -73,7 +63,7 @@ module.exports = function(app) {
 
     socket.on('changeName',function(data){
       player.name = data.name;
-      var snake = findPlayerSnake(player.id);
+      var snake = game.findPlayerSnake(player.id);
       snake.name = player.name;
     });
 
@@ -101,7 +91,7 @@ module.exports = function(app) {
 
     // client sends direction input to server, server broadcasts the player's move
     socket.on('direction', function(data){
-      var snake = findPlayerSnake(player.id);
+      var snake = game.findPlayerSnake(player.id);
       if (snake) {
         snake.pushDirection(data.direction);
       }
@@ -109,7 +99,7 @@ module.exports = function(app) {
 
     // client drop a bomb on everyone
     socket.on('dropBomb', function() {
-      var snake = findPlayerSnake(player.id);
+      var snake = game.findPlayerSnake(player.id);
       if (snake) {
         snake.eventQ.push("bomb");
       }

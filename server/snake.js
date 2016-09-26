@@ -149,6 +149,16 @@ Snake.prototype = {
       io.emit('loseHead', {id: this.id,});
       if(this.segments.length > 1) {
         this.segments.splice(0,1);
+
+        // if you ran onto a snake, they get sections
+        if (collide.id) {
+          var victor = game.findPlayerSnake(collide.id);
+          if (victor) {
+            var tail = victor.getTail();
+            victor.makeSegment(tail.x, tail.y, "tail");
+          }
+        }
+
       } else {
         this.die();
         game.cleanupDebug();
@@ -216,7 +226,7 @@ Snake.prototype = {
 
         // plain collision
         if(collider(segment, newHead, newNext)) {
-          otherCollision = true;
+          otherCollision = snake;
         }
 
         // we need a secondary check if we're dealing with single-segment snakes.
@@ -225,7 +235,7 @@ Snake.prototype = {
           let currentOtherHead = game.snakes[i].getHead();
           let futureOtherHead  = snake.getHead();
           if(collider(currentOtherHead, newHead) || collider(futureOtherHead, currentHead)) {
-            otherCollision = true;
+            otherCollision = snake;
           }
         }
       }

@@ -23,6 +23,16 @@ Game.prototype = {
   players : {},     // But object here - why? Should we standardize?
   mode : "game",
 
+  findPlayerSnake: function(playerid) {
+    for(var i = 0 ; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      if(snake.id === playerid) {
+        return snake
+      }
+    }
+    return false;
+  },
+
   removePlayer : function(id){
     for(var i = 0 ; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
