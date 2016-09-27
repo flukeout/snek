@@ -37,6 +37,7 @@ function makeParticle(options){
 
     scale : options.scale || 1,
     scaleV : options.scaleV || 0,
+    scaleVa : options.scaleVa || 0,
 
     speed : options.speed || false,
     angle : options.angle || false,
@@ -50,6 +51,7 @@ function makeParticle(options){
     className : options.className || false,
 
     lifespan : options.lifespan || 0,
+    delay : options.delay || 0, //how long to wait before moving
   };
 
 
@@ -82,14 +84,19 @@ function makeParticle(options){
   particle.el.css("background",particle.color);
 
   particle.move = function(){
-
     var p = this;
+
+    if(p.delay > 0) {
+      p.delay--;
+      return;
+    }
 
     p.lifespan--;
 
     if(p.lifespan < 0) {
       p.referenceParticle.active = false;
       p.el.removeAttr("style");
+      p.el.removeClass(p.className);
       p.el.hide();
 
       for(var i = 0; i < particles.length; i++){
@@ -106,6 +113,7 @@ function makeParticle(options){
     p.zV = p.zV - p.gravity
 
     p.scale = p.scale + p.scaleV;
+    p.scaleV = p.scaleV + p.scaleVa;
 
     p.xR = p.xR + p.xRv;
     p.zR = p.zR + p.zRv;
