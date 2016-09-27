@@ -32,15 +32,17 @@ module.exports = function(app) {
     console.log('Number of players', Object.keys(players).length);
 
     // send in response to connecting:
-    socket.emit('gameSetup', {
-      width: game.width,
-      height: game.height,
-      id: player.id,
-      color: player.color,
-      apples: game.apples,
-      snakes: game.snakes,
-      winLength : game.winLength,
-    });
+    setTimeout(function(){
+      socket.emit('gameSetup', {
+        width: game.width,
+        height: game.height,
+        id: player.id,
+        color: player.color,
+        apples: game.apples,
+        snakes: game.snakes,
+        winLength : game.winLength,
+      });
+    },1000)
 
     // a client disconnects - we don't do much with that yet
     socket.on('disconnect', function(){
