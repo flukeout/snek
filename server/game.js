@@ -60,6 +60,8 @@ Game.prototype = {
   resetGame : function(){
     console.log("resetGame");
 
+
+
     for(var i = 0; i < this.snakes.length; i++){
       var s = this.snakes[i];
       s.die("quiet");
@@ -72,6 +74,7 @@ Game.prototype = {
         color: this.players[key].color,
         name : this.players[key].name
       }
+      console.log("addSnake:", snakeDetails)
       this.addSnake(snakeDetails);
     })
 
@@ -142,7 +145,7 @@ Game.prototype = {
   checkWinners: function(winnerIDs){
     var that = this;
 
-    if(this.mode == "game") {
+
       if(winnerIDs.length > 0){
 
         for(var i = 0; i < winnerIDs.length; i++){
@@ -170,7 +173,9 @@ Game.prototype = {
           winner : winnerIDs[0]
         });
 
-        this.mode = "winner"
+        winnerIDs = [];
+
+        this.mode = "winner";
 
         this.snakes.forEach(snake => {
           if(winnerIDs.indexOf(snake.id) < 0 ){
@@ -182,7 +187,7 @@ Game.prototype = {
           that.resetGame();
         },5000);
       }
-    }
+
 
 
   },
