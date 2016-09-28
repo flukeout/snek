@@ -60,13 +60,10 @@ Game.prototype = {
   resetGame : function(){
     console.log("resetGame");
 
-    // Kill all snakes in game
-    var num = parseInt(this.snakes.length);
-    for(var i = 0; i < num; i++) {
-      var snake = this.snakes[0];
+    for (var i=this.snakes.length-1; i>=0; i--) {
+      let snake = this.snakes[i];
       snake.die("quiet");
     }
-
 
     // For each player in the game, add a snake
     Object.keys(this.players).forEach(key => {
@@ -169,14 +166,11 @@ Game.prototype = {
 
         this.mode = "winner";
 
-        var num = parseInt(this.snakes.length);
-        var j = 0;
-        for(var i = 0; i < num; i++) {
-          var snake = this.snakes[j];
+        // Explode eveyrone but the winner!
+        for (var i=this.snakes.length-1; i>=0; i--) {
+          let snake = this.snakes[i];
           if(winnerIDs.indexOf(snake.id) < 0) {
             snake.die("loud",true);
-          } else {
-            j++;
           }
         }
 
