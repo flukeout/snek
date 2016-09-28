@@ -166,6 +166,7 @@ Game.prototype = {
         console.log("number: " + Object.keys(this.players).length);
         console.log("Sendplayers...")
         console.log(sendPlayers);
+        console.log(this.snakes);
 
         this.io.emit('gameOver', {
           players : sendPlayers,
@@ -179,6 +180,7 @@ Game.prototype = {
         this.snakes.forEach(snake => {
           // if(winnerIDs.indexOf(snake.id) < 0 ){
             snake.die("quiet",true);
+
           // }
         });
 
