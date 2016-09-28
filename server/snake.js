@@ -302,7 +302,10 @@ Snake.prototype = {
   },
 
   warp : function(){
-    // OK SO... what do.. mothefucker...
+    // OK SO - this warps the snake forward 5 spots
+    // Ignore collision detection
+
+    var warpSegments = [];
 
     for(var i = 0; i  < 5; i++) {
       var head = this.segments.slice(-1)[0];
@@ -315,9 +318,20 @@ Snake.prototype = {
       else if (d === "left")  { newHead.x--; }
 
       this.makeSegment(newHead.x,newHead.y,"head");
+
+      var tailClone = {
+        x: parseInt(this.segments[0].x),
+        y: parseInt(this.segments[0].y)
+      }
+      warpSegments.push(tailClone);
       this.segments.splice(0,1);
+
     }
 
+    io.emit('warpSnake', {
+      id: this.id,
+      segments: warpSegments
+    });
   },
 
   die : function(type, norespawn) {

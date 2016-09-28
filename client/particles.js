@@ -93,7 +93,7 @@ function makeParticle(options){
 
     p.lifespan--;
 
-    if(p.lifespan < 0) {
+    if(p.lifespan < 0 || p.o < 0) {
       p.referenceParticle.active = false;
       p.el.removeAttr("style");
       p.el.removeClass(p.className);

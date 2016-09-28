@@ -12,6 +12,7 @@ function makeSnake(id, x, y, color, direction, length, name){
     speed : 5, // every 10 frames?
     segments : [],
     changes : [],
+    upcomingWarp : false,
     phrases : [
       "...",
       "!!?",
@@ -52,6 +53,54 @@ function makeSnake(id, x, y, color, direction, length, name){
     getHead : function(){
       return this.segments[this.segments.length -1];
     },
+
+    loadWarp : function(segments){
+      this.upcomingWarp = segments;
+    },
+
+    warp : function(segments) {
+
+      for(var i = 0; i < segments.length; i++){
+        var segment = segments[i];
+
+        var options = {
+          x : segment.x * this.size + 1,
+          y : segment.y * this.size + 1,
+          width: 18,
+          height: 18,
+          color: this.color,
+          o: .4,
+          oV: -0.005,
+          lifespan : 300,
+          className : "warpskid",
+        }
+        makeParticle(options);
+      } // for each warp segments
+
+
+      // for(var j = 0; j < 5; j++) {
+      //   var options = {
+      //     x : this.segments[0].x * this.size + 5,
+      //     y : this.segments[0].y * this.size + 5,
+      //     // angle : getRandom(0,359),
+      //     // speed : getRandom(0,2),
+      //     width: 5,
+      //     // xV : 2,
+      //     // yV : getRandom(-.5,.5),
+      //     height: 5,
+      //     zV : getRandom(1,2),
+      //     // gravity: .1,
+      //     color: this.color,
+      //     o: .2,
+      //     oV: -0.0025,
+      //     lifespan : 300,
+      //     className : "warpskid",
+      //     // delay: getRandom(10,40)
+      //   }
+      //   makeParticle(options);
+      // }
+    },
+
     say : function(message){
       // Appends a chat message element at the head position
 
@@ -74,6 +123,7 @@ function makeSnake(id, x, y, color, direction, length, name){
         };
       }(messageEl), 1500);
     },
+
     makeSegment : function(x,y,place){
       var segmentEl = $("<div class='snek'><div class='body'></div></div>");
 
@@ -100,6 +150,10 @@ function makeSnake(id, x, y, color, direction, length, name){
     },
     move : function(){
       this.draw();
+      if(this.upcomingWarp){
+        this.warp(this.upcomingWarp);
+        this.upcomingWarp = false;
+      }
     },
     die : function(x,y,type){
 

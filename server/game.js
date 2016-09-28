@@ -10,7 +10,7 @@ var Game = function(io,players) {
 
 Game.prototype = {
   size : 5,         // starting snake size
-  winLength : 15,   // How long a snakes needs to bo to win the round
+  winLength : 6,   // How long a snakes needs to bo to win the round
   width : 42,       // board width
   height: 28,       // board height
   apples : [],
@@ -58,6 +58,7 @@ Game.prototype = {
   },
 
   resetGame : function(){
+    console.log("resetGame");
 
     for(var i = 0; i < this.snakes.length; i++){
       var s = this.snakes[i];
@@ -78,9 +79,13 @@ Game.prototype = {
 
     this.mode = "game";
 
-    this.io.emit('gameMode', {
-      mode : "game"
-    });
+    var that = this;
+    setTimeout(function(){
+      that.io.emit('gameMode', {
+        mode : "game"
+      });
+
+    },1000);
 
   },
 
@@ -152,6 +157,11 @@ Game.prototype = {
           })
         })
 
+        console.log("Game over, players in game are....");
+        console.log("number: " + Object.keys(this.players).length);
+        console.log("Sendplayers...")
+        console.log(sendPlayers);
+
         this.io.emit('gameOver', {
           players : sendPlayers,
           winner : winnerIDs[0]
@@ -167,7 +177,7 @@ Game.prototype = {
 
         setTimeout(function(){
           that.resetGame();
-        },5000)
+        },5000);
       }
     }
 
