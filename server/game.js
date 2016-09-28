@@ -120,8 +120,13 @@ Game.prototype = {
           winnerIDs.push(s.id);
         }
       }
-      this.checkWinners(winnerIDs);
     });
+
+    if(this.mode == "game") {
+      this.checkWinners(winnerIDs);
+      this.checkBombs();
+    }
+
   },
 
   getFutureSnakes: function() {
@@ -179,7 +184,7 @@ Game.prototype = {
       }
     }
 
-    this.checkBombs();
+
   },
 
   checkBombs : function(){
