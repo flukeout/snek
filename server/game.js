@@ -84,7 +84,6 @@ Game.prototype = {
       that.io.emit('gameMode', {
         mode : "game"
       });
-
     },1000);
 
   },
@@ -121,9 +120,8 @@ Game.prototype = {
           winnerIDs.push(s.id);
         }
       }
+      this.checkWinners(winnerIDs);
     });
-
-    this.checkWinners(winnerIDs);
   },
 
   getFutureSnakes: function() {
