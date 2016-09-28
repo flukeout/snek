@@ -75,15 +75,38 @@ body, html {
     transform: rotate(45deg);
   }
 
+  &.player-snake.not-moving .body {
+    // outline: 10px solid rgba(255,255,255,.2);
+    animation: .2s ease-out playerIndicator infinite;
+  }
+
   .body {
     position: absolute;
     width: ~"calc(100% - 2px)";
     height: ~"calc(100% - 2px)";
     top: 1px;
     left: 1px;
-    // border-bottom: solid 2px rgba(0,0,0,.2);
-    // animation: flicker .01s infinite;
   }
+}
+
+
+@keyframes flicker {
+  0% { opacity: 1;}
+  50% { opacity: .8;}
+  100% { opacity: 1;}
+}
+
+@keyframes playerIndicator {
+  0% {
+    outline: 10px solid rgba(255,255,255,.12);
+  }
+  50% {
+    outline: 16px solid rgba(255,255,255,.12);
+  }
+  100% {
+    outline: 10px solid rgba(255,255,255,.12);
+  }
+
 }
 
 @keyframes flicker {
@@ -519,11 +542,10 @@ body, html {
 
 [mode='winner'] {
   color: white;
-  font-size: 40px;
   font-weight: bold;
 
   .scoreboard {
-    width: 40%;
+    width: 350px;
 
     h1 {
       font-size: 30px;
@@ -533,8 +555,6 @@ body, html {
       color: white;
     }
 
-    font-size: 20px;
-
     ul {
       list-style-type: none;
       padding: 0;
@@ -543,6 +563,7 @@ body, html {
         border-bottom: solid 2px rgba(255,255,255,.2);
         padding: 10px 0;
         color: white;
+        font-size: 30px;
 
         .points {
           float: right;
@@ -682,5 +703,10 @@ body, html {
 .underblast {
   z-index: 2;
   position: absolute;
+  border-radius: 50%;
+}
+
+
+.spawn-particle {
   border-radius: 50%;
 }

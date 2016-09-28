@@ -35,7 +35,6 @@ var game = {
 
   },
   changeMode : function(type){
-    this.game = type;
     $("[mode]").addClass("hidden");
     $("[mode="+type+"]").removeClass("hidden");
   },

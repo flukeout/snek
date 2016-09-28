@@ -5,13 +5,10 @@ function makeSnake(id, x, y, color, direction, length, name){
     id : id,
     size : 20,
     name : name,
-    points : 0,
     length: length,
     moving : false,
     color : color,
-    speed : 5, // every 10 frames?
     segments : [],
-    changes : [],
     upcomingWarp : false,
     phrases : [
       "...",
@@ -43,6 +40,7 @@ function makeSnake(id, x, y, color, direction, length, name){
       "why??",
       "wut"
     ],
+
     init : function(){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
@@ -50,6 +48,7 @@ function makeSnake(id, x, y, color, direction, length, name){
       makeSpawnParticle(x, y, this.color);
       this.say(this.name);
     },
+
     getHead : function(){
       return this.segments[this.segments.length -1];
     },
@@ -76,29 +75,6 @@ function makeSnake(id, x, y, color, direction, length, name){
         }
         makeParticle(options);
       } // for each warp segments
-
-
-      // for(var j = 0; j < 5; j++) {
-      //   var options = {
-      //     x : this.segments[0].x * this.size + 5,
-      //     y : this.segments[0].y * this.size + 5,
-      //     // angle : getRandom(0,359),
-      //     // speed : getRandom(0,2),
-      //     width: 5,
-      //     // xV : 2,
-      //     // yV : getRandom(-.5,.5),
-      //     height: 5,
-      //     zV : getRandom(1,2),
-      //     // gravity: .1,
-      //     color: this.color,
-      //     o: .2,
-      //     oV: -0.0025,
-      //     lifespan : 300,
-      //     className : "warpskid",
-      //     // delay: getRandom(10,40)
-      //   }
-      //   makeParticle(options);
-      // }
     },
 
     say : function(message){
@@ -144,10 +120,13 @@ function makeSnake(id, x, y, color, direction, length, name){
       } else {
         this.segments.push(segmentDetails);
       }
+
     },
+
     eat : function(){
       playSound("eat");
     },
+
     move : function(){
       this.draw();
       if(this.upcomingWarp){
@@ -155,6 +134,7 @@ function makeSnake(id, x, y, color, direction, length, name){
         this.upcomingWarp = false;
       }
     },
+
     die : function(x,y,type){
 
       if(type != "quiet"){
@@ -175,10 +155,12 @@ function makeSnake(id, x, y, color, direction, length, name){
       var snakeIndex = game.snakes.indexOf(this);
       game.snakes.splice(snakeIndex, 1);
     },
+
     boom : function(){
       var head = this.segments[this.segments.length - 1];
       makeBeam(head.x, head.y, this.direction || "left", this.color);
     },
+
     removeSegment : function(segment){
       // This removes the element and the segment from the array;
       var segmentIndex = this.segments.indexOf(segment);
@@ -186,6 +168,7 @@ function makeSnake(id, x, y, color, direction, length, name){
       el.remove();
       this.segments.splice(segmentIndex,1);
     },
+
     loseSegment: function(x, y, showParticle, position) {
 
       if(this.segments.length > 1) {
@@ -215,15 +198,28 @@ function makeSnake(id, x, y, color, direction, length, name){
       }
 
     },
+
     loseHead : function(){
       var head = this.segments[this.segments.length - 1];
       this.loseSegment(head.x,head.y,true, "head")
     },
+
     draw : function(){
+
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
         $(seg.el).css("opacity", 1);
+        if(this.id == game.playerId){
+          $(seg.el).addClass("player-snake");
+        } else {
+          $(seg.el).removeClass("player-snake");
+        }
         $(seg.el).css("transform","translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)");
+        if(!this.moving && i == 0) {
+          $(seg.el).addClass("not-moving");
+        } else {
+          $(seg.el).removeClass("not-moving");
+        }
       }
     }
   }

@@ -14,7 +14,7 @@ var scoreBoard = {
       if(s.id == winner) {
         winnerName = s.name;
       }
-      var item = $("<li><span class='name'>"+s.name+"</span><span class='points'>"+s.points+" pts.</span>");
+      var item = $("<li><span class='name'>"+s.name+"</span><span class='points'>"+s.points+"</span>");
       $(".scoreboard ul").append(item);
     }
 
