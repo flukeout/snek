@@ -177,9 +177,9 @@ Game.prototype = {
         this.mode = "winner";
 
         this.snakes.forEach(snake => {
-          if(winnerIDs.indexOf(snake.id) < 0 ){
+          // if(winnerIDs.indexOf(snake.id) < 0 ){
             snake.die("quiet",true);
-          }
+          // }
         });
 
         setTimeout(function(){
