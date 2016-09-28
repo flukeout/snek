@@ -170,11 +170,13 @@ Game.prototype = {
         this.mode = "winner";
 
         var num = parseInt(this.snakes.length);
-
+        var j = 0;
         for(var i = 0; i < num; i++) {
-          var snake = this.snakes[0];
+          var snake = this.snakes[j];
           if(winnerIDs.indexOf(snake.id) < 0) {
             snake.die("loud",true);
+          } else {
+            j++;
           }
         }
 
