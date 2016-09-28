@@ -241,6 +241,20 @@ function makeExplosion(xPos, yPos){
     makeParticle(options);
   }
 
+  var options = {
+    x : xPos * 20 - 190,
+    y : yPos * 20 - 190,
+    width : 400,
+    height: 400,
+    o : .1,
+    oV : -.002,
+    className : "underblast",
+    lifespan: 125,
+    scale : 1,
+    scaleV : -.01,
+    color: "radial-gradient(white 10%, rgba(255,255,255,0) 50%)",
+  }
+  makeParticle(options);
 }
 
 // Adds effect to a newly spawned snake

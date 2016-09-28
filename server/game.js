@@ -145,8 +145,6 @@ Game.prototype = {
 
   checkWinners: function(winnerIDs){
     var that = this;
-
-
       if(winnerIDs.length > 0){
 
         for(var i = 0; i < winnerIDs.length; i++){
@@ -164,48 +162,26 @@ Game.prototype = {
           })
         })
 
-        // console.log("Game over, players in game are....");
-        // console.log("number: " + Object.keys(this.players).length);
-        // console.log("Sendplayers...")
-        // console.log(sendPlayers);
-        // console.log(this.snakes);
-
         this.io.emit('gameOver', {
           players : sendPlayers,
           winner : winnerIDs[0]
         });
-        console.log("GAME OVER");
-        console.log(sendPlayers);
-        console.log(winnerIDs);
-
-        winnerIDs = [];
 
         this.mode = "winner";
-
 
         var num = parseInt(this.snakes.length);
 
         for(var i = 0; i < num; i++) {
           var snake = this.snakes[0];
-          snake.die("quiet",true);
+          if(winnerIDs.indexOf(snake.id) < 0) {
+            snake.die("loud",true);
+          }
         }
-
-        // this.snakes.forEach(snake => {
-        //   console.log("foreach snake");
-        //   // if(winnerIDs.indexOf(snake.id) < 0 ){
-        //     // console.log("killing snake id: ", snake.id);
-        //
-        //
-        //   // }
-        // });
 
         setTimeout(function(){
           that.resetGame();
         },5000);
       }
-
-
-
   },
 
   checkBombs : function(){

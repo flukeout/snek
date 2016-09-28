@@ -108,7 +108,6 @@ socket.on('killSnake', function(msg){
   var x = msg.x;
   var y = msg.y;
   var type = msg.type;
-
   var snake = getSnake(msg.id);
   snake.die(x,y,type);
 });
