@@ -60,11 +60,13 @@ Game.prototype = {
   resetGame : function(){
     console.log("resetGame");
 
-
-    for(var i = 0; i < this.snakes.length; i++){
-      var s = this.snakes[i];
-      s.die("quiet");
+    // Kill all snakes in game
+    var num = parseInt(this.snakes.length);
+    for(var i = 0; i < num; i++) {
+      var snake = this.snakes[0];
+      snake.die("quiet");
     }
+
 
     // For each player in the game, add a snake
     Object.keys(this.players).forEach(key => {
@@ -162,27 +164,40 @@ Game.prototype = {
           })
         })
 
-        console.log("Game over, players in game are....");
-        console.log("number: " + Object.keys(this.players).length);
-        console.log("Sendplayers...")
-        console.log(sendPlayers);
-        console.log(this.snakes);
+        // console.log("Game over, players in game are....");
+        // console.log("number: " + Object.keys(this.players).length);
+        // console.log("Sendplayers...")
+        // console.log(sendPlayers);
+        // console.log(this.snakes);
 
         this.io.emit('gameOver', {
           players : sendPlayers,
           winner : winnerIDs[0]
         });
+        console.log("GAME OVER");
+        console.log(sendPlayers);
+        console.log(winnerIDs);
 
         winnerIDs = [];
 
         this.mode = "winner";
 
-        this.snakes.forEach(snake => {
-          // if(winnerIDs.indexOf(snake.id) < 0 ){
-            snake.die("quiet",true);
 
-          // }
-        });
+        var num = parseInt(this.snakes.length);
+
+        for(var i = 0; i < num; i++) {
+          var snake = this.snakes[0];
+          snake.die("quiet",true);
+        }
+
+        // this.snakes.forEach(snake => {
+        //   console.log("foreach snake");
+        //   // if(winnerIDs.indexOf(snake.id) < 0 ){
+        //     // console.log("killing snake id: ", snake.id);
+        //
+        //
+        //   // }
+        // });
 
         setTimeout(function(){
           that.resetGame();

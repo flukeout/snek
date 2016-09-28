@@ -118,6 +118,14 @@ var game = {
   },
 
   addSnake : function(id, x, y, color, direction, length, name){
+
+    for(var i = 0; i < this.snakes.length; i++) {
+      var snake = this.snakes[i];
+      if(snake.id == parseInt(id)){
+        return;
+      }
+    }
+
     var snake = makeSnake(id, x, y, color, direction, length, name);
     snake.init();
     this.snakes.push(snake);
