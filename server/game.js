@@ -61,7 +61,6 @@ Game.prototype = {
     console.log("resetGame");
 
 
-
     for(var i = 0; i < this.snakes.length; i++){
       var s = this.snakes[i];
       s.die("quiet");
@@ -179,7 +178,7 @@ Game.prototype = {
 
         this.snakes.forEach(snake => {
           if(winnerIDs.indexOf(snake.id) < 0 ){
-            snake.die("quiet");
+            snake.die("quiet",true);
           }
         });
 

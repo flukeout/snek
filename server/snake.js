@@ -321,7 +321,7 @@ Snake.prototype = {
 
       var tailClone = {
         x: parseInt(this.segments[0].x),
-        y: parseInt(this.segments[0].y)
+        y: parseInt(this.segments[0].y);
       }
       warpSegments.push(tailClone);
       this.segments.splice(0,1);
