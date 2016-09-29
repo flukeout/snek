@@ -22,6 +22,18 @@ var sounds = {
   "beep" : {
     buffer : null,
     url : path + "../sounds/beep.mp3"
+  },
+  "chat" : {
+    buffer : null,
+    url : path + "../sounds/chat.mp3"
+  },
+  "spawn" : {
+    buffer : null,
+    url : path + "../sounds/spawn.mp3"
+  },
+  "warp" : {
+    buffer : null,
+    url : path + "../sounds/warp.mp3"
   }
 
 

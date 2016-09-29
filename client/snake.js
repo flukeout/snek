@@ -47,6 +47,7 @@ function makeSnake(id, x, y, color, direction, length, name){
       }
       makeSpawnParticle(x, y, this.color);
       this.say(this.name);
+      playSound("spawn");
     },
 
     getHead : function(){
@@ -58,6 +59,8 @@ function makeSnake(id, x, y, color, direction, length, name){
     },
 
     warp : function(segments) {
+
+      playSound("warp");
 
       for(var i = 0; i < segments.length; i++){
         var segment = segments[i];
@@ -82,6 +85,8 @@ function makeSnake(id, x, y, color, direction, length, name){
 
       // Remove any other messages with this snake ID
       $(".message[snake="+this.id+"]").remove();
+
+      // playSound("chat");
 
       var head = this.getHead();
 
