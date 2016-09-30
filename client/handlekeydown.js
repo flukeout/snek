@@ -19,11 +19,20 @@ function handleKeyDown(event, resultTracker) {
   switch(event.keyCode) {
 
     // letter key handling
+
+    // Warp
     case keys.w:
     case keys.W:
       resultTracker.warp = true;
       break;
 
+    // Change name
+    case keys.n:
+    case keys.N:
+      chat.changeNameKeyHit();
+      break;
+
+    // Bomb Key
     case keys.b:
     case keys.B:
       resultTracker.bomb = true;

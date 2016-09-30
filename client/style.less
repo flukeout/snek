@@ -386,7 +386,10 @@ body, html {
     border-bottom: solid 2px rgba(255,255,255,.2);
 
     &::-webkit-input-placeholder {
-    color: rgba(255,255,255,.2);
+      color: rgba(255,255,255,.25);
+    }
+    &::-moz-input-placeholder {
+      color: rgba(255,255,255,.25);
     }
   }
 }
@@ -527,6 +530,7 @@ body, html {
 
 .winning-snake {
   position: absolute;
+  text-transform: uppercase;
   top: 60px;
   width: 100%;
   font-size: 40px;
@@ -546,7 +550,18 @@ body, html {
   font-weight: bold;
 
   .scoreboard {
-    width: 350px;
+    width: 400px;
+    position: relative;
+    top: -20px;
+
+    .snake-square {
+      display: inline-block;
+      margin-right: 10px;
+      width: 20px;
+      height: 20px;
+      position:relative;
+      top: 1px;
+    }
 
     h1 {
       font-size: 30px;
@@ -554,6 +569,7 @@ body, html {
       font-weight: 900;
       margin-top:0;
       color: white;
+      text-transform: uppercase;
     }
 
     ul {
@@ -562,9 +578,14 @@ body, html {
 
       li {
         border-bottom: solid 2px rgba(255,255,255,.2);
+        color: rgba(255,255,255,.8);
         padding: 10px 0;
-        color: white;
-        font-size: 30px;
+        // color: white;
+        font-size: 24px;
+
+        .name {
+          text-transform: uppercase;
+        }
 
         .points {
           float: right;

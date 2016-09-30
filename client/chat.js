@@ -1,48 +1,64 @@
 var chat = {
   state : "closed",
+  mode : "",
   init : function(){
     this.chatUI = $(".chat-ui");
     this.chatInput = this.chatUI.find("input");
   },
   chatUI: "",
   chatInput : "",
+
+  changeNameKeyHit: function(){
+    if(this.state == "closed"){
+      this.startType();
+      this.state = "open";
+      this.chatInput.attr("placeholder","What's your name?");
+      this.mode = "namechange";
+    }
+  },
+
   enterHit : function(){
     if(this.state == "closed") {
       this.startType();
       this.state = "open";
+      this.mode = "chatmessage";
+      this.chatInput.attr("placeholder","Send a message");
     } else {
       this.state = "closed";
       this.finishType();
     }
   },
+
   startType: function(){
     $(".keys-helper").hide();
     this.chatUI.show();
-    this.chatInput.focus();
+    var that = this;
+    setTimeout(function(){
+      that.chatInput.focus();
+    },20)
   },
+
   finishType: function(){
     $(".keys-helper").show();
     this.chatUI.hide();
-    var message = this.chatInput.val();
+    var inputVal = this.chatInput.val();
     this.chatInput.val("");
     this.chatInput.blur();
 
-    if(message.indexOf("name") == 0) {
-      var newName = message.replace("name","");
-      newName = newName.trim();
+    if(this.mode == "namechange") {
+      newName = inputVal.trim();
       this.changeName(newName);
-      return;
     }
 
-    if(message.indexOf("admin") == 0) {
-      var command = message.replace("admin","");
+    if(inputVal.indexOf("admin") == 0 && this.mode == "chatmessage") {
+      var command = inputVal.replace("admin","");
       command = command.trim();
       this.sendAdminCommand(command);
       return;
     }
 
-    if(message.length > 0) {
-      this.sendMessage(message);
+    if(this.mode == "chatmessage" && inputVal.length > 0) {
+      this.sendMessage(inputVal);
     }
   },
   sendAdminCommand: function(command){
