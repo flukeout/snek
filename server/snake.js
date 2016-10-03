@@ -335,11 +335,31 @@ Snake.prototype = {
       var newHead = { x: head.x, y: head.y };
 
       var d = this.direction;
-           if (d === "up")    { newHead.y--; }
-      else if (d === "down")  { newHead.y++; }
-      else if (d === "right") { newHead.x++; }
-      else if (d === "left")  { newHead.x--; }
+      if (d === "up") {
+        newHead.y--;
+        if(newHead.y < -1) {
+          newHead.y = game.height;
+        }
 
+      }
+      else if (d === "down")  {
+        newHead.y++;
+        if(newHead.y > game.height) {
+          newHead.y = -1;
+        }
+      }
+      else if (d === "right") {
+        newHead.x++;
+        if(newHead.x > game.width) {
+          newHead.x = -1;
+        }
+      }
+      else if (d === "left")  {
+        newHead.x--;
+        if(newHead.x < -1) {
+          newHead.x = game.width;
+        }
+      }
       this.makeSegment(newHead.x,newHead.y,"head");
       this.segments.splice(0,1);
 

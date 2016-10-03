@@ -63,8 +63,6 @@ function loadSound(name){
 }
 
 function playSound(name){
-  console.log("playing",name);
-
   var buffer = sounds[name].buffer;
 
   if(buffer){

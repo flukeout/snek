@@ -40,6 +40,7 @@ function makeParticle(options){
     scaleVa : options.scaleVa || 0,
 
     speed : options.speed || false,
+    speedA : options.speedA || 0,
     angle : options.angle || false,
 
     color:  options.color || false,

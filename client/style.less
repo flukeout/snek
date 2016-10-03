@@ -56,7 +56,9 @@ body, html {
 .border {
   content: " ";
   position: absolute;
-  border: solid 20px #222;
+  opacity: .6;
+  border: solid 20px #444;
+  transition: border-color .15s ease-in;
   border-radius: 4px;
   width: 100%;
   height: 100%;
@@ -68,7 +70,7 @@ body, html {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 4;
+  z-index: 5;
   transform-style: preserve-3d;
 
   &.winner .body {
@@ -758,5 +760,13 @@ body, html {
 }
 
 .warpskid {
+  z-index: 4;
+}
+
+.brick {
+  z-index: 4;
+}
+
+.overlay {
   z-index: 4;
 }
