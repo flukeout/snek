@@ -34,9 +34,11 @@ var sounds = {
   "warp" : {
     buffer : null,
     url : path + "../sounds/warp.mp3"
+  },
+  "power-up" : {
+    buffer : null,
+    url : path + "../sounds/power-up.mp3"
   }
-
-
 };
 
 for(var key in sounds) {
@@ -61,8 +63,10 @@ function loadSound(name){
 }
 
 function playSound(name){
+  console.log("playing",name);
 
   var buffer = sounds[name].buffer;
+
   if(buffer){
     var source = context.createBufferSource(); // creates a sound source
     source.buffer = buffer;                    // tell the source which sound to play

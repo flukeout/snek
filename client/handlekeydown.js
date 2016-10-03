@@ -1,4 +1,4 @@
-function handleKeyDown(event, resultTracker) {
+function handleKey(event, resultTracker, type) {
 
   var keys = {};
 
@@ -19,7 +19,6 @@ function handleKeyDown(event, resultTracker) {
   switch(event.keyCode) {
 
     // letter key handling
-
     // Warp
     case keys.w:
     case keys.W:

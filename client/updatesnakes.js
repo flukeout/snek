@@ -11,6 +11,7 @@ function updateSnakes(snakes){
         gameSnake.points = serverSnake.points;
         gameSnake.name = serverSnake.name;
         gameSnake.moving = serverSnake.moving;
+        gameSnake.charge = serverSnake.charge;
 
         var diff = gameSnake.segments.length - serverSnake.segments.length;
         if(diff > 0){

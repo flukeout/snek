@@ -99,6 +99,14 @@ module.exports = function(app) {
       }
     });
 
+    socket.on('releaseDirection', function(data){
+      var snake = game.findPlayerSnake(player.id);
+      if (snake) {
+        snake.releaseDirection(data.direction);
+      }
+    });
+
+
     // client drop a bomb on everyone
     socket.on('dropBomb', function() {
       var snake = game.findPlayerSnake(player.id);

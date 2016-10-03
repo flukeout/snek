@@ -80,6 +80,18 @@ body, html {
     animation: .2s ease-out playerIndicator infinite;
   }
 
+  &.charged .body {
+    &:after {
+      background: white;
+      position: absolute;
+      content: "";
+      left: 0;
+      width: 100%;
+      height: 100%;
+      animation: .05s linear chargeIndicator infinite;
+    }
+  }
+
   .body {
     position: absolute;
     width: ~"calc(100% - 2px)";
@@ -89,6 +101,10 @@ body, html {
   }
 }
 
+@keyframes chargeIndicator {
+  0% { opacity: .4;}
+  100% { opacity: 0;}
+}
 
 @keyframes flicker {
   0% { opacity: 1;}
@@ -729,4 +745,18 @@ body, html {
 
 .spawn-particle {
   border-radius: 50%;
+}
+
+.speed {
+  z-index: 4;
+  // border-radius: 50%;
+  transform-origin: bottom left;
+}
+
+.poopl {
+  transform-origin: top;
+}
+
+.warpskid {
+  z-index: 4;
 }

@@ -30,6 +30,16 @@ var Snake = function(details, _game) {
   this.nextDirection = details.nextDirection || "";
   this.directionQ = [];
   this.eventQ = [];
+  this.warpCharge = 10; // need to charge at least 10 to warp
+  this.buttons = {
+    up : false,
+    down : false,
+    left: false,
+    right: false
+  }
+  this.chargeDirection = undefined;
+  this.heldDirection = undefined;
+  this.charge = 0;
 };
 
 module.exports = Snake;
@@ -38,6 +48,15 @@ Snake.prototype = {
 
   pushDirection: function(direction){
     this.directionQ.push(direction);
+    this.buttons[direction] = true;
+  },
+
+  releaseDirection: function(direction){
+    if(this.charge >= this.warpCharge) {
+      this.eventQ.push("warp");
+    }
+    this.buttons[direction] = false;
+    this.charge = 0;
   },
 
   changeDirection : function(newDirection){
@@ -127,6 +146,10 @@ Snake.prototype = {
       this.changeDirection(nextDirection);
       this.directionQ.splice(0, 1);
       this.direction = this.nextDirection;
+    }
+
+    if(this.buttons[this.direction] == true) {
+      this.charge++;
     }
 
     var head = this.segments.slice(-1)[0];
@@ -305,10 +328,10 @@ Snake.prototype = {
     // OK SO - this warps the snake forward 5 spots
     // Ignore collision detection
 
-    var warpSegments = [];
-
-    for(var i = 0; i  < 5; i++) {
+    var segments = [];
+    for(var i = 0; i < 5; i++) {
       var head = this.segments.slice(-1)[0];
+
       var newHead = { x: head.x, y: head.y };
 
       var d = this.direction;
@@ -318,24 +341,20 @@ Snake.prototype = {
       else if (d === "left")  { newHead.x--; }
 
       this.makeSegment(newHead.x,newHead.y,"head");
-
-      var tailClone = {
-        x: parseInt(this.segments[0].x),
-        y: parseInt(this.segments[0].y)
-      }
-      warpSegments.push(tailClone);
       this.segments.splice(0,1);
 
+      var tail = this.segments[0];
+      segments.push(tail);
     }
 
     io.emit('warpSnake', {
       id: this.id,
-      segments: warpSegments
+      segments : segments
     });
   },
 
   die : function(type, norespawn) {
-    // console.log("A " + type  + " death");
+
 
     var head = this.segments.length > 0 ? this.getHead() : this.tombStone;
 

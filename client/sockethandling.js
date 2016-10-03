@@ -25,6 +25,7 @@ socket.on('serverTick', function(msg){
 });
 
 socket.on('warpSnake', function(msg){
+
   var snake = getSnake(msg.id);
   snake.loadWarp(msg.segments);
 });

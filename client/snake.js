@@ -59,12 +59,18 @@ function makeSnake(id, x, y, color, direction, length, name){
     },
 
     warp : function(segments) {
-
       playSound("warp");
+
+      for(var i = 0; i < this.segments.length; i++){
+        var seg = {};
+        var s = this.segments[i];
+        seg.x = parseInt(s.x);
+        seg.y = parseInt(s.y);
+        segments.push(seg)
+      }
 
       for(var i = 0; i < segments.length; i++){
         var segment = segments[i];
-
         var options = {
           x : segment.x * this.size + 1,
           y : segment.y * this.size + 1,
@@ -72,12 +78,52 @@ function makeSnake(id, x, y, color, direction, length, name){
           height: 18,
           color: this.color,
           o: .4,
+          // scale : .5 + (.5 * (i/segments.length)),
           oV: -0.005,
           lifespan : 300,
           className : "warpskid",
         }
         makeParticle(options);
-      } // for each warp segments
+      }
+
+      // Fluffs....
+      var head = this.getHead();
+
+      for(var j = 0; j < this.segments.length; j++) {
+        var seg = this.segments[j];
+        for(var i = 0; i < 2; i++){
+          var options = {
+            x : seg.x * this.size + getRandom(0,14),
+            y : seg.y * this.size + getRandom(0,14),
+            zV : getRandom(3,5),
+            gravity : .15,
+            width: 6,
+            height: 6,
+            speed : 2,
+            color: this.color,
+            o: 2,
+            oV: -0.05,
+            lifespan : 200,
+            className : "speed"
+          }
+
+          if(this.direction == "right") {
+            options.angle = 90;
+          } else if(this.direction == "up") {
+            options.angle = 180;
+          } else if(this.direction == "left") {
+            options.angle = 270;
+          } else if(this.direction == "down") {
+            options.angle = .01;
+          }
+
+          makeParticle(options);
+      }
+
+      }
+
+
+
     },
 
     say : function(message){
@@ -133,11 +179,11 @@ function makeSnake(id, x, y, color, direction, length, name){
     },
 
     move : function(){
-      this.draw();
       if(this.upcomingWarp){
         this.warp(this.upcomingWarp);
         this.upcomingWarp = false;
       }
+      this.draw();
     },
 
     die : function(x,y,type){
@@ -211,11 +257,27 @@ function makeSnake(id, x, y, color, direction, length, name){
 
     draw : function(){
 
+      // we ahve access to the charge level here (this.charge)....!
+      if(this.id == game.playerId){
+        if(this.charge == 10) {
+          playSound("power-up");
+        }
+      }
+
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
         $(seg.el).css("opacity", 1);
         if(this.id == game.playerId){
           $(seg.el).addClass("player-snake");
+
+          if(this.charge >= 10) {
+            $(seg.el).addClass("charged");
+          } else {
+            $(seg.el).removeClass("charged");
+          }
+
+
+
         } else {
           $(seg.el).removeClass("player-snake");
         }
