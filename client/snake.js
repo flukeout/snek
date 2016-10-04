@@ -315,17 +315,13 @@ function makeSnake(id, x, y, color, direction, length, name){
             width: 4,
             height: 4,
             color: "#fff",
-            o: 1,
-            oV: -0.05,
+            o: .8,
+            oV: -0.04,
             lifespan : 40,
             className : "speed"
           }
-
           makeParticle(options);
         }
-
-
-
       } else {
         $(head.el).removeClass("charged");
       }

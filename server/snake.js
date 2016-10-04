@@ -149,8 +149,16 @@ Snake.prototype = {
       var nextDirection = this.directionQ[0];
       this.changeDirection(nextDirection);
       this.directionQ.splice(0, 1);
+
+      // If the player isn't fully charged, and changes direction
+      // reset the charge
+      if(this.direction != nextDirection && this.charge < this.warpCharge) {
+        this.charge = 0;
+      }
+
       this.direction = this.nextDirection;
     }
+
 
     if(this.buttons[this.direction] == true) {
       this.charge++;
