@@ -127,7 +127,6 @@ Game.prototype = {
       this.checkWinners(winnerIDs);
       this.checkBombs();
     }
-
   },
 
   getFutureSnakes: function() {

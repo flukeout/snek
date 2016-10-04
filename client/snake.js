@@ -301,17 +301,41 @@ function makeSnake(id, x, y, color, direction, length, name){
         }
       }
 
+      var head = this.getHead();
+
+      if(this.charge >= this.boostCharge) {
+        $(head.el).addClass("charged");
+
+        for(var i = 0; i < 2; i++){
+          var options = {
+            x : head.x * this.size + 1 + getRandom(0,14),
+            y : head.y * this.size + 1 + getRandom(0,14),
+            zV : getRandom(5,7),
+            gravity : .05,
+            width: 4,
+            height: 4,
+            color: "#fff",
+            o: 1,
+            oV: -0.05,
+            lifespan : 40,
+            className : "speed"
+          }
+
+          makeParticle(options);
+        }
+
+
+
+      } else {
+        $(head.el).removeClass("charged");
+      }
+
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
         $(seg.el).css("opacity", 1);
         if(this.id == game.playerId){
           $(seg.el).addClass("player-snake");
 
-          if(this.charge >= this.boostCharge) {
-            $(seg.el).addClass("charged");
-          } else {
-            $(seg.el).removeClass("charged");
-          }
 
         } else {
           $(seg.el).removeClass("player-snake");

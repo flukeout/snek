@@ -47,16 +47,20 @@ module.exports = Snake;
 Snake.prototype = {
 
   pushDirection: function(direction){
+
+    if(this.direction == direction) {
+      if(this.charge >= this.warpCharge) {
+        this.eventQ.push("warp");
+        this.charge = 0;
+      }
+    }
+
     this.directionQ.push(direction);
     this.buttons[direction] = true;
   },
 
   releaseDirection: function(direction){
-    if(this.charge >= this.warpCharge) {
-      this.eventQ.push("warp");
-    }
     this.buttons[direction] = false;
-    this.charge = 0;
   },
 
   changeDirection : function(newDirection){
@@ -340,7 +344,6 @@ Snake.prototype = {
         if(newHead.y < -1) {
           newHead.y = game.height;
         }
-
       }
       else if (d === "down")  {
         newHead.y++;
@@ -363,8 +366,13 @@ Snake.prototype = {
       this.makeSegment(newHead.x,newHead.y,"head");
       this.segments.splice(0,1);
 
+
+
       var tail = this.segments[0];
       segments.push(tail);
+
+
+      game.checkCollisions(); // Check if I got apples
     }
 
     io.emit('warpSnake', {

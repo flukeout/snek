@@ -25,18 +25,14 @@ $(document).ready(function(){
     // Only handle input "for game purposes" if
     // the client isn't currently trying to write
     // a chat message.
-    // Only send a directional input if the button isn't already pressed
 
     var direction = keyResult.direction;
-    if(direction){
-      var previousState = buttons[direction];
 
-      if(previousState != false) {
-        buttons[direction] = false;
-        socket.emit('releaseDirection', {
-          direction: direction
-        });
-      }
+    if(direction){
+      buttons[direction] = false;
+      socket.emit('releaseDirection', {
+        direction: direction
+      });
     }
   });
 
@@ -45,8 +41,7 @@ $(document).ready(function(){
 
     var keyResult = {
       direction: false,
-      bomb: false,
-      warp : false
+      bomb: false
     };
 
     handleKey(event, keyResult, "down");

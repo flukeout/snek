@@ -106,7 +106,6 @@ module.exports = function(app) {
       }
     });
 
-
     // client drop a bomb on everyone
     socket.on('dropBomb', function() {
       var snake = game.findPlayerSnake(player.id);
@@ -114,15 +113,6 @@ module.exports = function(app) {
         snake.eventQ.push("bomb");
       }
     });
-
-    // client warps
-    socket.on('warpSnake', function() {
-      var snake = game.findPlayerSnake(player.id);
-      if (snake) {
-        snake.eventQ.push("warp");
-      }
-    });
-
 
     // client snake died... broadcast to all connected clients
     socket.on('died', function() {
