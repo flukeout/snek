@@ -106,7 +106,6 @@ function makeSnake(id, x, y, color, direction, length, name){
               y : thisSeg.y * this.size,
               width: 20,
               height: 20,
-              speed : 2,
               o : .8,
               oV : -.005,
               color: "#000",

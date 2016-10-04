@@ -22,8 +22,6 @@ $(document).ready(function(){
       return;
     }
 
-
-
     // Only handle input "for game purposes" if
     // the client isn't currently trying to write
     // a chat message.
@@ -82,13 +80,6 @@ $(document).ready(function(){
     if(bomb) {
       socket.emit('dropBomb')
     }
-
-   // var warp = keyResult.warp;
-   //  if(warp) {
-   //    socket.emit('warpSnake')
-   //  }
-   // console.log(buttons);
-
   });
 
   chat.init();
