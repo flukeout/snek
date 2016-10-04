@@ -30,7 +30,7 @@ var Snake = function(details, _game) {
   this.nextDirection = details.nextDirection || "";
   this.directionQ = [];
   this.eventQ = [];
-  this.warpCharge = 10; // need to charge at least 10 to warp
+  this.warpCharge = 12; // need to charge at least 10 to warp
   this.buttons = {
     up : false,
     down : false,

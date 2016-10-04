@@ -314,8 +314,6 @@ function makeSnake(id, x, y, color, direction, length, name){
             $(seg.el).removeClass("charged");
           }
 
-
-
         } else {
           $(seg.el).removeClass("player-snake");
         }
