@@ -18,17 +18,12 @@ function handleKey(event, resultTracker, type) {
 
   switch(event.keyCode) {
 
-    // letter key handling
-    // Warp
-    case keys.w:
-    case keys.W:
-      resultTracker.warp = true;
-      break;
-
     // Change name
     case keys.n:
     case keys.N:
-      chat.changeNameKeyHit();
+      if(type=="down"){
+        chat.changeNameKeyHit();
+      }
       break;
 
     // Bomb Key
@@ -53,7 +48,9 @@ function handleKey(event, resultTracker, type) {
 
     // the 'enter' key
     case 13:
-      chat.enterHit();
+      if(type=="down"){
+        chat.enterHit();
+      }
       break;
 
     default:

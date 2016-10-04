@@ -58,6 +58,7 @@ var chat = {
     }
 
     if(this.mode == "chatmessage" && inputVal.length > 0) {
+      console.log(inputVal.length);
       this.sendMessage(inputVal);
     }
   },

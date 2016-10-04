@@ -22,6 +22,8 @@ $(document).ready(function(){
       return;
     }
 
+
+
     // Only handle input "for game purposes" if
     // the client isn't currently trying to write
     // a chat message.

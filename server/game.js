@@ -15,7 +15,7 @@ Game.prototype = {
   height: 28,       // board height
   apples : [],
   bombs :  [],
-  bombLifeSpan: 7,
+  bombLifeSpan: 4,
   bombRadius: 5,    // should we move this to the Bomb object init?
 
   snakes : [],      // Array here

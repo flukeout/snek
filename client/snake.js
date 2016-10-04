@@ -7,6 +7,8 @@ function makeSnake(id, x, y, color, direction, length, name){
     name : name,
     length: length,
     moving : false,
+    charge : 0,
+    boostCharge : 12,
     color : color,
     segments : [],
     upcomingWarp : false,
@@ -190,18 +192,14 @@ function makeSnake(id, x, y, color, direction, length, name){
       }
 
       }
-
-
-
     },
 
-    say : function(message){
       // Appends a chat message element at the head position
+    say : function(message){
+
 
       // Remove any other messages with this snake ID
       $(".message[snake="+this.id+"]").remove();
-
-      // playSound("chat");
 
       var head = this.getHead();
 
@@ -217,7 +215,7 @@ function makeSnake(id, x, y, color, direction, length, name){
         return function() {
           el.remove();
         };
-      }(messageEl), 1500);
+      }(messageEl), 2750);
     },
 
     makeSegment : function(x,y,place){
@@ -328,7 +326,7 @@ function makeSnake(id, x, y, color, direction, length, name){
 
       // we ahve access to the charge level here (this.charge)....!
       if(this.id == game.playerId){
-        if(this.charge == 10) {
+        if(this.charge == this.boostCharge) {
           playSound("power-up");
         }
       }
@@ -339,7 +337,7 @@ function makeSnake(id, x, y, color, direction, length, name){
         if(this.id == game.playerId){
           $(seg.el).addClass("player-snake");
 
-          if(this.charge >= 10) {
+          if(this.charge >= this.boostCharge) {
             $(seg.el).addClass("charged");
           } else {
             $(seg.el).removeClass("charged");
