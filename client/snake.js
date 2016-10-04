@@ -96,57 +96,28 @@ function makeSnake(id, x, y, color, direction, length, name){
           var deltaX = thisSeg.x - nextSeg.x;
           var deltaY = thisSeg.y - nextSeg.y;
           if(Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
+
             $(".border").css("border-color",this.color);
 
-            // console.log(thisSeg, nextSeg);
 
+            // Make two particles to cover up the border where the warp happened
             var options = {
               x : thisSeg.x * this.size,
               y : thisSeg.y * this.size,
               width: 20,
               height: 20,
               speed : 2,
-              o : 1,
-
+              o : .8,
+              oV : -.005,
               color: "#000",
-              lifespan : 100,
+              lifespan : 150,
               className : "overlay"
             }
-            // makeParticle(options);
+            makeParticle(options);
 
-            // options.x= nextSeg.x * this.size;
-            // options.y= nextSeg.y * this.size;
-            // makeParticle(options);
-
-            // Make some chunks??
-            // if(this.direction == "up") {
-            //
-            //
-            //   var options = {
-            //     x : nextSeg.x * this.size,
-            //     y : nextSeg.y * this.size,
-            //     width: 20,
-            //     height: 20,
-            //     speed : 4,
-            //     color: "#444",
-            //     o : 2,
-            //     oV : -.06,
-            //     lifespan : 400,
-            //     className : "brick"
-            //   }
-            //
-            //   options.angle = 20;
-            //   makeParticle(options);
-            //   options.angle = 40;
-            //   makeParticle(options);
-            //
-            //   options.angle = -20;
-            //   makeParticle(options);
-            //
-            //   options.angle = -40;
-            //   makeParticle(options);
-            //
-            // }
+            options.x= nextSeg.x * this.size;
+            options.y= nextSeg.y * this.size;
+            makeParticle(options);
 
             // Flash the border according to the snake
             setTimeout(function(){
