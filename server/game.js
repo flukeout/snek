@@ -10,13 +10,16 @@ var Game = function(io,players) {
 
 Game.prototype = {
   size : 5,         // starting snake size
-  winLength : 15,   // How long a snakes needs to bo to win the round
-  width : 42,       // board width
-  height: 28,       // board height
+  winLength : 6,   // How long a snakes needs to bo to win the round
+
+  width : 42,  // Originally 42
+  height: 28,
+  appleCount : 2,
   apples : [],
   bombs :  [],
-  bombLifeSpan: 4,
-  bombRadius: 5,    // should we move this to the Bomb object init?
+
+  bombLifeSpan: 4,  // how long Bombs take to go off
+  bombRadius: 5,    // the size of the Bomb Radius
 
   snakes : [],      // Array here
   player : {},
@@ -31,6 +34,22 @@ Game.prototype = {
       }
     }
     return false;
+  },
+
+  init: function(){
+    this.shuffleSettings();
+  },
+
+  shuffleSettings : function(){
+    console.log("shuffling settings");
+
+    this.width = Math.round(getRandom(25,50));
+    this.height = Math.round(getRandom(16,32));
+    this.appleCount = Math.round(getRandom(1,3));
+    this.size = Math.round(getRandom(2,8));
+    this.winLength = Math.round(this.size * getRandom(1.5,3.5));
+
+    // this.bombRadius = Math.round(getRandom(5,7)); // This one is strange... has to be an odd number
   },
 
   removePlayer : function(id){
@@ -53,12 +72,15 @@ Game.prototype = {
   },
 
   start : function(data){
-    this.addApple();
-    this.addApple();
+    // console.log("game start");
+    // this.addApple();
+    // this.addApple();
   },
 
+
+  // Reset game runs when the round is over...
+
   resetGame : function(){
-    console.log("resetGame");
 
     for (var i=this.snakes.length-1; i>=0; i--) {
       let snake = this.snakes[i];
@@ -72,7 +94,6 @@ Game.prototype = {
         color: this.players[key].color,
         name : this.players[key].name
       }
-      console.log("addSnake:", snakeDetails)
       this.addSnake(snakeDetails);
     })
 
@@ -80,10 +101,17 @@ Game.prototype = {
 
     this.mode = "game";
 
+    this.shuffleSettings();
+
     var that = this;
     setTimeout(function(){
       that.io.emit('gameMode', {
-        mode : "game"
+        mode : "game",
+        gameSettings : {
+          width: that.width,
+          height: that.height,
+          winLength : that.winLength,
+        }
       });
     },1000);
 
@@ -367,11 +395,13 @@ Game.prototype = {
 };
 
 module.exports = function(io, players) {
+
   var game = new Game(io,players);
-  var totalFrames = 0;
-  var avgFrame = 0;
+  game.init();
+
+  console.log("Width: " + game.width);
+
   var time = new Date().getTime();
-  var elapsedHistory = [];
   var elapsed = 0;
   var ms = 80;
 
@@ -383,7 +413,6 @@ module.exports = function(io, players) {
 
     while(elapsed >= ms) {
       elapsed = elapsed - ms;
-      totalFrames++;
       game.move();
       io.emit('serverTick', {
         message: elapsed,
@@ -395,6 +424,8 @@ module.exports = function(io, players) {
   }
 
   move();
+
+
 
   return game;
 };

@@ -28,8 +28,7 @@ module.exports = function(app) {
     players[player.id] = player;
 
     // welcome user, send them their snake color (may be user-changeble later)
-    console.log('A user connected, giving it snake id', player.id);
-    console.log('Number of players', Object.keys(players).length);
+    console.log('A user connected, giving it snake id:', player.id);
 
     // send in response to connecting:
     setTimeout(function(){
@@ -42,7 +41,7 @@ module.exports = function(app) {
         snakes: game.snakes,
         winLength : game.winLength,
       });
-    },1000)
+    },1000);
 
     // a client disconnects - we don't do much with that yet
     socket.on('disconnect', function(){
@@ -51,8 +50,6 @@ module.exports = function(app) {
       })
       game.removePlayer(player.id);
       delete players[player.id];
-      console.log('Player left');
-      console.log('Number of players', Object.keys(players).length);
     });
 
     socket.on('sendChat',function(data){

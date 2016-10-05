@@ -15,6 +15,8 @@ socket.on('gameOver', function(msg) {
 
 socket.on('gameMode', function(msg) {
   var mode = msg.mode;
+  var settings = msg.gameSettings;
+  game.setupBoard(settings.width, settings.height, settings.winLength);
   game.changeMode(mode);
 });
 
@@ -42,14 +44,16 @@ socket.on('loseSegment', function(msg) {
   snake.loseSegment(x, y, showParticle);
 });
 
+
+
 socket.on('gameSetup', function(msg){
-  // this is the first thing we get
-  var width = parseInt(msg.width);
-  var height = parseInt(msg.height);
-  var id = parseInt(msg.id);
-  var apples = msg.apples;
-  var snakes = msg.snakes;
-  var winLength = msg.winLength;
+  console.log("game Setup received");
+  var width = parseInt(msg.width);    // board width
+  var height = parseInt(msg.height);  // board height
+  var id = parseInt(msg.id);          // player id
+  var apples = msg.apples;            // apples already in play
+  var snakes = msg.snakes;            // snakes already in play
+  var winLength = msg.winLength;      // snake length needed to win
   game.setup(width, height, id, apples, snakes, winLength);
 });
 

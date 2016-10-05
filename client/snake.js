@@ -80,7 +80,6 @@ function makeSnake(id, x, y, color, direction, length, name){
           height: 18,
           color: this.color,
           o: .4,
-          // scale : .5 + (.5 * (i/segments.length)),
           oV: -0.005,
           lifespan : 300,
           className : "warpskid",
@@ -98,7 +97,6 @@ function makeSnake(id, x, y, color, direction, length, name){
           if(Math.abs(deltaX) > 1 || Math.abs(deltaY) > 1) {
 
             $(".border").css("border-color",this.color);
-
 
             // Make two particles to cover up the border where the warp happened
             var options = {
@@ -233,7 +231,7 @@ function makeSnake(id, x, y, color, direction, length, name){
           that.say(that.phrases[index]);
         },220);
         // Make an explosion!
-        makeExplosion(x, y);
+        makeExplosion(x * this.size, y * this.size, 60);
       }
 
       for(var i = 0; i < this.segments.length; i++){

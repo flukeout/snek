@@ -57,15 +57,30 @@ var game = {
     }
   },
 
-  setup : function(width,height,id,apples,snakes,winlength) {
 
-    this.winLength = winlength;
-    this.changeMode("game");
+  // Sets up visual properties of the board
 
+  setupBoard : function(width, height, winLength){
+    this.winLength = winLength;
+
+    $(".leader-boxes .box").remove();
     for(var i = 0; i < this.winLength; i++) {
       var box = $("<div class='box'>");
       $(".leader-boxes").append(box);
     }
+
+    $(".board").css("width",this.size * width);
+    $(".board").css("height",this.size * height);
+
+    this.height = height;
+    this.width = width;
+
+  },
+
+  setup : function(width, height, id, apples, snakes, winLength) {
+
+    this.setupBoard(width, height, winLength);
+    this.changeMode("game");
 
     for(var i = 0; i < apples.length; i++) {
       var apple = apples[i];
@@ -78,8 +93,6 @@ var game = {
       this.addSnake(snake.id,snake.x, snake.y, snake.color, "", snake.length);
     }
 
-    this.height = height;
-    this.width = width;
     this.playerId = id;
 
     var storedName = localStorage.getItem("playerName");
@@ -87,9 +100,6 @@ var game = {
       this.playerName = storedName;
       chat.changeName(storedName);
     }
-
-    $(".board").css("width",this.size * this.width);
-    $(".board").css("height",this.size * this.height);
 
     socket.emit("makeSnake");
   },
@@ -175,7 +185,7 @@ var game = {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
-        makeExplosion(bomb.x, bomb.y);
+        makeExplosion(bomb.x * this.size, bomb.y * this.size, 60);
         bomb.el.remove();
         var bombIndex = this.bombs.indexOf(bomb);
         this.bombs.splice(bombIndex, 1);

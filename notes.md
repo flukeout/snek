@@ -1,3 +1,6 @@
 **Left off**
 
-* Idea - allow warping through walls with charge warp? Could be cool!
+* Clean up game.setup + game.setupBoard
+* THey should be in charge of different things
+  * One for stuff like snakes and apples
+  * One for visual properties (widht, height, winlength) etc.

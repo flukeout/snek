@@ -39,21 +39,24 @@ function shakeScreen(){
 }
 
 // Adds a bomb to the board at x,y
-function makeExplosion(xPos, yPos){
+// Pixel position, not grid position
+
+function makeExplosion(xposition, yposition, size){
 
   playSound("boom");
   shakeScreen();
 
-  var size = 3;
-  var width = 3 * 20;
-  var offset = (width - 20) / 2;
-  var x = xPos * 20 - offset;
-  var y = yPos * 20 - offset;
+
+  // Adds the orange blast
+
+  var blastOffset = (size - 20) / 2;
+  var x = xposition - blastOffset;
+  var y = yposition - blastOffset;
 
   var particle = {};
   particle.el = $("<div class='boom'><div class='shock'/><div class='body'/></div>");
-  particle.el.css("height", width);
-  particle.el.css("width", width);
+  particle.el.css("height", size);
+  particle.el.css("width", size);
   particle.el.css("transform","translate3d("+x+"px,"+y+"px,0)");
 
   setTimeout(function(el) {
@@ -62,41 +65,38 @@ function makeExplosion(xPos, yPos){
     };
   }(particle.el),500);
 
-  //Move function
   $(".board").append(particle.el);
 
-  // Make Bomb Puffs
+
+  // Make smoke puffs
+
   for(var i = 0; i < 8; i++){
 
     var options = {
-      x : xPos * 20,     // absolute non-relative position on gameboard
-      y : yPos * 20,     // absolute non-relative position on gameboard
-      angle: getRandom(0,359),    // just on the x,y plane, works with speed
-      zR : getRandom(-15,15),     // zRotation velocity
-      oV : -.008,                 // opacity velocity
-      width : getRandom(20,55),   // size of the particle
-      className : 'puff',         // adds this class to the particle <div/>
-      lifespan: 125,              // how many frames it lives
+      x : xposition,
+      y : yposition,
+      angle: getRandom(0,359),
+      zR : getRandom(-15,15),
+      oV : -.008,
+      width : getRandom(20,55),
+      className : 'puff',
+      lifespan: 125,
     }
 
-    // Need to put this offset code into the makeParticle function
-    // You should pass it an x,y of 0
-
-    var offset = (options.width - 20) / 2;
-    options.x = options.x - offset;
-    options.y = options.y - offset;
+    options.x = options.x - (options.width/2) + 10;
+    options.y = options.y - (options.width/2) + 10;
     options.height = options.width;
     options.speed = 1 + (2 * (1 - options.width / 50)); // The bigger the particle, the lower the speed
-
     makeParticle(options);
   }
 
 
-  // Bomb blasts that eminate from the center of the bomb
+  // Blast lines that eminate from the center of the bomb
+
   for(var i = 0; i < getRandom(8,12); i++){
     var options = {
-      x : (xPos * 20) + 8,
-      y : (yPos * 20) + 8,
+      x : xposition + 8,
+      y : yposition + 8,
       zR : getRandom(0,360),
       width: 4,
       height: getRandom(60,100),
@@ -111,9 +111,10 @@ function makeExplosion(xPos, yPos){
     makeParticle(options);
   }
 
+  // White flash underneath the explosion
   var options = {
-    x : xPos * 20 - 190,
-    y : yPos * 20 - 190,
+    x : x - 190,
+    y : y - 190,
     width : 400,
     height: 400,
     o : .1,

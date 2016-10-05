@@ -1,8 +1,6 @@
 var scoreBoard = {
   update : function(players,winner){
 
-    console.log(players);
-
     $(".scoreboard li").remove();
 
     var winnerName = "";
