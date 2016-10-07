@@ -1,17 +1,15 @@
 var game = {
-  size : 20,
-  width : 40,
-  height: 28,
-  apples : [],
-  bombs: [],
-  tickSpeed : 200,  // 8 frames difference
-  tickSpeedModifier : 0,
-  snakes : [],
+  gridSize : 20,   // This is the size of the grid in pixels
+
+  apples : [],     // Keeps track of apples
+  bombs: [],       // Keeps track of bombs
+  snakes : [],     // Keeps track of snakes
+
   playerId : 0,
-  elapsed : 0,
-  mode : "game",
   playerName : "",
-  winLength : 0,
+
+  mode : "game",
+
   gameWon : function(players,winner){
 
     playSound("winner");
@@ -34,19 +32,12 @@ var game = {
     },2000);
 
   },
+
   changeMode : function(type){
     $("[mode]").addClass("hidden");
     $("[mode="+type+"]").removeClass("hidden");
   },
 
-  removePlayer : function(id){
-    for(var i = 0 ; i < this.snakes.length; i++) {
-      var snake = this.snakes[i];
-      if(snake.id === id){
-        snake.die();
-      }
-    }
-  },
 
   changeDirection : function(id,direction,ticks, x, y){
     for(var i = 0; i < this.snakes.length; i++) {
@@ -61,20 +52,14 @@ var game = {
   // Sets up visual properties of the board
 
   setupBoard : function(width, height, winLength){
-    this.winLength = winLength;
-
     $(".leader-boxes .box").remove();
-    for(var i = 0; i < this.winLength; i++) {
+    for(var i = 0; i < winLength; i++) {
       var box = $("<div class='box'>");
       $(".leader-boxes").append(box);
     }
 
-    $(".board").css("width",this.size * width);
-    $(".board").css("height",this.size * height);
-
-    this.height = height;
-    this.width = width;
-
+    $(".board").css("width",this.gridSize * width);
+    $(".board").css("height",this.gridSize * height);
   },
 
   setup : function(width, height, id, apples, snakes, winLength) {
@@ -149,9 +134,16 @@ var game = {
     }
     $(".board").append(apple.el);
 
-    apple.el.css("width",this.size).css("height",this.size);
-    apple.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
+    apple.el.css("width",this.gridSize).css("height",this.gridSize);
+    apple.el.css("transform","translateX(" + this.gridSize * x + "px) translateY("+this.gridSize * y+"px)");
     this.apples.push(apple);
+  },
+
+  removePlayer : function(id) {
+    var snake = getSnake(id);
+    if(snake){
+      snake.die();
+    }
   },
 
   removeApple: function(id){
@@ -175,9 +167,9 @@ var game = {
     $(".board").append(bomb.el);
     playSound("beep");
 
-    bomb.el.css("width",this.size).css("height",this.size);
+    bomb.el.css("width",this.gridSize).css("height",this.gridSize);
     bomb.el.find(".body").css("background", color);
-    bomb.el.css("transform","translateX(" + this.size * x + "px) translateY("+this.size * y+"px)");
+    bomb.el.css("transform","translateX(" + this.gridSize * x + "px) translateY("+this.gridSize * y+"px)");
     this.bombs.push(bomb);
   },
 
@@ -185,7 +177,7 @@ var game = {
     for(var i = 0; i < this.bombs.length; i++){
       var bomb = this.bombs[i];
       if(id === bomb.id){
-        makeExplosion(bomb.x * this.size, bomb.y * this.size, 60);
+        makeExplosion(bomb.x * this.gridSize, bomb.y * this.gridSize, 60);
         bomb.el.remove();
         var bombIndex = this.bombs.indexOf(bomb);
         this.bombs.splice(bombIndex, 1);

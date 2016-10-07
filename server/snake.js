@@ -296,7 +296,6 @@ Snake.prototype = {
   },
 
   respawn : function(debug){
-    console.log("Respawn Snake");
     var snakeDetails = {
       id : this.id,
       color: this.color,
@@ -389,8 +388,8 @@ Snake.prototype = {
     });
   },
 
+  // Dies removes it from the player array too...
   die : function(type, norespawn) {
-
 
     var head = this.segments.length > 0 ? this.getHead() : this.tombStone;
 

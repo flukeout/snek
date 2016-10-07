@@ -14,23 +14,24 @@ module.exports = function(app) {
 
   // A player joins the game
   io.sockets.on('connection', function(socket) {
+    console.log("Player Connected");
 
+    // Create a player object with a unique ID
     var player = {
       id: uuid(),
       socket: socket,
-      color: nextColor(),
+      color: nextColor(),  // Give player a color from the colors array
       name : "",
       points : 0
     };
 
+    // Give them a name
     player.name = "Snake_" + player.id;
 
+    // Add them to to the player object
     players[player.id] = player;
 
-    // welcome user, send them their snake color (may be user-changeble later)
-    console.log('A user connected, giving it snake id:', player.id);
-
-    // send in response to connecting:
+    // Send the player the game setup details
     setTimeout(function(){
       socket.emit('gameSetup', {
         width: game.width,
@@ -43,23 +44,26 @@ module.exports = function(app) {
       });
     },1000);
 
-    // a client disconnects - we don't do much with that yet
+    // When this player disconnects
+    // remove that player and let the clients know
     socket.on('disconnect', function(){
-      io.emit('playerDisconnect', {
-        id: player.id
-      })
+      io.emit("playerDisconnect",{
+        id : player.id
+      });
       game.removePlayer(player.id);
       delete players[player.id];
     });
 
+    // When this player sends in a chat message
+    // Send it out to all clients.
     socket.on('sendChat',function(data){
-      console.log("Chat message from" + player.id);
       io.emit('newChat',{
         id: player.id,
         message: data.message
       });
     });
 
+    // When this player changes their name
     socket.on('changeName',function(data){
       player.name = data.name;
       var snake = game.findPlayerSnake(player.id);
@@ -77,8 +81,8 @@ module.exports = function(app) {
       }
     });
 
-
-    // client requests a new snake, server spawns a new snake
+    // When the client requests a new snake be made for them
+    // We add one!
     socket.on('makeSnake', function() {
     	var data = {
         id: player.id,
@@ -88,7 +92,7 @@ module.exports = function(app) {
       game.addSnake(data);
     });
 
-    // client sends direction input to server, server broadcasts the player's move
+    // Client presses a directional input
     socket.on('direction', function(data){
       var snake = game.findPlayerSnake(player.id);
       if (snake) {
@@ -96,6 +100,7 @@ module.exports = function(app) {
       }
     });
 
+    // Client releases a directional input
     socket.on('releaseDirection', function(data){
       var snake = game.findPlayerSnake(player.id);
       if (snake) {
@@ -103,7 +108,7 @@ module.exports = function(app) {
       }
     });
 
-    // client drop a bomb on everyone
+    // Client pressed the bomb button
     socket.on('dropBomb', function() {
       var snake = game.findPlayerSnake(player.id);
       if (snake) {
@@ -111,7 +116,7 @@ module.exports = function(app) {
       }
     });
 
-    // client snake died... broadcast to all connected clients
+    // Client snake dies, we let everyone know
     socket.on('died', function() {
       io.emit('killSnake', {
         id: player.id
@@ -172,7 +177,7 @@ module.exports = function(app) {
 
   });
 
-  // and fire up a boring ol' server
+  // Fire up a boring ol' server, on port 3000
   server.listen(process.env.PORT || 3000, function(){
     console.log('listening on *:3000');
     game = startGame(io,players);

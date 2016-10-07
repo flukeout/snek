@@ -44,10 +44,7 @@ socket.on('loseSegment', function(msg) {
   snake.loseSegment(x, y, showParticle);
 });
 
-
-
 socket.on('gameSetup', function(msg){
-  console.log("game Setup received");
   var width = parseInt(msg.width);    // board width
   var height = parseInt(msg.height);  // board height
   var id = parseInt(msg.id);          // player id
@@ -55,10 +52,6 @@ socket.on('gameSetup', function(msg){
   var snakes = msg.snakes;            // snakes already in play
   var winLength = msg.winLength;      // snake length needed to win
   game.setup(width, height, id, apples, snakes, winLength);
-});
-
-socket.on('playerDisconnect', function(msg){
-  game.removePlayer(msg.id);
 });
 
 socket.on('snakeEat', function(msg){
@@ -102,15 +95,23 @@ socket.on('spawnSnake', function(msg){
   var direction = msg.direction;
   var length = msg.length;
   var name = msg.name || "no_name"
-
   game.addSnake(id, x, y, color, direction, length, name);
 });
 
+
+// When another player disconnects...
+socket.on('playerDisconnect', function(msg){
+  game.removePlayer(msg.id);
+});
+
+// killSnake - where does this come from
 socket.on('killSnake', function(msg){
   var id = msg.id;
   var x = msg.x;
   var y = msg.y;
   var type = msg.type;
   var snake = getSnake(msg.id);
-  snake.die(x,y,type);
+  if(snake){
+    snake.die(x,y,type);
+  }
 });

@@ -9,24 +9,25 @@ var Game = function(io,players) {
 };
 
 Game.prototype = {
-  size : 5,         // starting snake size
-  winLength : 6,   // How long a snakes needs to bo to win the round
-
-  width : 42,  // Originally 42
-  height: 28,
-  appleCount : 2,
-  apples : [],
-  bombs :  [],
-  appleCount : 1,
-
+  startLength : 5,  // Starting snake size
+  winLength : 6,    // Snake length to win
+  width : 42,       // Width of the baord, in grid squares
+  height: 28,       // Height of the board, in grid squares
+  appleCount : 1,   // Number of apples at one time
   bombLifeSpan: 4,  // how long Bombs take to go off
   bombRadius: 5,    // the size of the Bomb Radius
 
-  snakes : [],      // Array here
-  player : {},
-  players : {},     // But object here - why? Should we standardize?
-  mode : "game",
+  tickDelay : 80,   // Delay, in milliseconds, between each frame. Bigger value means game runs slower.
 
+  apples : [],      // Keeps all of the apples
+  bombs :  [],      // Keeps all of the bombs
+  snakes : [],      // Keeps all of the player snakes
+  players : {},     // Keeps all of the payers
+
+  mode : "game",    // Other modes is "winner", which shows the scoreboard
+
+
+  // Finds a snake by the player's id
   findPlayerSnake: function(playerid) {
     for(var i = 0 ; i < this.snakes.length; i++) {
       var snake = this.snakes[i];
@@ -37,28 +38,40 @@ Game.prototype = {
     return false;
   },
 
+
+  // Randomizes the game settings
   shuffleSettings : function(){
     this.width = Math.round(getRandom(25,50));
     this.height = Math.round(getRandom(16,32));
+    this.startLength = Math.round(getRandom(2,8));
+    this.winLength = Math.round(this.startLength * getRandom(1.5,3.5));
     this.appleCount = Math.round(getRandom(1,3));
-    this.size = Math.round(getRandom(2,8));
-    this.winLength = Math.round(this.size * getRandom(1.5,3.5));
-
     // this.bombRadius = Math.round(getRandom(5,7)); // This one is strange... has to be an odd number
   },
 
+  // Removes a player from the game
+  // all this does is remove the player's snake... we can just kill it instead..
   removePlayer : function(id){
-    for(var i = 0 ; i < this.snakes.length; i++) {
-      var snake = this.snakes[i];
-      if(snake.id === id){
-        var snakeIndex = this.snakes.indexOf(snake);
-        this.snakes.splice(snakeIndex, 1);
-      }
+
+    var snake = this.getSnake(id);
+
+    if(snake){
+      snake.die("loud",true);
     }
+
+    // for(var i = 0 ; i < this.snakes.length; i++) {
+    //   var snake = this.snakes[i];
+    //   if(snake.id === id){
+    //     snake.die("loud",true);
+    //     var snakeIndex = this.snakes.indexOf(snake);
+    //     this.snakes.splice(snakeIndex, 1);
+    //   }
+    // }
   },
 
+  // Remove debug snakes
   cleanupDebug: function() {
-    for (var i=this.snakes.length-1; i>=0; i--) {
+    for (var i= this.snakes.length - 1; i >= 0; i--) {
       let s = this.snakes[i];
       if (s.debug || s.moveDebugSnake) {
         s.die('debug', true);
@@ -67,8 +80,7 @@ Game.prototype = {
   },
 
 
-  // Reset game runs when the round is over...
-
+  // Reset game runs when the round is over
   resetGame : function(){
 
     for(var j = 0; j < this.apples.length; j++) {
@@ -99,8 +111,9 @@ Game.prototype = {
 
     this.cleanupDebug();
 
+    // Let the clients know a new game is starting
+    // and send the new game settings.
     this.mode = "game";
-
     var that = this;
     setTimeout(function(){
       that.io.emit('gameMode', {
@@ -118,14 +131,14 @@ Game.prototype = {
   cleanupGame : function(){
     // Check each snake, if the associated player doesn't exist in this.players
     // Kill it off without a respawn
-
-    for(var i = 0; i < this.snakes.length; i++) {
-      var snake = this.snakes[i];
-      var snakeID = snake.id;
-      if(!this.players[snakeID]){
-        snake.die("", true);
-      }
-    }
+    // Do we still need this?
+    // for(var i = 0; i < this.snakes.length; i++) {
+    //     var snake = this.snakes[i];
+    //     var snakeID = snake.id;
+    //     if(!this.players[snakeID]){
+    //       snake.die("", true);
+    //     }
+    //   }
   },
 
   move : function(){
@@ -150,14 +163,17 @@ Game.prototype = {
     });
 
     if(this.mode == "game") {
-      this.checkWinners(winnerIDs);
+      if(winnerIDs.length > 0) {
+        this.endRound(winnerIDs);
+      }
+
       this.checkBombs();
     }
   },
 
+  // Copy all snakes, move them without collision detection
+  // (for use with proper collision-on-next-tick detection)
   getFutureSnakes: function() {
-    // copy all snakes, move them without collision detection
-    // (for use with proper collision-on-next-tick detection)
     return this.snakes.map(snake => {
       var s = new Snake(snake, this);
       s.move();
@@ -165,46 +181,53 @@ Game.prototype = {
     });
   },
 
-  checkWinners: function(winnerIDs){
-    var that = this;
-      if(winnerIDs.length > 0){
 
-        for(var i = 0; i < winnerIDs.length; i++){
-          var winnerID = winnerIDs[i];
-          this.players[winnerID].points++;
-        }
+  // End the round and send out the scores to the clients
+  endRound: function(winnerIDs){
 
-        var sendPlayers = [];
+    var winnerID = winnerIDs[0];
 
-        Object.keys(this.players).forEach(key => {
-          sendPlayers.push({
-            id: key,
-            name: this.players[key].name,
-            points : this.players[key].points
-          })
-        })
+    this.players[winnerID].points++;
 
-        this.io.emit('gameOver', {
-          players : sendPlayers,
-          winner : winnerIDs[0]
-        });
+    // Sends all of the player info to the client
+    // to be displayed in the scoreboard
 
-        this.mode = "winner";
+    var sendPlayers = [];
 
-        // Explode eveyrone but the winner!
-        for (var i=this.snakes.length-1; i>=0; i--) {
-          let snake = this.snakes[i];
-          if(winnerIDs.indexOf(snake.id) < 0) {
-            snake.die("loud",true);
-          }
-        }
+    // Create the array with each player and their point total
+    Object.keys(this.players).forEach(key => {
+      sendPlayers.push({
+        id: key,
+        name: this.players[key].name,
+        points : this.players[key].points
+      })
+    })
 
-        setTimeout(function(){
-          that.resetGame();
-        },5000);
+    // Send that info to the client
+    this.io.emit('gameOver', {
+      players : sendPlayers,
+      winner : winnerIDs[0]
+    });
+
+    this.mode = "winner";
+
+    // Explode eveyrone but the winner
+    for (var i=this.snakes.length-1; i>=0; i--) {
+      let snake = this.snakes[i];
+      if(snake.id != winnerID) {
+        snake.die("loud",true);
       }
+    }
+
+    // 5 seconds later, restart the round
+    var that = this;
+    setTimeout(function(){
+      that.resetGame();
+    },5000);
   },
 
+
+  // This is the bomb countdown
   checkBombs : function(){
     var b = this.bombs, l=b.length;
     for (var i=l-1; i>=0; i--) {
@@ -216,21 +239,43 @@ Game.prototype = {
     };
   },
 
-  addSnake : function(data){
-    var snakeDetails = Object.assign({
-      x: (Math.random() * this.width)  | 0,
-      y: (Math.random() * this.height)  | 0,
-      name : data.name,
-      length: this.size
-    }, data);
 
-    for(var i = 0; i < this.snakes.length; i++) {
+  // Returns a snake with a specific id
+  getSnake : function(id) {
+    for(var i = 0; i < this.snakes.length; i++){
       var snake = this.snakes[i];
-      var id = snake.id;
-      if(id == data.id){
-        return;
+      if(snake.id === id) {
+        return snake;
       }
     }
+    return false;
+  },
+
+
+  // Adds a new snake to the game
+  addSnake : function(data){
+
+    var emptySpot = this.getEmptyCoordinates();
+
+    var snakeDetails = Object.assign({
+      x: emptySpot.x,
+      y: emptySpot.y,
+      name : data.name,
+      length: this.startLength
+    }, data);
+
+    // If for some reason this snake already exists, don't add it
+    if(this.getSnake(data.id)) {
+      return;
+    }
+
+    // for(var i = 0; i < this.snakes.length; i++) {
+    //   var snake = this.snakes[i];
+    //   var id = snake.id;
+    //   if(id == data.id){
+    //     return;
+    //   }
+    // }
 
     this.io.emit('spawnSnake', snakeDetails);
 
@@ -385,12 +430,13 @@ module.exports = function(io, players) {
   var game = new Game(io,players);
   game.resetGame();
 
-
   var time = new Date().getTime();
   var elapsed = 0;
-  var ms = 80;
+  var ms = game.tickDelay;
 
   function move(){
+    // console.log(game.snakes.length);
+
     var now = new Date().getTime();
     var delta = now - time;
     time = now;
@@ -404,6 +450,8 @@ module.exports = function(io, players) {
         snakes : game.snakes
        });
     }
+
+
 
     setTimeout(move,1);
   }
