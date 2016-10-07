@@ -17,6 +17,7 @@ Game.prototype = {
   appleCount : 2,
   apples : [],
   bombs :  [],
+  appleCount : 1,
 
   bombLifeSpan: 4,  // how long Bombs take to go off
   bombRadius: 5,    // the size of the Bomb Radius
@@ -36,13 +37,7 @@ Game.prototype = {
     return false;
   },
 
-  init: function(){
-    this.shuffleSettings();
-  },
-
   shuffleSettings : function(){
-    console.log("shuffling settings");
-
     this.width = Math.round(getRandom(25,50));
     this.height = Math.round(getRandom(16,32));
     this.appleCount = Math.round(getRandom(1,3));
@@ -71,21 +66,25 @@ Game.prototype = {
     }
   },
 
-  start : function(data){
-    // console.log("game start");
-    // this.addApple();
-    // this.addApple();
-  },
 
   // Reset game runs when the round is over...
 
   resetGame : function(){
 
-    this.shuffleSettings();
+    for(var j = 0; j < this.apples.length; j++) {
+      var apple = this.apples[j];
+      this.removeApple(apple);
+    }
 
     for (var i=this.snakes.length-1; i>=0; i--) {
       let snake = this.snakes[i];
       snake.die("quiet");
+    }
+
+    this.shuffleSettings();
+
+    for(var i = 0; i < this.appleCount; i++) {
+      this.addApple();
     }
 
     // For each player in the game, add a snake
@@ -101,8 +100,6 @@ Game.prototype = {
     this.cleanupDebug();
 
     this.mode = "game";
-
-
 
     var that = this;
     setTimeout(function(){
@@ -231,10 +228,7 @@ Game.prototype = {
       var snake = this.snakes[i];
       var id = snake.id;
       if(id == data.id){
-        console.log("Already have this snake");
         return;
-      } else {
-        console.log("Don't have it, making");
       }
     }
 
@@ -244,25 +238,15 @@ Game.prototype = {
     snake.init();
     this.snakes.push(snake);
 
-    if(this.apples.length == 0) {
-      this.addApple();
-      this.addApple();
-    }
-
     return snake;
   },
 
-  addApple : function(x, y ){
-
-    // Only adds apples to empty (non-snake) coordinates
-    var possible = this.getEmptyCoordinates();
-    while(!possible){
-      possible = this.getEmptyCoordinates();
-    }
+  addApple : function(){
+    var emptySpot = this.getEmptyCoordinates();
 
     var apple = {
-      x : parseFloat(x)==x? x : getRandom(0,this.width - 1),
-      y : parseFloat(y)==y? y : getRandom(0,this.height - 1),
+      x : emptySpot.x,
+      y : emptySpot.y,
       id: uuid()
     };
 
@@ -270,8 +254,9 @@ Game.prototype = {
     this.apples.push(apple);
   },
 
-  // Retuns random x,y value with nothing on it
+  // Retuns random x,y value with no snakes on it
   getEmptyCoordinates: function(){
+
     var spot = {
       x : getRandom(0,this.width - 1),
       y : getRandom(0,this.height - 1)
@@ -296,7 +281,7 @@ Game.prototype = {
     if(free) {
       return spot;
     } else {
-      return false;
+      return this.getEmptyCoordinates();
     }
   },
 
@@ -398,9 +383,8 @@ Game.prototype = {
 module.exports = function(io, players) {
 
   var game = new Game(io,players);
-  game.init();
+  game.resetGame();
 
-  console.log("Width: " + game.width);
 
   var time = new Date().getTime();
   var elapsed = 0;
@@ -425,8 +409,6 @@ module.exports = function(io, players) {
   }
 
   move();
-
-
 
   return game;
 };
