@@ -77,10 +77,11 @@ Game.prototype = {
     // this.addApple();
   },
 
-
   // Reset game runs when the round is over...
 
   resetGame : function(){
+
+    this.shuffleSettings();
 
     for (var i=this.snakes.length-1; i>=0; i--) {
       let snake = this.snakes[i];
@@ -101,7 +102,7 @@ Game.prototype = {
 
     this.mode = "game";
 
-    this.shuffleSettings();
+
 
     var that = this;
     setTimeout(function(){
