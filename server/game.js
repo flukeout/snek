@@ -46,6 +46,7 @@ Game.prototype = {
     this.startLength = Math.round(getRandom(2,8));
     this.winLength = Math.round(this.startLength * getRandom(1.5,3.5));
     this.appleCount = Math.round(getRandom(1,3));
+    this.appleCount = 1;
     // this.bombRadius = Math.round(getRandom(5,7)); // This one is strange... has to be an odd number
   },
 
