@@ -1,0 +1,86 @@
+body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: black;
+}
+
+.pad-controls {
+
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  top: 30px;
+}
+
+
+.button {
+
+  opacity: 0;
+
+  position: absolute;
+  transform: rotate(45deg);
+  display: inline-block;
+  margin: 5px;
+  height: 75px;
+  border: solid 2px rgba(255,255,255,.2);
+  width: 75px;
+}
+
+.active {
+  border: solid 2px rgba(255,255,255,.4);
+}
+
+
+[direction=bomb] {
+  left: calc(50% - 77px);
+  top: 265px;
+  border-radius: 50%;
+  height: 140px;
+  width: 140px;
+}
+
+
+[direction=up] {
+  left: calc(50% - 44px);
+}
+
+[direction=left] {
+  left: 46px;
+  top: 62px;
+
+}
+
+[direction=right] {
+  right: 46px;
+  top: 62px;
+}
+
+[direction=down] {
+  left: calc(50% - 44px);
+  top: 125px;
+}
+
+.console {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  color: white;
+}
+
+.beacon {
+  position: fixed;
+  transform: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 20px;
+  padding: 20px 10;
+  opacity :1;
+  bottom: 10px;
+  right: 10px;
+  color: white;
+  text-align: center;
+}

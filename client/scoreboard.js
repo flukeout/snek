@@ -12,8 +12,9 @@ var scoreBoard = {
     for(var i = 0; i < players.length; i++){
       var s = players[i];
 
-      var gameSnake = getSnake(parseInt(s.id)); // Grabs the related snake from the game object
-      var snakeColor = gameSnake.color;
+      var gameSnake = getSnake(parseInt(s.id)) || {}; // Grabs the related snake from the game object
+
+      var snakeColor = gameSnake.color || "#DDD";
 
       if(s.id == winner) {
         winnerName = s.name;

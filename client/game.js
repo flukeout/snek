@@ -12,6 +12,8 @@ var game = {
 
   gameWon : function(players,winner){
 
+    console.log("gameWon called",this.snakes);
+
     playSound("winner");
 
     $("[mode=game]").addClass("winner");
@@ -21,12 +23,14 @@ var game = {
     var winnerSnake = getSnake(winner);
 
     setTimeout(function(){
+      console.log("removing class winner")
       $("[mode=game]").removeClass("winner");
-    },2500)
+    },2500);
 
     var that = this;
 
     setTimeout(function(){
+      console.log("changing mode to winn");
       that.changeMode("winner");
       $(".winning-snake").css("opacity","0");
     },2000);

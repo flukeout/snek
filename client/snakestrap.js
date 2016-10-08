@@ -70,7 +70,6 @@ $(document).ready(function(){
       }
     }
 
-
     var bomb = keyResult.bomb;
     if(bomb) {
       socket.emit('dropBomb')

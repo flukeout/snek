@@ -1,35 +1,40 @@
 var chat = {
-  state : "closed",
-  mode : "",
+  state : "closed",   // Open or closed
+  mode : "",          // Either for chatting or changing name
+  chatUI: "",         // Placeholder for chat UI wrapper element
+  chatInput : "",     // Placeholder for input element
+
+
   init : function(){
     this.chatUI = $(".chat-ui");
     this.chatInput = this.chatUI.find("input");
   },
-  chatUI: "",
-  chatInput : "",
+
 
   changeNameKeyHit: function(){
     if(this.state == "closed"){
-      this.startType();
+      this.startTyping();
       this.state = "open";
       this.chatInput.attr("placeholder","What's your name?");
       this.mode = "namechange";
     }
   },
 
+
   enterHit : function(){
     if(this.state == "closed") {
-      this.startType();
+      this.startTyping();
       this.state = "open";
       this.mode = "chatmessage";
       this.chatInput.attr("placeholder","Send a message");
     } else {
       this.state = "closed";
-      this.finishType();
+      this.finishTyping();
     }
   },
 
-  startType: function(){
+
+  startTyping: function(){
     $(".keys-helper").hide();
     this.chatUI.show();
     var that = this;
@@ -38,7 +43,8 @@ var chat = {
     },20)
   },
 
-  finishType: function(){
+
+  finishTyping: function(){
     $(".keys-helper").show();
     this.chatUI.hide();
     var inputVal = this.chatInput.val();
@@ -58,15 +64,18 @@ var chat = {
     }
 
     if(this.mode == "chatmessage" && inputVal.length > 0) {
-      console.log(inputVal.length);
       this.sendMessage(inputVal);
     }
   },
+
+
   sendAdminCommand: function(command){
     socket.emit('adminCommand', {
       command: command
     });
   },
+
+
   changeName: function(newName){
     if(newName.length > 12) {
       newName = newName.substring(0,12) + "...";
@@ -77,6 +86,8 @@ var chat = {
     });
     this.sendMessage("Hi, I'm " + newName);
   },
+
+
   sendMessage: function(message){
     if(message.length > 32) {
       message = message.substring(0,32) + "...";
