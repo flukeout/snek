@@ -84,10 +84,11 @@ function makeParticle(options){
   // Grabs an available particle from the blankParticles array
   particle.referenceParticle = blankParticle;
 
-  particle.el.css("height", particle.height);
-  particle.el.css("width",  particle.width);
-  particle.el.addClass(particle.className);
-  particle.el.css("background",particle.color);
+  particle.el[0].style.height = particle.height;
+  particle.el[0].style.width = particle.width;
+  particle.el[0].classList.add(particle.className);
+  particle.el[0].style.background = particle.color;
+
 
   particle.move = function(){
     var p = this;
@@ -118,6 +119,14 @@ function makeParticle(options){
     p.yV = p.yV + p.yVa;
 
     p.o = p.o + p.oV;
+
+    // If the particle is invisible
+    // and won't be visible again
+    // kill it off.
+    if(p.o <= 0 && p.oV <= 0) {
+      p.lifespan = 0;
+    }
+
     p.z = p.z + p.zV;
     p.zV = p.zV - p.gravity
 
@@ -127,13 +136,13 @@ function makeParticle(options){
     p.xR = p.xR + p.xRv;
     p.zR = p.zR + p.zRv;
     p.yR = p.yR + p.yRv;
-    p.el.css("transform","translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale("+p.scale+")");
-    p.el.css("opacity",p.o);
 
+
+    p.el[0].style.transform = "translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale("+p.scale+")";
+    p.el[0].style.opacity = p.o;
   } // particle.move()
 
   particles.push(particle);
-  particle.el.css("display","block");
-  particle.el.css("opacity",0);
+  particle.el[0].style.display = "block";
+  particle.el[0].style.opacity = 0;
 }
-

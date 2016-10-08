@@ -11,9 +11,6 @@ var game = {
   mode : "game",
 
   gameWon : function(players,winner){
-
-    console.log("gameWon called",this.snakes);
-
     playSound("winner");
 
     $("[mode=game]").addClass("winner");
@@ -23,19 +20,17 @@ var game = {
     var winnerSnake = getSnake(winner);
 
     setTimeout(function(){
-      console.log("removing class winner")
       $("[mode=game]").removeClass("winner");
     },2500);
 
     var that = this;
-
     setTimeout(function(){
       console.log("changing mode to winn");
       that.changeMode("winner");
       $(".winning-snake").css("opacity","0");
     },2000);
-
   },
+
 
   changeMode : function(type){
     $("[mode]").addClass("hidden");
@@ -54,7 +49,7 @@ var game = {
 
 
   // Sets up visual properties of the board
-
+  // Height, width and the leading snake indicator
   setupBoard : function(width, height, winLength){
     $(".leader-boxes .box").remove();
     for(var i = 0; i < winLength; i++) {
@@ -66,6 +61,7 @@ var game = {
     $(".board").css("height",this.gridSize * height);
   },
 
+  // Starts the "game" up.
   setup : function(width, height, id, apples, snakes, winLength) {
 
     this.setupBoard(width, height, winLength);
@@ -90,29 +86,32 @@ var game = {
       chat.changeName(storedName);
     }
 
+    // Request a snake for this player
     socket.emit("makeSnake");
   },
 
+
+  // Moves each snake
   move : function(){
     var max = 0;
     var longest;
 
     for(var i = 0 ; i < this.snakes.length; i++ ){
-      var s = this.snakes[i];
-      s.move();
-      if(s.segments.length > max) {
-        longest = s;
-        max = s.segments.length;
+      var snake = this.snakes[i];
+      snake.move();
+      if(snake.segments.length > max) {
+        longest = snake;
+        max = snake.segments.length;
       }
     }
 
     $(".leader-boxes .box").css("background","#222");
     $(".leader-name").text("???");
+
     if(longest){
       $(".leader-name").text(longest.name);
       $(".leader-boxes .box:nth-child(-n+"+max+")").css("background",longest.color);
     }
-
   },
 
   addSnake : function(id, x, y, color, direction, length, name){

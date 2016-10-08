@@ -1,18 +1,33 @@
 <html>
   <head>
-    <link rel="stylesheet/less" href="style.less" type="text/css">
     <script src="/jquery.js"></script>
     <script src="/socket.io.js"></script>
-    <script src="/handlekeys.js"></script>
     <script src="pad.js"></script>
     <link rel="stylesheet" href="style.css" type="text/css" media="screen">
-
     <meta name="viewport" content="width=320, user-scalable=no">
+
     <title>This is the Pad</title>
   </head>
   <body>
     <div class="console"></div>
     <div class="pad-controls">
+
+      <div class="instructions">
+        <div class="action">
+          <h2>SWIPE</h2>
+          <p>to move your snake</p>
+        </div>
+        <div class="action">
+          <h2>SWIPE &amp; HOLD</h2>
+          <p>to charge up a boost</p>
+          <p>Once charged, swipe in the direction you are already moving to boost!</p>
+        </div>
+
+        <div class="action">
+          <h2>TAP</h2>
+          <p>to drop a bomb</p>
+        </div>
+      </div>
 
       <div class="button" direction="up"></div><br/>
       <div class="button" direction="left"></div>

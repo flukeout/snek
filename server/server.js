@@ -5,7 +5,7 @@ require('./sockets')(app);
 var path = require('path');
 
 app.use(express.static(path.join(__dirname,'..','client')));
-app.use("/pad", express.static(path.join(__dirname,'..','pad')));
+app.use("/touchpad", express.static(path.join(__dirname,'..','touchpad')));
 app.use("/sounds", express.static(path.join(__dirname,'..','sounds')));
 
 app.get('/socket.io.js', function(req, res) {

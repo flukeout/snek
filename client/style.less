@@ -1,7 +1,6 @@
 body, html {
-  font-family: "Helvetica Neue";
+  font-family: "Lato", "Helvetica Neue", sans-serif;
   padding: 0;
-  font-family: "Lato";
   font-weight: 700;
   margin: 0;
   background: black;
@@ -77,8 +76,8 @@ body, html {
     transform: rotate(45deg);
   }
 
-  &.player-snake.not-moving .body {
-    animation: .2s ease-out playerIndicator infinite; //Outline around player character
+  &.player-indicator .body {
+    animation: .2s ease-out playerIndicator infinite;
   }
 
   &.charged .body {
@@ -90,10 +89,7 @@ body, html {
       left: 0;
       width: 100%;
       height: 100%;
-      // left: 25%;
       top: 0;
-      // transform: translateZ(10px);
-
     }
   }
 
@@ -544,22 +540,8 @@ body, html {
   }
 }
 
-.winning-snake {
-  position: absolute;
-  text-transform: uppercase;
-  top: 60px;
-  width: 100%;
-  font-size: 40px;
-  text-align: center;
-  font-weight: 900;
-  margin-top:0;
-  color: white;
-  z-index: 88;
-  opacity: 0;
-  transition: opacity .2s ease-out;
-}
 
-// When we fade everything out except the winning snake
+// Scoreboard between rounds
 
 [mode='winner'] {
   color: white;
@@ -596,7 +578,6 @@ body, html {
         border-bottom: solid 2px rgba(255,255,255,.2);
         color: rgba(255,255,255,.8);
         padding: 10px 0;
-        // color: white;
         font-size: 24px;
 
         .name {
@@ -615,7 +596,26 @@ body, html {
   }
 }
 
+
+// Winner screen when we show just the winning snake
+
+.winning-snake {
+  position: absolute;
+  text-transform: uppercase;
+  top: 60px;
+  width: 100%;
+  font-size: 40px;
+  text-align: center;
+  font-weight: 900;
+  margin-top:0;
+  color: white;
+  z-index: 88;
+  opacity: 0;
+  transition: opacity .2s ease-out;
+}
+
 .winner {
+
   .keys-helper {
     opacity: 0;
     transition: all .2s ease-out;
@@ -629,10 +629,12 @@ body, html {
     opacity: 0;
     transition: all .2s ease-out;
   }
+
   .border {
     border-color: transparent;
     transition: all .2s ease-out;
   }
+
   .board {
     transition: all .2s ease-out;
     background: transparent;
@@ -644,11 +646,7 @@ body, html {
   }
 }
 
-
-
-
-
-
+// Little indicator when a player spawn
 
 .spawn {
   position: absolute;
@@ -679,7 +677,7 @@ body, html {
   }
 }
 
-
+// Instructions at the bottom of the page
 .keys-helper {
   position: absolute;
   bottom: 0;
@@ -722,11 +720,15 @@ body, html {
   z-index: 5;
 }
 
-.smear {
+// Bomb blast-line
+.blast-line {
   transform-origin: top;
   z-index: 4;
 }
 
+
+// Blank particle, hangs out and waits
+// to be used by particles.js
 .blank-particle {
   position: absolute;
   display: none;
@@ -742,19 +744,9 @@ body, html {
   border-radius: 50%;
 }
 
-
-.spawn-particle {
-  border-radius: 50%;
-}
-
 .speed {
   z-index: 4;
-  // border-radius: 50%;
   transform-origin: bottom left;
-}
-
-.poopl {
-  transform-origin: top;
 }
 
 .warpskid {

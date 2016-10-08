@@ -67,9 +67,7 @@ function makeExplosion(xposition, yposition, size){
 
   $(".board").append(particle.el);
 
-
-  // Make smoke puffs
-
+  // Make smoke puffs around the explosion
   for(var i = 0; i < 8; i++){
 
     var options = {
@@ -90,9 +88,7 @@ function makeExplosion(xposition, yposition, size){
     makeParticle(options);
   }
 
-
   // Blast lines that eminate from the center of the bomb
-
   for(var i = 0; i < getRandom(8,12); i++){
     var options = {
       x : xposition + 8,
@@ -100,7 +96,7 @@ function makeExplosion(xposition, yposition, size){
       zR : getRandom(0,360),
       width: 4,
       height: getRandom(60,100),
-      className : 'smear',
+      className : 'blast-line',
       lifespan: 200,
       o: .4,
       oV: -.01

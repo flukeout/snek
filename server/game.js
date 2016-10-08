@@ -9,15 +9,22 @@ var Game = function(io,players) {
 };
 
 Game.prototype = {
-  startLength : 5,  // Starting snake size
-  winLength : 6,    // Snake length to win
-  width : 42,       // Width of the baord, in grid squares
-  height: 28,       // Height of the board, in grid squares
-  appleCount : 1,   // Number of apples at one time
-  bombLifeSpan: 4,  // how long Bombs take to go off
-  bombRadius: 5,    // the size of the Bomb Radius
 
-  tickDelay : 80,   // Delay, in milliseconds, between each frame. Bigger value means game runs slower.
+  // Randomizes the game settings every round
+  shuffleSettings : function(){
+    this.width = Math.round(getRandom(25,35));      // Game board width, in squares
+    this.height = Math.round(getRandom(16,28));     // Game board height, in squares
+
+    this.startLength = Math.round(getRandom(2,8));                        // Starting length of the snake
+    this.winLength = Math.round(this.startLength * getRandom(1.5,3.5));   // Snake length needed to win
+
+    this.appleCount = 1;     // Number of apples at any one time
+    this.bombLifeSpan = 4;   // How many snake moves Bombs take to go off
+    this.bombRadius = 5;     // The effective size of the Bomb Radius
+
+    this.tickDelay =   80;   // Delay, in milliseconds, between each snake movement. Bigger value means game runs slower.
+  },
+
 
   apples : [],      // Keeps all of the apples
   bombs :  [],      // Keeps all of the bombs
@@ -25,7 +32,6 @@ Game.prototype = {
   players : {},     // Keeps all of the payers
 
   mode : "game",    // Other modes is "winner", which shows the scoreboard
-
 
   // Finds a snake by the player's id
   findPlayerSnake: function(playerid) {
@@ -39,36 +45,15 @@ Game.prototype = {
   },
 
 
-  // Randomizes the game settings
-  shuffleSettings : function(){
-    this.width = Math.round(getRandom(25,50));
-    this.height = Math.round(getRandom(16,32));
-    this.startLength = Math.round(getRandom(2,8));
-    this.winLength = Math.round(this.startLength * getRandom(1.5,3.5));
-    this.appleCount = Math.round(getRandom(1,3));
-    this.appleCount = 1;
-    // this.bombRadius = Math.round(getRandom(5,7)); // This one is strange... has to be an odd number
-  },
-
   // Removes a player from the game
   // all this does is remove the player's snake... we can just kill it instead..
   removePlayer : function(id){
-
     var snake = this.getSnake(id);
-
     if(snake){
       snake.die("loud",true);
     }
-
-    // for(var i = 0 ; i < this.snakes.length; i++) {
-    //   var snake = this.snakes[i];
-    //   if(snake.id === id){
-    //     snake.die("loud",true);
-    //     var snakeIndex = this.snakes.indexOf(snake);
-    //     this.snakes.splice(snakeIndex, 1);
-    //   }
-    // }
   },
+
 
   // Remove debug snakes
   cleanupDebug: function() {

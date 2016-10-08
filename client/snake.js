@@ -7,6 +7,7 @@ function makeSnake(id, x, y, color, direction, length, name){
     name : name,
     length: length,
     moving : false,
+    playerSnake : false,
     charge : 0,
     boostCharge : 12,
     color : color,
@@ -47,8 +48,14 @@ function makeSnake(id, x, y, color, direction, length, name){
       for(var i = 0; i < this.length; i++) {
         this.makeSegment(this.x,this.y,"head");
       }
+
       makeSpawnParticle(x, y, this.color);
       this.say(this.name);
+
+      if(this.id == game.playerId){
+        this.playerSnake = true;
+      }
+
       playSound("spawn");
     },
 
@@ -196,6 +203,7 @@ function makeSnake(id, x, y, color, direction, length, name){
       }
 
       $(".board").append(segmentEl);
+
       segmentEl.css("opacity",0);
 
       segmentEl.css("width",this.size).css("height",this.size);
@@ -292,15 +300,16 @@ function makeSnake(id, x, y, color, direction, length, name){
 
     draw : function(){
 
-      // we ahve access to the charge level here (this.charge)....!
+      // If the player reaches the full charge level
       if(this.id == game.playerId){
         if(this.charge == this.boostCharge) {
           playSound("power-up");
         }
       }
 
+      // Add an indicator and particles to the head of the snake when
+      // it has reached the full charge level
       var head = this.getHead();
-
       if(this.charge >= this.boostCharge) {
         $(head.el).addClass("charged");
 
@@ -324,21 +333,24 @@ function makeSnake(id, x, y, color, direction, length, name){
         $(head.el).removeClass("charged");
       }
 
+      // Move each segment
       for(var i = 0; i < this.segments.length; i++) {
         var seg = this.segments[i];
-        $(seg.el).css("opacity", 1);
-        if(this.id == game.playerId){
-          $(seg.el).addClass("player-snake");
+        var segEl = seg.el[0];
 
-
-        } else {
-          $(seg.el).removeClass("player-snake");
+        if(!seg.drawn) {
+          segEl.style.opacity = 1;
+          seg.drawn = true;
         }
-        $(seg.el).css("transform","translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)");
-        if(!this.moving && i == 0) {
-          $(seg.el).addClass("not-moving");
+
+        segEl.style.transform = "translateX(" + seg.x * this.size + "px) translateY(" + seg.y * this.size + "px)";
+
+        // Add a player indicator when snake
+        // belongs to this player and is not moving
+        if(!this.moving && i == 0 && this.playerSnake) {
+          segEl.classList.add("player-indicator");
         } else {
-          $(seg.el).removeClass("not-moving");
+          segEl.classList.remove("player-indicator");
         }
       }
     }

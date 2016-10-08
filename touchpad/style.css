@@ -5,6 +5,7 @@ body {
   right: 0;
   bottom: 0;
   background: black;
+  font-family: "Lato", "Helvetica Neue", sans-serif;
 }
 
 .pad-controls {
@@ -83,4 +84,24 @@ body {
   right: 10px;
   color: white;
   text-align: center;
+}
+
+.instructions {
+  color: white;
+  padding: 0 20px;
+}
+
+.action {
+  margin: 10px 0 30px 0;
+}
+
+.instructions p {
+  margin: 0 0 10px 0;
+  color: rgba(255,255,255,.5);
+}
+
+
+.instructions h2 {
+  margin: 0;
+  font-size: 1.5em;
 }

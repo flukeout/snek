@@ -1,4 +1,7 @@
-**Left off**
+**Thoughts & Fixes**
+
+* add wall crash juice
+* need to keep the mobile pad client from being 'zoomable' when tapping the screen
 
 * One problem is that when we try to do the scores
 * We look for snakes that are alive to see what color they are
