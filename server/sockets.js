@@ -122,59 +122,6 @@ module.exports = function(app) {
         id: player.id
       });
     });
-
-    // ==== DEBUG SOCKET MESSAGES ====
-
-    function noDebug() {
-      return game.snakes.length!==1;
-    }
-
-    socket.on('generateDebugSnake', function(method) {
-      if (noDebug()) return;
-
-      var player = game.snakes[0];
-      var d = game.addSnake({
-        id: (Number.MAX_SAFE_INTEGER - game.snakes.length),
-        color: 'rgba(255,255,255,0.2)',
-        debug: true,
-        moving: false
-      });
-
-      if (method==='fullsnake') {
-        player.segments.forEach((segment,pos) => {
-          d.segments[pos] = {
-            x: game.width - segment.x,
-            y: game.height - segment.y
-          };
-        });
-      }
-
-      if (method==='collisionsnake') {
-        var dir = player.direction;
-
-        if (dir === 'up' || dir === 'down') {
-          player.segments.forEach((segment,pos) => {
-            d.segments[pos] = {
-              x: segment.x,
-              y: game.height - segment.y
-            };
-          });
-          d.direction = dir === 'up' ? 'down' : 'up';
-        } else {
-          player.segments.forEach((segment,pos) => {
-            d.segments[pos] = {
-              x: game.width - segment.x,
-              y: segment.y
-            };
-          });
-          d.direction = dir === 'left' ? 'right' : 'left';
-        }
-
-        d.moving = true;
-        d.moveDebugSnake = true;
-      }
-    });
-
   });
 
   // Fire up a boring ol' server, on port 3000
