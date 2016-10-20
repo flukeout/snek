@@ -1,4 +1,4 @@
-var colors = require('../client/colors');
+var colors = require('../client/lib/colors');
 
 var nextColor = (function() {
   var c = 0;

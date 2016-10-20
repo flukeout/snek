@@ -1,12 +1,11 @@
-var buttons = {
-  left : false,
-  right: false,
-  down : false,
-  up : false,
-  bomb : false
-}
-
 $(document).ready(function(){
+  var buttons = {
+    left : false,
+    right: false,
+    down : false,
+    up : false,
+    bomb : false
+  };
 
   $(document).on("keyup",function(event) {
 
