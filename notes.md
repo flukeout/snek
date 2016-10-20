@@ -1,5 +1,8 @@
 **Thoughts & Fixes**
 
+* Find a way to getSnake using the same function / javascript file
+  * Same with getRandom.. (used in particles JS)
+
 * add wall crash juice
 * need to keep the mobile pad client from being 'zoomable' when tapping the screen
 

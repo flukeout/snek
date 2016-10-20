@@ -9,8 +9,14 @@ var directions = ["up","down","left","right"];
 
 var startX;              // Keeps track of the x position of a new move or gesture starts
 var startY;              // Keeps track of the y position of a new move or gesture starts
-var minTouch = 40;       // Minimum distance swiped to register a move
+var minTouch = 80;       // Minimum distance swiped to register a move
 var startMoveTime = 0;   // Tracks the time a move was started, so we can check how long it took
+var gestureDelta = 0;
+
+var lastX = 0;
+var lastY = 0;
+
+var lastDirection;
 
 $(document).ready(function(){
 
@@ -29,17 +35,24 @@ $(document).ready(function(){
   // We also let the player make multiple moves without having
   // to lift their finger.
 
+
+
   $("body").on("touchstart", function(e){
     var touch = e.originalEvent.changedTouches[0];
     startX = touch.clientX;
     startY = touch.clientY;
     var now = new Date();
     startMoveTime = now.getTime();
+    
+    lastX = touch.clientX;
+    lastY = touch.clientY;
   });
 
   // When the player swipes around the controller,
   // we figure out when they've moved far enough in
   // any direction and let the game know.
+
+
   $("body").on("touchmove", function(e){
 
     var touch = e.originalEvent.changedTouches[0];
@@ -48,6 +61,16 @@ $(document).ready(function(){
 
     var xDelta = x - startX;
     var yDelta = y - startY;
+    
+
+    var totalDeltaX = x - lastX;
+    var totalDeltaY = y - lastY;
+    
+    gestureDelta += Math.abs(totalDeltaX);
+    gestureDelta += Math.abs(totalDeltaY);
+    
+    lastX = x;
+    lastY = y;
 
     var totalDelta = Math.abs(xDelta) + Math.abs(yDelta);
 
@@ -57,6 +80,7 @@ $(document).ready(function(){
         socket.emit('direction', {
           direction: "right"
         });
+        lastDirection = "right";
         endmove(x, y, "right");
       }
 
@@ -64,6 +88,7 @@ $(document).ready(function(){
         socket.emit('direction', {
           direction: "left"
         });
+        lastDirection = "left";
         endmove(x, y, "left");
       }
 
@@ -92,6 +117,10 @@ $(document).ready(function(){
 
     checkShortTouch(x, y);
     endmove(x, y, false);
+    gestureDelta = 0;
+
+    return false;
+    e.preventDefault();
   });
 
 });
@@ -103,15 +132,14 @@ $(document).ready(function(){
 // If it's a short swipe and a short duration, it's probably meant to be a tap.
 
 function checkShortTouch(x, y){
-  var xDelta = x - startX;
-  var yDelta = y - startY;
-  var gestureDelta = Math.abs(xDelta) + Math.abs(yDelta);
 
   var now = new Date();
   var endTime = now.getTime();
   var timeDelta = endTime - startMoveTime;
 
-  if(timeDelta < 100 && gestureDelta < 10 ) {
+  $(".console").text(timeDelta + "," +  gestureDelta);
+
+  if(timeDelta < 250 && gestureDelta < 5) {
     socket.emit('dropBomb');
   }
 }
@@ -130,7 +158,6 @@ function endmove(x,y, direction){
     }
   }
 }
-
 
 
 // These are commented out button controls
