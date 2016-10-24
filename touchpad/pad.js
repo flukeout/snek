@@ -36,7 +36,6 @@ $(document).ready(function(){
   // to lift their finger.
 
 
-
   $("body").on("touchstart", function(e){
     var touch = e.originalEvent.changedTouches[0];
     startX = touch.clientX;
@@ -76,34 +75,34 @@ $(document).ready(function(){
 
     if(totalDelta > minTouch) {
 
+      var thisDirection = false;
+
       if(xDelta > minTouch) {
-        socket.emit('direction', {
-          direction: "right"
-        });
-        lastDirection = "right";
-        endmove(x, y, "right");
+        thisDirection = "right";
       }
 
       if(xDelta < (minTouch * -1)) {
-        socket.emit('direction', {
-          direction: "left"
-        });
-        lastDirection = "left";
-        endmove(x, y, "left");
+        thisDirection = "left";
       }
 
       if(yDelta > minTouch) {
-        socket.emit('direction', {
-          direction: "down"
-        });
-        endmove(x, y, "down");
+        thisDirection = "down";
       }
 
       if(yDelta < (minTouch * -1)) {
-        socket.emit('direction', {
-          direction: "up"
-        });
-        endmove(x, y, "up");
+        thisDirection = "up";
+      }
+
+      if(thisDirection) {
+
+        if(thisDirection != lastDirection) {
+          socket.emit('direction', {
+            direction: thisDirection
+          });
+          endmove(x, y, thisDirection);
+        }
+        
+        lastDirection = thisDirection;
       }
 
     }
@@ -118,6 +117,7 @@ $(document).ready(function(){
     checkShortTouch(x, y);
     endmove(x, y, false);
     gestureDelta = 0;
+    lastDirection = false;
 
     return false;
     e.preventDefault();
