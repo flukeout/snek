@@ -76,9 +76,6 @@ module.exports = function(app) {
       if(command == "resetGame"){
         game.resetGame();
       }
-      if(command == "cleanupGame"){
-        game.cleanupGame();
-      }
     });
 
     // When the client requests a new snake be made for them
