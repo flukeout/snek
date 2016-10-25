@@ -5,11 +5,11 @@ blah blah intro text blah blah paragraph lol SNEK.
 ## Table of Contents
 
 1. [Getting set up](#1. getting set up)
-	1.1. [Prerequisites]()
-    1.2. [Getting the code]()
-    1.3. [First-time installation]()
-    1.4. [Running the game]()
-    1.5. [Running the game with more than one person]()
+	1. [Prerequisites]()
+    2. [Getting the code]()
+    3. [First-time installation]()
+    4. [Running the game]()
+    5. [Running the game with more than one person]()
 2. [Aspects of game play]()
 3. [Diving into the code]()
 4. [Troubleshooting and help]()
