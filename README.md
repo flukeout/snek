@@ -12,6 +12,9 @@ blah blah intro text blah blah paragraph lol SNEK.
     5. [Running the game with more than one person]()
 2. [Aspects of game play]()
 3. [Diving into the code]()
+	1. [The game loop]()
+	2. [The server code]()
+	3. [The client code]()
 4. [Troubleshooting and help]()
 5. [License information (boring, but important)]()
 
