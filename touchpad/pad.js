@@ -20,15 +20,6 @@ var lastDirection;
 
 $(document).ready(function(){
 
-  // Sends a ""!!!"" message to help the player
-  // identify where they are on the map.
-  $("body").on("touchstart", ".beacon", function(e){
-    socket.emit('sendChat', {
-      message: "!!!"
-    });
-    return false; // Otherwise we end up dropping a bomb
-  });
-
   // When we start a gesture, keep track of
   // * Where it started (x,y)
   // * When it started
@@ -158,38 +149,3 @@ function endmove(x,y, direction){
     }
   }
 }
-
-
-// These are commented out button controls
-// They provide an alternate input method
-// =====-=====-=====-=====-=====-=====-=====-=====-=====-=====-=====-=====-=====-=====-=====-=====-
-// $(".pad-controls").on("touchstart",".button", function(e){
-//
-//   e.preventDefault();
-//
-//   var direction = $(this).attr("direction");
-//   $(this).addClass("active");
-//
-//   if(directions.indexOf(direction) > -1) {
-//     socket.emit('direction', {
-//       direction: direction
-//     });
-//     return;
-//   }
-//
-//   if(direction == "bomb") {
-//     socket.emit('dropBomb')
-//   }
-
-//   return false;
-// });
-//
-//
-// $(".pad-controls").on("touchend",".button", function(){
-//   var direction = $(this).attr("direction");
-//   $(this).removeClass("active");
-//
-//   socket.emit('releaseDirection', {
-//     direction: direction
-//   });
-// })

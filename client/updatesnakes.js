@@ -1,4 +1,7 @@
-// Updates all of the snakes...
+// Updates all of the snakes:
+// * Receives data from the server
+// * Updates all of the snakes in the game to match the server state of the snakes
+
 function updateSnakes(snakes){
 
   for(var i = 0; i < snakes.length; i++){

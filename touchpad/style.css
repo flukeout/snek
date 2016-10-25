@@ -4,7 +4,6 @@
   user-select: none;
 }
 
-
 body {
   position: absolute;
   top: 0;
@@ -16,7 +15,6 @@ body {
 }
 
 .pad-controls {
-
   position: absolute;
   text-align: center;
   width: 100%;

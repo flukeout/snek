@@ -13,7 +13,6 @@ var scoreBoard = {
       var s = players[i];
 
       var gameSnake = getSnake(parseInt(s.id)) || {}; // Grabs the related snake from the game object
-
       var snakeColor = gameSnake.color || "#DDD";
 
       if(s.id == winner) {
