@@ -1,6 +1,11 @@
 # Snek: a web-based multiplayer Snake
 
-blah blah intro text blah blah paragraph lol SNEK.
+Snek is a web-based, multiplayer version of Snake, using a JavaScript server (running using Node.js) and a simple HTML, CSS, and jQuery/plain JS client that connects to the server using websockets.
+
+If that sounds a little complicated: don't worry! The important part is this:
+
+![snakes on a plane!](https://raw.githubusercontent.com/flukeout/snek/gh-pages/client/images/favicon.png)
+ 
 
 ## Table of Contents
 
