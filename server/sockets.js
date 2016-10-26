@@ -70,14 +70,6 @@ module.exports = function(app) {
       snake.name = player.name;
     });
 
-    //Receive admin command from a client
-    socket.on('adminCommand',function(data){
-      var command = data.command;
-      if(command == "resetGame"){
-        game.resetGame();
-      }
-    });
-
     // When the client requests a new snake be made for them
     // We add one!
     socket.on('makeSnake', function() {

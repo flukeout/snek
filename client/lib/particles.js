@@ -53,9 +53,8 @@ function makeParticle(options){
     className : options.className || false,
 
     lifespan : options.lifespan || 0,
-    delay : options.delay || 0, //how long to wait before moving
+    delay : options.delay || 0,
   };
-
 
   if(particle.angle) {
     particle.angle =  particle.angle - 180;
@@ -65,7 +64,6 @@ function makeParticle(options){
     particle.xVa = Math.sin(particle.angle * (Math.PI/180)) * particle.speedA;
     particle.yVa = Math.cos(particle.angle * (Math.PI/180)) * particle.speedA;
   }
-
 
   for(var i = 0; i < blankParticles.length; i++){
     var blankParticle = blankParticles[i];
@@ -88,7 +86,6 @@ function makeParticle(options){
   particle.el[0].style.width = particle.width;
   particle.el[0].classList.add(particle.className);
   particle.el[0].style.background = particle.color;
-
 
   particle.move = function(){
     var p = this;
@@ -120,9 +117,7 @@ function makeParticle(options){
 
     p.o = p.o + p.oV;
 
-    // If the particle is invisible
-    // and won't be visible again
-    // kill it off.
+    // If the particle opacity drops below 0 and won't get above 0, get rid of it
     if(p.o <= 0 && p.oV <= 0) {
       p.lifespan = 0;
     }
@@ -136,7 +131,6 @@ function makeParticle(options){
     p.xR = p.xR + p.xRv;
     p.zR = p.zR + p.zRv;
     p.yR = p.yR + p.yRv;
-
 
     p.el[0].style.transform = "translate3d("+p.x+"px,"+p.y+"px,"+p.z+"px) rotateX("+p.xR+"deg) rotateZ("+p.zR+"deg) rotateY("+p.yR+"deg) scale("+p.scale+")";
     p.el[0].style.opacity = p.o;

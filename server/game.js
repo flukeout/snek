@@ -25,7 +25,6 @@ Game.prototype = {
     this.tickDelay =   80;   // Delay, in milliseconds, between each snake movement. Bigger value means game runs slower.
   },
 
-
   apples : [],      // Keeps all of the apples
   bombs :  [],      // Keeps all of the bombs
   snakes : [],      // Keeps all of the player snakes
@@ -99,7 +98,9 @@ Game.prototype = {
     },1000);
 
   },
-
+ 
+  // The main game loop funciton, runs every "tick" of the game
+  // moves all of the snakes, and checks to see if any snake is long enough to win
   move : function(){
     var winnerIDs = [];
     var futureSnakes = this.getFutureSnakes();
@@ -350,8 +351,10 @@ Game.prototype = {
     this.io.emit('removeBomb', bomb.id);
   },
 
+  
+  // Checks if a snake runs into a bomb or an apple
+  // You can run into bombs before they auto-detonate
   checkCollisions(){
-    //Checks collisions between apples and snakes
     for(var i = 0; i < this.snakes.length; i++){
       var snake = this.snakes[i];
       var head = snake.segments[snake.segments.length - 1];
@@ -387,8 +390,9 @@ module.exports = function(io, players) {
   var elapsed = 0;
   var ms = game.tickDelay;
 
+
+  // The main game loop
   function move(){
-    // console.log(game.snakes.length);
 
     var now = new Date().getTime();
     var delta = now - time;
@@ -403,8 +407,6 @@ module.exports = function(io, players) {
         snakes : game.snakes
        });
     }
-
-
 
     setTimeout(move,1);
   }

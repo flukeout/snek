@@ -1,19 +1,13 @@
 var collider = require('./collider');
 var game, io;
 
-var dist = function(x1, y1, x2, y2) {
-  var dx = x1 - x2;
-  var dy = y1 - y2;
-  return Math.sqrt(dx*dx + dy*dy);
-};
-
 var Snake = function(details, _game) {
-  // this SHOULD be safe?
+
   game = details.game || _game;
   io = details.io || _game.io;
 
-  this.id = details.id;
-  this.x = details.x;
+  this.id = details.id;   // Each snake in the game has a unique ID
+  this.x = details.x;     
   this.y = details.y;
   this.length = details.length;
   this.color = details.color;
@@ -28,7 +22,7 @@ var Snake = function(details, _game) {
   this.nextDirection = details.nextDirection || "";
   this.directionQ = [];
   this.eventQ = [];
-  this.warpCharge = 12; // need to charge at least 10 to warp
+  this.warpCharge = 12;
   this.buttons = {
     up : false,
     down : false,
@@ -102,7 +96,7 @@ Snake.prototype = {
     this.length++;
   },
 
-  // we're using a 5x5 bomb kernel
+  // Checks to see which segments were in a bomb blast
   getSegmentsNear: function(x, y, bombRadius) {
     var segments=[],
         sx, sy,
@@ -123,41 +117,45 @@ Snake.prototype = {
     return segments;
   },
 
+  // When a snake eats an apple, we...
+  // * Add a segment
+  // * Notify all the clients
   eat : function(){
     var tail = this.segments[0];
     this.makeSegment(tail.x,tail.y,"tail");
     io.emit('snakeEat', this.id);
   },
 
+  // When a snake moves
   move : function(futureSnakes) {
 
+    // Check the event queue for upcoming warps or bombs
     if(this.eventQ.length > 0) {
+      // Grab the next event
       var nextEvent = this.eventQ.splice(0, 1)[0];
-
       if(nextEvent == "bomb") {
         this.dropBomb();
       }
-
       if(nextEvent == "warp") {
         this.warp();
       }
     }
 
+    // Check if there are any directions in the queue
     if(this.directionQ.length > 0) {
       var nextDirection = this.directionQ[0];
       this.changeDirection(nextDirection);
       this.directionQ.splice(0, 1);
 
-      // If the player isn't fully charged, and changes direction
-      // reset the charge
+      // If the player isn't fully charged, and changes direction, reset the charge
       if(this.direction != nextDirection && this.charge < this.warpCharge) {
         this.charge = 0;
       }
-
       this.direction = this.nextDirection;
     }
 
-
+    // Increase the snake charge if the player is holding
+    // down the direction key for the direction they are already moving
     if(this.buttons[this.direction] == true) {
       this.charge++;
     }
@@ -201,6 +199,9 @@ Snake.prototype = {
     }
   },
 
+  // Checks collisions against "future snakes"
+  // We need to check collisions against the upcoming position of each snake,
+  // and not the current one.
   processCollisions: function(futureSnakes, head, newHead, newNext) {
     // check for collisions with the level wall
     var wallCollision  = (head.x >= game.width - 1 && this.direction == "right") |
@@ -276,11 +277,12 @@ Snake.prototype = {
     return otherCollision;
   },
 
+  // Returns the "head" segment of the snake
   getHead : function(){
-    // return this.segments[this.segments.length - 1];
     return this.segments.slice(-1)[0];
   },
 
+  // Causes the snake to lose the "head" segment
   loseHead : function(){
     if(this.segments.length > 1) {
       io.emit('loseHead', {id: this.id,});
@@ -288,10 +290,12 @@ Snake.prototype = {
     }
   },
 
+  // Returns the last, or "tail", segment of the snake
   getTail : function(){
     return this.segments[0];
   },
 
+  // Respawns the snake
   respawn : function(){
     var snakeDetails = {
       id : this.id,
@@ -305,6 +309,7 @@ Snake.prototype = {
     }
   },
 
+  // Removes a specific segment from the snake
   loseSegment: function(segment, showParticle) {
     segment.id = this.id;
 
@@ -323,6 +328,7 @@ Snake.prototype = {
     }
   },
 
+  // Dropbs a bomb (and loses a tail segment)
   dropBomb : function() {
     if (this.segments.length>1) {
       var tail = this.getTail();
@@ -331,9 +337,8 @@ Snake.prototype = {
     }
   },
 
+  // Warps the snake 5 steps forward, ignoring any collision detection
   warp : function(){
-    // OK SO - this warps the snake forward 5 spots
-    // Ignore collision detection
 
     var segments = [];
     for(var i = 0; i < 5; i++) {
@@ -369,13 +374,10 @@ Snake.prototype = {
       this.makeSegment(newHead.x,newHead.y,"head");
       this.segments.splice(0,1);
 
-
-
       var tail = this.segments[0];
       segments.push(tail);
 
-
-      game.checkCollisions(); // Check if I got apples
+      game.checkCollisions(); // While warping, check if eating any apples
     }
 
     io.emit('warpSnake', {
@@ -384,7 +386,7 @@ Snake.prototype = {
     });
   },
 
-  // Dies removes it from the player array too...
+  // This kills the snake
   die : function(type, norespawn) {
 
     var head = this.segments.length > 0 ? this.getHead() : this.tombStone;
@@ -396,6 +398,7 @@ Snake.prototype = {
       type : type
     });
 
+    // Removes this snake from the game
     var snakeIndex = game.snakes.indexOf(this);
     game.snakes.splice(snakeIndex, 1);
 
@@ -408,6 +411,8 @@ Snake.prototype = {
       },1000);
     }
   },
+
+  // The snake loses it's tail
   loseTail : function(){
     if(this.segments.length > 1) {
       io.emit('loseTail', {id: this.id,});
