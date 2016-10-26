@@ -54,18 +54,6 @@ Game.prototype = {
     }
   },
 
-
-  // Remove debug snakes
-  cleanupDebug: function() {
-    for (var i= this.snakes.length - 1; i >= 0; i--) {
-      let s = this.snakes[i];
-      if (s.debug || s.moveDebugSnake) {
-        s.die('debug', true);
-      }
-    }
-  },
-
-
   // Reset game runs when the round is over
   resetGame : function(){
 
@@ -95,8 +83,6 @@ Game.prototype = {
       this.addSnake(snakeDetails);
     })
 
-    this.cleanupDebug();
-
     // Let the clients know a new game is starting
     // and send the new game settings.
     this.mode = "game";
@@ -114,31 +100,12 @@ Game.prototype = {
 
   },
 
-  cleanupGame : function(){
-    // Check each snake, if the associated player doesn't exist in this.players
-    // Kill it off without a respawn
-    // Do we still need this?
-    // for(var i = 0; i < this.snakes.length; i++) {
-    //     var snake = this.snakes[i];
-    //     var snakeID = snake.id;
-    //     if(!this.players[snakeID]){
-    //       snake.die("", true);
-    //     }
-    //   }
-  },
-
   move : function(){
     var winnerIDs = [];
     var futureSnakes = this.getFutureSnakes();
 
     this.snakes.forEach(s => {
-      if (!s.debug || s.moveDebugSnake) {
-        // move this snake, with collisions checked
-        // against the hypothetical future in which
-        // snakes were allowed to move without any
-        // collision detection worked into their move.
-        s.move(futureSnakes);
-      }
+      s.move(futureSnakes);
 
       if(this.mode == "game") {
         if(s.segments.length >= this.winLength) {

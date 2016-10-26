@@ -18,15 +18,13 @@ var Snake = function(details, _game) {
   this.length = details.length;
   this.color = details.color;
 
-  this.debug = !!details.debug;
-  this.moving = !!details.moving;
-
   this.ticks = 0;
   this.points = 0;
   this.name = details.name || "ServerSnake";
   this.size = details.size || 4;
   this.segments = (details.segments || []).slice();
   this.direction = details.direction || undefined;
+  this.moving = !!details.moving;
   this.nextDirection = details.nextDirection || "";
   this.directionQ = [];
   this.eventQ = [];
@@ -196,7 +194,6 @@ Snake.prototype = {
 
       } else {
         this.die();
-        game.cleanupDebug();
       }
     } else {
       this.makeSegment(newHead.x,newHead.y,"head");
@@ -252,7 +249,7 @@ Snake.prototype = {
 
       // Ignore collisions with just-spawned
       // snakes (= not moving snake)
-      if (!snake.debug && !snake.moving) {
+      if (!snake.moving) {
         continue;
       }
 
@@ -295,11 +292,10 @@ Snake.prototype = {
     return this.segments[0];
   },
 
-  respawn : function(debug){
+  respawn : function(){
     var snakeDetails = {
       id : this.id,
       color: this.color,
-      debug: this.debug,
       name : this.name || "jammer"
     }
 
