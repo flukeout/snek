@@ -12,7 +12,7 @@ If that sounds a little complicated: don't worry! The important part is this:
 1. [Getting set up](#1-getting-set-up)
 	1. [Prerequisites](#11-prerequisites)
     2. [Getting the code](#12-getting-the-code)
-    3. [First-time installation](#13-first-time installation)
+    3. [First-time installation](#13-first-time-installation)
     4. [Running the game](#14-running-the-game)
     5. [Running the game with more than one person](#15-running-the-game-with-more-than-one-person)
 2. [Aspects of game play](#2-aspects-of-game-play)
