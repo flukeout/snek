@@ -10,7 +10,7 @@ If that sounds a little complicated: don't worry! The important part is this:
 ## Table of Contents
 
 1. [Getting set up](#1-getting-set-up)
-	1. [Prerequisites](#1.1. Prerequisites)
+	1. [Prerequisites](#1.1.%20Prerequisites)
     2. [Getting the code](#1.2. Getting the code)
     3. [First-time installation](#1.3. First-time installation)
     4. [Running the game](#1.4. Running the game)
