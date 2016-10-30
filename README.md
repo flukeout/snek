@@ -9,20 +9,20 @@ If that sounds a little complicated: don't worry! The important part is this:
 
 ## Table of Contents
 
-1. [Getting set up](#1. getting set up)
-	1. [Prerequisites](#1.1. Prerequisites)
-    2. [Getting the code](#1.2. Getting the code)
-    3. [First-time installation](#1.3. First-time installation)
-    4. [Running the game](#1.4. Running the game)
-    5. [Running the game with more than one person](#1.5. Running the game with more than one person)
-2. [Aspects of game play](#2. Aspects of game play)
-3. [Diving into the code](#3. Diving into the code)
-	1. [The game loop](#3.1. The game loop)
-	2. [The server code](#3.2. The server code)
-	3. [The client code](#3.3. The client code)
-	4. [The touchpad code](#3.4. The touchpad code)
-4. [Troubleshooting and help](#4. Troubleshooting and help)
-5. [License information (boring, but important)](#5. License information)
+1. [Getting set up](#1-getting-set-up)
+	1. [Prerequisites](#11-prerequisites)
+    2. [Getting the code](#12-getting-the-code)
+    3. [First-time installation](#13-first-time-installation)
+    4. [Running the game](#14-running-the-game)
+    5. [Running the game with more than one person](#15-running-the-game-with-more-than-one-person)
+2. [Aspects of game play](#2-aspects-of-game-play)
+3. [Diving into the code](#3-diving-into-the-code)
+	1. [The game loop](#31-the-game-loop)
+	2. [The server code](#32-the-server-code)
+	3. [The client code](#33-the-client-code)
+	4. [The touchpad code](#34-the-touchpad-code)
+4. [Troubleshooting and help](#4-troubleshooting-and-help)
+5. [License information (boring, but important)](#5-license-information)
 
 
 ## 1. Getting set up
