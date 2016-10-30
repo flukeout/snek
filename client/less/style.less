@@ -27,6 +27,7 @@ body, html {
 .board {
   position: relative;
   background: #1a1a1a;
+  background: #111;
   margin: 0 auto;
   width: 0;
   height: 0;
@@ -41,14 +42,14 @@ body, html {
   top: 0;
   z-index: 3;
   background-image: repeating-linear-gradient(90deg, //↘
-        #111, #111 1px, //5px
+        #333, #333 1px, //5px
         rgba(0,0,0,0) 1px , rgba(0,0,0,0) 18px, //100px
-        #111 18px, #111 20px, //5px
+        #333 18px, #333 20px, //5px
      ),
      repeating-linear-gradient(180deg, //↘
-        #111, #111 1px, //5px
+        #333, #333 1px, //5px
         rgba(0,0,0,0) 1px, rgba(0,0,0,0) 18px, //100px
-        #111 18px, #111 20px, //5px
+        #333 18px, #333 20px, //5px
      );
 }
 
@@ -56,7 +57,7 @@ body, html {
   content: " ";
   position: absolute;
   opacity: .4;
-  border: solid 20px #666;
+  border: solid 20px #BBB;
   transition: border-color .15s ease-in;
   border-radius: 4px;
   width: 100%;
